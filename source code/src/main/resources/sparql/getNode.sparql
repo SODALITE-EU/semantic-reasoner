@@ -1,0 +1,19 @@
+select distinct ?description ?instanceType ?classType
+where {
+	{
+		?node rdfs:subClassOf tosca:tosca.entity.Root .
+		?node sesame:directSubClassOf ?classType .
+		FILTER (?node != owl:Nothing) .
+	}
+	UNION 
+	{
+		?node rdf:type soda:SodaliteSituation .
+		FILTER NOT EXISTS {
+			?node rdfs:subClassOf tosca:tosca.entity.Root 
+		}
+		?node sesame:directType ?instanceType .
+		FILTER (?node != owl:Nothing) .
+	}
+	
+	OPTIONAL {?node dcterms:description ?description .}
+}

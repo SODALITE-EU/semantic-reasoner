@@ -1,0 +1,20 @@
+select ?requirement ?classifier ?value
+where {
+	?resource soda:hasContext ?context .
+	FILTER (strends(str(?resource), ?var)).
+	?context tosca:requirements ?classifier.
+	?classifier DUL:classifies ?requirement .
+	OPTIONAL {?classifier tosca:hasValue ?value .} 
+	
+	FILTER NOT EXISTS {
+			?resource soda:hasInferredContext ?context2 .
+			FILTER(?context != ?context2).
+			?context2 tosca:requirements ?classifier2.
+			?classifier2 DUL:classifies ?requirement .
+			
+			?resource2 soda:hasContext ?context2 .
+			#FILTER(?resource != ?resource2).	
+			FILTER(?resource2 != owl:Nothing).
+			?resource2 rdfs:subClassOf ?resource.	
+	}
+}

@@ -1,0 +1,10 @@
+select distinct ?value 
+where {
+		?resource soda:hasContext ?context .
+		FILTER (strends(str(?resource), ?var)).
+		?context tosca:valid_target_types [tosca:hasValue [tosca:hasValue ?value]] .
+}
+
+
+
+                

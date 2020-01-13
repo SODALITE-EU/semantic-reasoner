@@ -1,0 +1,8 @@
+select distinct ?template ?templateType ?r_a 
+where {
+    ?template a soda:SodaliteSituation ;
+            sesame:directType ?templateType ;
+            soda:hasContext [tosca:requirements [DUL:classifies ?r_a]] .
+    ?templateType rdfs:subClassOf tosca:tosca.entity.Root .
+}  
+

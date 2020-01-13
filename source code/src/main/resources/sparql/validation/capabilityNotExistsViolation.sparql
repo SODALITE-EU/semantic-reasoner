@@ -1,0 +1,28 @@
+
+
+# template, r_a, ctx
+select *
+where {
+    ?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a; DUL:hasRegion ?r_a_node]] .
+    ?r_a_node sesame:directType ?type_r_a_node.
+    ?type_r_a_node rdfs:subClassOf tosca:tosca.entity.Root .
+
+    ?type_r_a_node soda:hasInferredContext ?ctx2;
+        rdfs:subClassOf tosca:tosca.entity.Root. 
+    ?ctx2 tosca:capabilities [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies :tosca:type; DUL:hasRegion ?capabilityType]] .
+    
+    FILTER NOT EXISTS {
+        ?type_r_a_node soda:hasInferredContext ?ctx3.
+        ?ctx3 tosca:capabilities [DUL:classifies ?r_a] .
+        ?node2 soda:hasContext ?ctx3.
+        FILTER (?ctx2 != ?ctx3).
+        ?node2 rdfs:subClassOf ?type_r_a_node .
+    }
+
+    ?ctx tosca:requirements [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies :tosca:type; DUL:hasRegion ?r_d_capability]] .
+    ?capabilityType rdfs:subClassOf ?r_d_capability .
+
+}
+
+
+

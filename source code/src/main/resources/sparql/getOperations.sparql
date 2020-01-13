@@ -1,0 +1,10 @@
+select distinct ?concept ?property
+where {
+	?resource soda:hasInferredContext ?context .
+	FILTER (strends(str(?resource), ?var)).
+	?context tosca:operations ?concept .
+	?concept DUL:classifies ?property .
+}
+
+
+                

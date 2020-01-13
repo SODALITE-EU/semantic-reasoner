@@ -1,0 +1,21 @@
+select distinct ?capability ?classifier
+where {
+	?resource soda:hasContext ?context .
+	FILTER (strends(str(?resource), ?var)).
+	?context tosca:capabilities ?classifier. 
+	?classifier DUL:classifies ?capability .
+	
+	FILTER NOT EXISTS {
+			?resource soda:hasInferredContext ?context2 .
+			FILTER(?context != ?context2).
+			?context2 tosca:capabilities ?classifier2.
+			?classifier2 DUL:classifies ?capability .
+			
+			?resource2 soda:hasContext ?context2 .
+			#FILTER(?resource != ?resource2).	
+			FILTER(?resource2 != owl:Nothing).
+			?resource2 rdfs:subClassOf ?resource.	
+	}
+	
+	
+}           

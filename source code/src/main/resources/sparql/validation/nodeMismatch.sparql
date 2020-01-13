@@ -1,0 +1,8 @@
+# ctx, r_a, tempalte
+select ?type_r_a_node ?r_d_node {
+	?ctx tosca:requirements [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies tosca:node; DUL:hasRegion ?r_d_node]] .
+	?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a; DUL:hasRegion ?r_a_node]] .
+	?r_a_node sesame:directType ?type_r_a_node . 
+	?type_r_a_node rdfs:subClassOf tosca:tosca.entity.Root .
+	FILTER NOT EXISTS {?type_r_a_node rdfs:subClassOf ?r_d_node . }
+}

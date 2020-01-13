@@ -1,0 +1,14 @@
+select distinct ?nodeType ?ctx
+where {
+    ?nodeType soda:hasInferredContext ?ctx;
+        rdfs:subClassOf tosca:tosca.entity.Root. 
+    ?ctx tosca:requirements [DUL:classifies ?r_a] .
+    
+    FILTER NOT EXISTS {
+        ?nodeType soda:hasInferredContext ?ctx2.
+        ?ctx2 tosca:requirements [DUL:classifies ?r_a] .
+        ?node2 soda:hasContext ?ctx2.
+        FILTER (?ctx2 != ?ctx).
+        ?node2 rdfs:subClassOf ?nodeType .
+    }
+}

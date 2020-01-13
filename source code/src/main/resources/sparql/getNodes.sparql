@@ -1,0 +1,7 @@
+select ?node ?description ?superclass
+where {
+	?node rdfs:subClassOf tosca:tosca.nodes.Root .
+	?node sesame:directSubClassOf ?superclass .
+	OPTIONAL {?node dcterms:description ?description .}
+	FILTER (?node != owl:Nothing) .
+}

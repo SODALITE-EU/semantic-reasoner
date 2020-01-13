@@ -1,0 +1,18 @@
+select distinct ?interface ?classifier
+where {
+	?resource soda:hasContext ?context .
+	FILTER (strends(str(?resource), ?var)).
+	?context tosca:interfaces ?classifier.
+	?classifier DUL:classifies ?interface .
+	FILTER NOT EXISTS {
+		?resource soda:hasInferredContext ?context2 .
+		FILTER(?context != ?context2).
+		?context2 tosca:interfaces ?classifier2.
+		?classifier2 DUL:classifies ?interface .
+		
+		?resource2 soda:hasContext ?context2 .
+		#FILTER(?resource != ?resource2).	
+		FILTER(?resource2 != owl:Nothing).
+		?resource2 rdfs:subClassOf ?resource.	
+	}
+}

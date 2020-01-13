@@ -1,0 +1,8 @@
+select ?type ?value
+where {
+	?var1 DUL:hasParameter ?p .
+	?p DUL:classifies tosca:constraints .
+	?p DUL:hasParameter ?param .
+	?param DUL:classifies ?type .
+	?param tosca:hasValue ?value .
+}  

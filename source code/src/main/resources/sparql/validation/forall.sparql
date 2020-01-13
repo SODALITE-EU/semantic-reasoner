@@ -1,0 +1,22 @@
+select distinct ?template ?templateType ?r_d_node ?r_a ?r_a_node ?type_r_a_node
+where {
+    ?templateType soda:hasInferredContext ?ctx;
+        rdfs:subClassOf tosca:tosca.entity.Root. 
+    ?ctx tosca:requirements [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies tosca:node; DUL:hasRegion ?r_d_node]] .
+    FILTER NOT EXISTS {
+        ?templateType rdfs:subClassOf ?node2 .
+        ?node2 soda:hasContext ?ctx2.
+        ?ctx2 tosca:requirements [DUL:classifies ?r_a] .
+        FILTER (?templateType != ?node2 && ?ctx2 != ?ctx).
+    }
+    {
+        select distinct ?template ?templateType ?r_a ?r_a_node ?type_r_a_node {
+            ?template a soda:SodaliteSituation ;
+                    sesame:directType ?templateType ;
+                    soda:hasContext [tosca:requirements [DUL:classifies ?r_a; DUL:hasRegion ?r_a_node]] .
+            ?r_a_node sesame:directType ?type_r_a_node .
+            ?templateType rdfs:subClassOf tosca:tosca.entity.Root .
+            ?type_r_a_node rdfs:subClassOf tosca:tosca.entity.Root .
+        }
+    }
+}
