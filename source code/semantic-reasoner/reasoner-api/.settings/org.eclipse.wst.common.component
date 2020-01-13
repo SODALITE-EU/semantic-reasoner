@@ -4,7 +4,10 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <property name="java-output-path" value="/semantic-reasoner/target/classes"/>
+        <dependent-module archiveName="reasoning-engine-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/reasoning-engine/reasoning-engine">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="reasoner-api"/>
+        <property name="java-output-path" value="/reasoner-api/target/classes"/>
     </wb-module>
 </project-modules>
