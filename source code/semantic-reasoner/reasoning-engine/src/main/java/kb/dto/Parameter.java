@@ -102,6 +102,17 @@ public class Parameter extends Resource {
 			value = api.kb.factory.createLiteral(KB.ANSIBLE + value.stringValue());
 		}
 
+	 /*"create": {
+            "implementation": "playbooks/torque-job/create.yml"
+          },
+		*/
+		
+		if (this.label.equals("implementation") && value instanceof Literal && value.stringValue().endsWith(".yml")) {
+			value = api.kb.factory.createLiteral(KB.ANSIBLE + value.stringValue());
+		}
+		
+		
+		
 		if (value instanceof Literal) {
 			this.value = value.stringValue();
 //			System.out.println(value);
