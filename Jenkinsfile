@@ -3,6 +3,7 @@ pipeline {
   stages {
     stage ('Pull repo code from github') {
       steps {
+        
         checkout scm
       }
     }
