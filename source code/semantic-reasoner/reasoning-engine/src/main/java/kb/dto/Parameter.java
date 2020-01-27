@@ -96,10 +96,10 @@ public class Parameter extends Resource {
 	// string
 	// List
 	// Min, Max
-	public void setValue(Value value, KBApi api) {
+	public void setValue(Value value, KB kb) {
 
 		if (this.label.equals("primary")) {
-			value = api.kb.factory.createLiteral(KB.ANSIBLE + value.stringValue());
+			value = kb.factory.createLiteral(KB.ANSIBLE + value.stringValue());
 		}
 
 	 /*"create": {
@@ -108,7 +108,7 @@ public class Parameter extends Resource {
 		*/
 		
 		if (this.label.equals("implementation") && value instanceof Literal && value.stringValue().endsWith(".yml")) {
-			value = api.kb.factory.createLiteral(KB.ANSIBLE + value.stringValue());
+			value = kb.factory.createLiteral(KB.ANSIBLE + value.stringValue());
 		}
 		
 		
@@ -120,7 +120,7 @@ public class Parameter extends Resource {
 		} else {
 			IRI v = (IRI) value;
 			List<String> collect = Iterations.asList(
-					api.kb.connection.getStatements(v, api.kb.factory.createIRI(KB.TOSCA + "hasValue"), null))
+					kb.connection.getStatements(v, kb.factory.createIRI(KB.TOSCA + "hasValue"), null))
 					.stream().map(x -> MyUtils.getStringValue(x.getObject())).collect(Collectors.toList());
 			if (collect.isEmpty()) {
 				this.valueUri = v.toString();

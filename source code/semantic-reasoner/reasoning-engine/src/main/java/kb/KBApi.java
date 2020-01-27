@@ -87,7 +87,7 @@ public class KBApi {
 			Property a = new Property(p1);
 			a.setClassifiedBy(concept);
 			if (_value != null)
-				a.setValue(_value, this);
+				a.setValue(_value, kb);
 
 			properties.add(a);
 		}
@@ -149,7 +149,7 @@ public class KBApi {
 			Requirement c = new Requirement(p1);
 			c.setClassifiedBy(concept);
 			if (_value != null)
-				c.setValue(_value, this);
+				c.setValue(_value, kb);
 
 			requirements.add(c);
 
@@ -348,7 +348,7 @@ public class KBApi {
 			Parameter p = new Parameter(_parameter);
 			p.setClassifiedBy(_classifier);
 			if (_value != null)
-				p.setValue(_value, this);
+				p.setValue(_value, kb);
 			parameters.add(p);
 		}
 		result.close();

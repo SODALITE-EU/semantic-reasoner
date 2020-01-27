@@ -46,6 +46,18 @@ public class KB {
 		factory = connection.getValueFactory();
 	}
 
+	public KB(SodaliteRepository manager) {
+		this.manager = manager;
+		connection = manager.getRepository(REPOSITORY).getConnection();
+		factory = connection.getValueFactory();
+	}
+
+	public KB(SodaliteRepository manager, String repoName) {
+		this.manager = manager;
+		connection = manager.getRepository(repoName).getConnection();
+		factory = connection.getValueFactory();
+	}
+
 	public void update(Model model) {
 		connection.begin();
 		connection.add(model);
