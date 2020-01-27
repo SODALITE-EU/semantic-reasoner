@@ -6,6 +6,7 @@ pipeline {
         checkout scm
       }
     }
+    
     stage ('Build the code with Maven') {
       steps {
         sh  """ #!/bin/bash
