@@ -17,6 +17,11 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
+    stage ('Trigger a build of defect-prediction') {
+      steps {
+        build job: 'defect-prediction/master', wait: false
+      }
+    }
   }
   post {
     failure {
