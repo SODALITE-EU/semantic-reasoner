@@ -7,8 +7,6 @@ pipeline {
         checkout scm
       }
     }
-    
-    
     stage ('Build the code with Maven') {
       steps {
         sh  """ #!/bin/bash
@@ -19,6 +17,11 @@ pipeline {
       }
     }
     stage ('Trigger a build of defect-prediction') {
+      when { 
+          not { 
+              triggeredBy 'UpstreamCause' 
+          }
+      }
       steps {
         build job: 'defect-prediction/master', wait: false
       }
