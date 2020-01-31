@@ -3,6 +3,9 @@ package kb.dsl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,6 +36,9 @@ import kb.dsl.exceptions.MappingException;
 import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
+import kb.validation.exceptions.ValidationException;
+import kb.validation.exceptions.models.ValidationModel;
+import kb.validation.required.RequiredPropertyValidation;
 
 public class DSLMappingService {
 
@@ -52,6 +58,12 @@ public class DSLMappingService {
 
 	IRI aadmKB;
 	IRI context;
+
+	// Validation
+	Set<String> definedPropertiesForValidation = new HashSet<String>(),
+			definedAttributesForValidation = new HashSet<String>();
+
+	List<ValidationModel> validationModels = new ArrayList<>();
 
 	public DSLMappingService(KB kb, String aadmTTL, String submissionId)
 			throws RDFParseException, UnsupportedRDFormatException, IOException {
@@ -74,7 +86,7 @@ public class DSLMappingService {
 
 	}
 
-	public IRI start() throws MappingException {
+	public IRI start() throws MappingException, ValidationException {
 
 		// AADM
 		aadmKB = null;
@@ -133,16 +145,24 @@ public class DSLMappingService {
 			builder.add(templateKB, factory.createIRI(KB.SODA + "hasContext"), templateDescriptionKB);
 
 			// properties
-			for (Resource _property : Models.getPropertyResources(aadmModel, _template,
-					factory.createIRI(KB.EXCHANGE + "properties"))) {
+			Set<Resource> _properties = Models.getPropertyResources(aadmModel, _template,
+					factory.createIRI(KB.EXCHANGE + "properties"));
+			definedPropertiesForValidation.clear();
+			for (Resource _property : _properties) {
 				IRI property = (IRI) _property;
 				IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
 
 				// add property classifiers to the template context
 				builder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "properties"), propertyClassifierKB);
 			}
+			// validation
+			RequiredPropertyValidation v = new RequiredPropertyValidation(templateName,
+					factory.createLiteral(templateType), definedPropertiesForValidation, kb);
+			validationModels.addAll(v.validate());
 
 			// attributes
+
+			definedAttributesForValidation.clear();
 			for (Resource _attribute : Models.getPropertyResources(aadmModel, _template,
 					factory.createIRI(KB.EXCHANGE + "attributes"))) {
 				IRI attribute = (IRI) _attribute;
@@ -169,6 +189,9 @@ public class DSLMappingService {
 
 			// misc
 
+		}
+		if (!validationModels.isEmpty()) {
+			throw new ValidationException(validationModels);
 		}
 		return aadmKB;
 
@@ -271,6 +294,8 @@ public class DSLMappingService {
 		if (value == null) {
 			System.err.println("No value found for property: " + parameter.getLocalName());
 		}
+
+		definedPropertiesForValidation.add(propertyName);
 
 		System.out.println(String.format("Property name: %s, value: %s", propertyName, value));
 

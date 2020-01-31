@@ -11,7 +11,7 @@ public class ValidationService {
 	RequirementValidation requirementValidation;
 
 	public ValidationService() {
-		requirementValidation = new RequirementValidation();
+		requirementValidation = new RequirementValidation(null);
 	}
 
 	public void validate() {

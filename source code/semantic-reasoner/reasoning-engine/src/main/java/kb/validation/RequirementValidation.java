@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
@@ -19,11 +20,18 @@ import kb.validation.exceptions.NodeMismatchValidationException;
 
 ///			System.out.println(MyUtils.getGson(true).toJson(requirementDefinitionExists));
 
+/*
+ * THIS NEEDS TO BE CHANGE IN ORDER TO PERFORM VALIDATION ON THE MODEL, BEFORE SAVING IT TO THE KB
+ */
+
 public class RequirementValidation extends ValidationManager {
 
-	public boolean start()
-			throws IOException, NoRequirementDefinitionValidationException, NodeMismatchValidationException,
-			CapabilityMismatchValidationException {
+	public RequirementValidation(Model model) {
+		super(model);
+	}
+
+	public boolean start() throws IOException, NoRequirementDefinitionValidationException,
+			NodeMismatchValidationException, CapabilityMismatchValidationException {
 		Set<HashMap<String, IRI>> templateRequirements = getTemplateRequirements();
 		if (templateRequirements.isEmpty()) {
 			System.out.println("No requirements to validate");
@@ -144,9 +152,8 @@ public class RequirementValidation extends ValidationManager {
 	// template, templateType, r_a
 	public Set<HashMap<String, IRI>> requirementDefinitions(HashMap<String, IRI> dto) throws IOException {
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/requirementDefinitionExists.sparql");
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding[] { new SimpleBinding("r_a", dto.get("r_a")),
-						new SimpleBinding("nodeType", dto.get("templateType")) });
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] {
+				new SimpleBinding("r_a", dto.get("r_a")), new SimpleBinding("nodeType", dto.get("templateType")) });
 
 		Set<HashMap<String, IRI>> container = new HashSet<>();
 
@@ -170,7 +177,7 @@ public class RequirementValidation extends ValidationManager {
 	}
 
 	public static void main(String[] args) throws IOException {
-		RequirementValidation requirementValidation = new RequirementValidation();
+		RequirementValidation requirementValidation = new RequirementValidation(null);
 
 		try {
 			boolean start = requirementValidation.start();

@@ -1,17 +1,23 @@
 package kb.validation;
 
+import org.eclipse.rdf4j.model.Model;
+
 import kb.repository.KB;
 
 public class ValidationManager {
 
-	KB kb;
+	protected KB kb; // in order to query the schema - tier1
 
-	public ValidationManager(KB kb) {
+	protected Model exchangeModel; // the submitted data (tier2)
+
+	public ValidationManager(KB kb, Model model) {
 		this.kb = kb;
+		this.exchangeModel = model;
 	}
 
-	public ValidationManager() {
+	public ValidationManager(Model model) {
 		kb = new KB();
+		this.exchangeModel = model;
 	}
 
 	public void shutDown() {
