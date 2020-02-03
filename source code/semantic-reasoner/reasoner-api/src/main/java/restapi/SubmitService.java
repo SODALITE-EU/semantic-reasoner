@@ -9,6 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.rio.RDFParseException;
@@ -54,7 +55,7 @@ public class SubmitService extends AbstractService {
 			
 			JSONObject errors = new JSONObject();
 			errors.put("errors", array);
-			return Response.ok(errors.toString()).build();
+			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 			
 			
 		} finally {
