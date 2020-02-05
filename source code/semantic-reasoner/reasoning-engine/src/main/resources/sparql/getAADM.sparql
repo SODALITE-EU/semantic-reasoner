@@ -1,8 +1,9 @@
-select ?aadm ?createdAt ?user (group_concat(distinct concat(str(?template), "|" , str(?superclass))) as ?templates)
+select ?aadm ?createdAt ?user (group_concat(distinct concat(str(?template), "|" , str(?superclass))) as ?templates) (group_concat(distinct concat(str(?input), "|" , str(?superclass2))) as ?inputs)
 where {
 	?aadm soda:createdAt ?createdAt .
 	?aadm soda:createdBy ?user .
 	?aadm soda:includesTemplate ?template .
+	OPTIONAL {?aadm soda:includesInput ?input . ?input sesame:directType ?superclass2 . ?superclass2 rdfs:subClassOf soda:SodaliteSituation}
     ?template sesame:directType ?superclass .
     ?superclass rdfs:subClassOf soda:SodaliteSituation .
 } group by ?aadm ?createdAt ?user

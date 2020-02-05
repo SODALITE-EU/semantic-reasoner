@@ -13,6 +13,8 @@ import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 
+import com.google.common.base.Strings;
+
 import kb.dto.AADM;
 import kb.dto.Attribute;
 import kb.dto.Capability;
@@ -32,7 +34,11 @@ public class KBApi {
 	public KB kb;
 
 	public KBApi() {
-		kb = new KB();
+		String getenv = System.getenv("graphdb");
+		if (getenv != null)
+			kb = new KB(getenv, "TOSCA");
+		else
+			kb = new KB();
 	}
 
 	public void shutDown() {
@@ -68,13 +74,12 @@ public class KBApi {
 	}
 
 	public Set<Property> getProperties(String resource, boolean isTemplate) throws IOException {
-		// System.out.println("getProperties: " + resource);
+		System.out.println("getProperties: " + resource);
 		Set<Property> properties = new HashSet<>();
 		String sparql = MyUtils
 				.fileToString(!isTemplate ? "sparql/getProperties.sparql" : "sparql/getPropertiesTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
 
-		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("var", kb.getFactory().createLiteral(resource)));
 
@@ -97,6 +102,37 @@ public class KBApi {
 		}
 
 		return properties;
+	}
+
+	public Set<Property> getInputs(String resource, boolean isTemplate) throws IOException {
+		System.out.println("getInputs: " + resource);
+		Set<Property> inputs = new HashSet<>();
+		String sparql = MyUtils.fileToString("sparql/getInputs.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("var", kb.getFactory().createLiteral(resource)));
+
+		while (result.hasNext()) {
+			System.err.println("in");
+			BindingSet bindingSet = result.next();
+			IRI p1 = (IRI) bindingSet.getBinding("property").getValue();
+			IRI concept = (IRI) bindingSet.getBinding("concept").getValue();
+			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
+
+			Property a = new Property(p1);
+			a.setClassifiedBy(concept);
+			if (_value != null)
+				a.setValue(_value, kb);
+
+			inputs.add(a);
+		}
+		result.close();
+		for (Property input : inputs) {
+			input.build(this);
+		}
+
+		return inputs;
 	}
 
 	public Set<Capability> getCapabilities(String resource, boolean isTemplate) throws IOException {
@@ -283,14 +319,11 @@ public class KBApi {
 			return nodes;
 		}
 
-		String query = KB.PREFIXES +
-				"SELECT ?node ?description ?superclass WHERE {\r\n" +
-				"	?node a tosca:tosca.nodes.Root .\r\n" +
-				"    ?node a ?var .   \r\n" +
-				"	 ?node sesame:directType ?superclass . \r\n " +
-				"    ?superclass rdfs:subClassOf tosca:tosca.nodes.Root . \r\n" +
-				"    OPTIONAL {?node dcterms:description ?description .} \r\n" +
-				"}";
+		String query = KB.PREFIXES + "SELECT ?node ?description ?superclass WHERE {\r\n"
+				+ "	?node a tosca:tosca.nodes.Root .\r\n" + "    ?node a ?var .   \r\n"
+				+ "	 ?node sesame:directType ?superclass . \r\n "
+				+ "    ?superclass rdfs:subClassOf tosca:tosca.nodes.Root . \r\n"
+				+ "    OPTIONAL {?node dcterms:description ?description .} \r\n" + "}";
 
 		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
@@ -329,12 +362,9 @@ public class KBApi {
 	public Set<Parameter> getParameters(IRI classifier) {
 		Set<Parameter> parameters = new HashSet<>();
 
-		String query = KB.PREFIXES + "select ?parameter ?classifier ?value "
-				+ " where {"
-				+ "		?var DUL:hasParameter ?classifier. "
-				+ "		OPTIONAL {?classifier tosca:hasValue ?value .} "
-				+ " 	?classifier DUL:classifies ?parameter . "
-				+ "}";
+		String query = KB.PREFIXES + "select ?parameter ?classifier ?value " + " where {"
+				+ "		?var DUL:hasParameter ?classifier. " + "		OPTIONAL {?classifier tosca:hasValue ?value .} "
+				+ " 	?classifier DUL:classifies ?parameter . " + "}";
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("var", classifier));
@@ -361,9 +391,8 @@ public class KBApi {
 
 	public Set<IRI> getValidTargetTypes(String resource, boolean isTemplate) throws IOException {
 		Set<IRI> results = new HashSet<>();
-		String sparql = MyUtils
-				.fileToString(!isTemplate ? "sparql/getValidTargetTypes.sparql"
-						: "sparql/getValidTargetTypesTemplate.sparql");
+		String sparql = MyUtils.fileToString(
+				!isTemplate ? "sparql/getValidTargetTypes.sparql" : "sparql/getValidTargetTypesTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
@@ -418,6 +447,7 @@ public class KBApi {
 			Value createdAt = bindingSet.getBinding("createdAt").getValue();
 			IRI user = (IRI) bindingSet.getBinding("user").getValue();
 			String templates = bindingSet.getBinding("templates").getValue().stringValue();
+			String inputs = bindingSet.getBinding("inputs").getValue().stringValue();
 
 			aadm = new AADM(kb.getFactory().createIRI(aadmId));
 			aadm.setUser(user);
@@ -426,9 +456,21 @@ public class KBApi {
 			String[] split = templates.split(" ");
 			for (String s : split) {
 				String[] split2 = s.split("\\|");
-				NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), true);
+				boolean isInput = split2[1].endsWith("Input");
+				NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), true && !isInput);
 				f.setType(kb.getFactory().createIRI(split2[1]));
 				aadm.addTemplate(f);
+			}
+
+			if (!Strings.isNullOrEmpty(inputs)) {
+				split = inputs.split(" ");
+				for (String s : split) {
+					String[] split2 = s.split("\\|");
+					NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), false);
+					f.isInput = true;
+					f.setType(kb.getFactory().createIRI(split2[1]));
+					aadm.addTemplate(f);
+				}
 			}
 
 //			aadm.setTemplates(

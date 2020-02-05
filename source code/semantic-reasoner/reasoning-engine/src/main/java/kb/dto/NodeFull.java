@@ -21,7 +21,9 @@ public class NodeFull extends Node {
 	Set<IRI> validTargetTypes;
 	Set<Operation> operations;
 
-	boolean isTemplate = false;
+	Set<Property> inputs;
+
+	public boolean isTemplate = false, isInput = false;
 
 	public NodeFull(IRI iri, boolean isTemplate) {
 		super(iri);
@@ -43,6 +45,9 @@ public class NodeFull extends Node {
 
 		operations = api.getOperations(uri.toString(), isTemplate);
 //		System.err.println("validTargetTypes " + validTargetTypes);
+
+		// inputs
+		inputs = api.getInputs(uri.toString(), false);
 	}
 
 	public boolean isTemplate() {
@@ -56,12 +61,13 @@ public class NodeFull extends Node {
 	@Override
 	public JsonElement serialise() {
 		JsonObject data = new JsonObject();
-		if (description != null)
-			data.addProperty("description", description);
-		data.addProperty("type", this.type.toString());
-		relevantUris.add(this.type.toString());
-		data.addProperty("isNodeTemplate", isTemplate);
-
+		if (!isInput) {
+			if (description != null)
+				data.addProperty("description", description);
+			data.addProperty("type", this.type.toString());
+			relevantUris.add(this.type.toString());
+			data.addProperty("isNodeTemplate", isTemplate);
+		}
 		// properties
 		JsonArray array = new JsonArray();
 		for (Property p : properties) {
@@ -127,6 +133,16 @@ public class NodeFull extends Node {
 
 		if (!operations.isEmpty())
 			data.add("operations", array);
+
+		// inputs
+		array = new JsonArray();
+		for (Property p : inputs) {
+			array.add(p.serialise());
+			relevantUris.addAll(p.relevantUris);
+		}
+
+		if (!inputs.isEmpty())
+			data.add("inputs", array);
 
 		return data;
 	}
