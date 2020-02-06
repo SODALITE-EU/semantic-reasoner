@@ -38,7 +38,12 @@ public class SubmitService extends AbstractService {
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("submissionId") String submissionId)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException {
 
-		KB kb = new KB();
+		KB kb;
+		String getenv = System.getenv("graphdb");
+		if (getenv != null)
+			kb = new KB(getenv, "TOSCA");
+		else
+			kb = new KB();
 		DSLMappingService m = new DSLMappingService(kb, aadmTTL, submissionId);
 		IRI aadmUri = null;
 		try {

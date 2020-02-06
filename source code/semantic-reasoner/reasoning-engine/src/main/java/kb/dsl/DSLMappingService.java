@@ -72,10 +72,8 @@ public class DSLMappingService {
 		this.factory = SimpleValueFactory.getInstance();
 
 		builder = new ModelBuilder();
-		builder.setNamespace("soda", KB.SODA)
-				.setNamespace("dul", KB.DUL)
-				.setNamespace("dcterms", KB.DCTERMS).setNamespace("exchange", KB.EXCHANGE)
-				.setNamespace("tosca", KB.TOSCA);
+		builder.setNamespace("soda", KB.SODA).setNamespace("dul", KB.DUL).setNamespace("dcterms", KB.DCTERMS)
+				.setNamespace("exchange", KB.EXCHANGE).setNamespace("tosca", KB.TOSCA);
 
 //		System.out.println(aadmTTL);
 		InputStream targetStream = IOUtils.toInputStream(aadmTTL, Charset.defaultCharset());
@@ -83,6 +81,8 @@ public class DSLMappingService {
 		targetStream.close();
 
 		context = kb.factory.createIRI("http://" + submissionId);
+
+		ws += submissionId + "/";
 
 	}
 
@@ -190,6 +190,54 @@ public class DSLMappingService {
 			// misc
 
 		}
+
+		// Inputs
+		Set<Resource> inputs = aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Input")).subjects();
+		if (inputs.size() > 0) {
+			IRI inputKB = factory.createIRI(ws + "parameters");
+			builder.add(inputKB, RDF.TYPE, factory.createIRI(KB.TOSCA + "Input"));
+			builder.add(aadmKB, factory.createIRI(KB.SODA + "includesInput"), inputKB);
+
+			// create description
+			IRI inputDescriptionKB = factory.createIRI(ws + "Desc_" + MyUtils.randomString());
+			builder.add(inputDescriptionKB, RDF.TYPE, "soda:SodaliteDescription");
+			builder.add(inputKB, factory.createIRI(KB.SODA + "hasContext"), inputDescriptionKB);
+
+			for (Resource _input : inputs) {
+				IRI input = (IRI) _input;
+				String inputName = Models
+						.objectLiteral(aadmModel.filter(input, factory.createIRI(KB.EXCHANGE + "name"), null))
+						.orElseThrow(() -> new MappingException("No 'name' defined for input: " + input.getLocalName()))
+						.stringValue();
+
+				System.out.println(String.format("Input name: %s", inputName));
+
+				// for each tosca input we need to have a Feature
+				IRI inputFeatureKB = factory.createIRI(ws + "Input_" + MyUtils.randomString());
+				builder.add(inputFeatureKB, RDF.TYPE, "tosca:Feature");
+
+				IRI kbProperty = getKBProperty(inputName);
+				if (kbProperty == null) {
+					kbProperty = factory.createIRI(ws + inputName);
+					builder.add(kbProperty, RDF.TYPE, "rdf:Property");
+				}
+				builder.add(inputFeatureKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
+				builder.add(inputDescriptionKB, factory.createIRI(KB.TOSCA + "input"), inputFeatureKB);
+
+				Set<Resource> _parameters = Models.getPropertyResources(aadmModel, _input,
+						factory.createIRI(KB.EXCHANGE + "hasParameter"));
+
+				// TODO: HERE WE NEED TO IMPLEMENT RECURSION
+				for (Resource _parameter : _parameters) {
+					IRI parameter = (IRI) _parameter;
+					IRI propertyClassifierKB = createPropertyOrAttributeKBModel(parameter);
+
+					builder.add(inputFeatureKB, factory.createIRI(KB.DUL + "hasParameter"), propertyClassifierKB);
+				}
+
+			}
+		}
+
 		if (!validationModels.isEmpty()) {
 			throw new ValidationException(validationModels);
 		}
@@ -274,26 +322,27 @@ public class DSLMappingService {
 		} else {
 
 			IRI root = createParameterKBModel(parameter);
-			builder.add(parameterClassifierKB, factory.createIRI("dul:hasParamater"), root);
+			builder.add(parameterClassifierKB, factory.createIRI("dul:hasParameter"), root);
 
 		}
 		return parameterClassifierKB;
 	}
 
-	private IRI createPropertyOrAttributeKBModel(IRI parameter) throws MappingException {
+	private IRI createPropertyOrAttributeKBModel(IRI exchangeParameter) throws MappingException {
 		String propertyName = Models
-				.objectLiteral(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "name"), null))
-				.orElseThrow(() -> new MappingException("No 'name' defined for property: " + parameter.getLocalName()))
+				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "name"), null))
+				.orElseThrow(() -> new MappingException(
+						"No 'name' defined for property: " + exchangeParameter.getLocalName()))
 				.stringValue();
 
-		String value = Models
-				.objectLiteral(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "value"), null))
-				.orElseThrow(() -> new MappingException("No 'value' defined for property: " + parameter.getLocalName()))
-				.stringValue();
+		Optional<Literal> _value = Models
+				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "value"), null));
 
-		if (value == null) {
-			System.err.println("No value found for property: " + parameter.getLocalName());
+		if (_value.isEmpty()) {
+			System.err.println("No value found for property: " + exchangeParameter.getLocalName());
 		}
+
+		String value = _value.isPresent() ? _value.get().stringValue() : null;
 
 		definedPropertiesForValidation.add(propertyName);
 
@@ -306,26 +355,43 @@ public class DSLMappingService {
 		// create rdf:property
 		IRI kbProperty = getKBProperty(propertyName);
 		if (kbProperty == null) {
-			kbProperty = factory.createIRI(ws + "Prop_" + propertyName);
+			kbProperty = factory.createIRI(ws + propertyName);
 			builder.add(kbProperty, RDF.TYPE, "rdf:Property");
 		}
 		builder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
 
 		// handle values
-		Object i = null;
-		if ((i = Ints.tryParse(value)) != null) {
-			builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
-		} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
-			builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
-		} else
-			builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+		if (value != null) {
+			Object i = null;
+			if ((i = Ints.tryParse(value)) != null) {
+				builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+			} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
+				builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
+			} else
+				builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+		}
+		else {
+			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, exchangeParameter,
+					factory.createIRI(KB.EXCHANGE + "hasParameter"));
+			
+			for (Resource _parameter : _parameters) {
+				IRI parameter = (IRI) _parameter;
+				IRI _p = createPropertyOrAttributeKBModel(parameter);
+
+				builder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+			}
+
+//			IRI root = createPropertyOrAttributeKBModel(exchangeParameter);
+//			builder.add(propertyClassifierKB, factory.createIRI("dul:hasParameter"), root);
+		}
 
 		return propertyClassifierKB;
 
 	}
 
 	private IRI getKBNodeType(String label, String type) {
-		String sparql = "select ?x { ?x rdfs:subClassOf " + type + " . FILTER (strends(str(?x), \"" + label + "\")). }";
+		String sparql = "select ?x { ?x rdfs:subClassOf " + type + " . FILTER (strends(str(?x), \"/" + label
+				+ "\")). }";
 		System.out.println(sparql);
 		String query = KB.PREFIXES + sparql;
 
@@ -341,7 +407,7 @@ public class DSLMappingService {
 	}
 
 	private IRI getKBProperty(String label) {
-		String sparql = "select ?x { ?x a rdf:Property . FILTER (strends(str(?x), \"" + label + "\")). }";
+		String sparql = "select ?x { ?x a rdf:Property . FILTER (strends(str(?x), \"/" + label + "\")). }";
 		System.out.println(sparql);
 		String query = KB.PREFIXES + sparql;
 
@@ -389,10 +455,8 @@ public class DSLMappingService {
 
 		Set<Resource> templates = Models
 				.objectResources(aadmModel.filter(aadmKB, factory.createIRI(KB.SODA + "includesTemplate"), null));
-		String sparql = "select ?x ?t "
-				+ "{ ?x a soda:AbstractApplicationDeployment; "
-				+ " 	soda:includesTemplate ?t ."
-				+ "}";
+		String sparql = "select ?x ?t " + "{ ?x a soda:AbstractApplicationDeployment; "
+				+ " 	soda:includesTemplate ?t ." + "}";
 		String query = KB.PREFIXES + sparql;
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
 		while (result.hasNext()) {
