@@ -113,7 +113,9 @@ public class AADM extends Resource {
 		Set<NodeFull> results = new HashSet<NodeFull>();
 
 		for (String u : uris) {
-			results.add(kb.getNode(u));
+			NodeFull node = kb.getNode(u, true);
+			if (node != null)
+				results.add(node);
 		}
 
 		kb.shutDown();

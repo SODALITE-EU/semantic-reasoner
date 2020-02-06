@@ -226,7 +226,11 @@ public class KBApi {
 		return nodes;
 	}
 
-	public NodeFull getNode(String resource) throws IOException {
+	public NodeFull getNode(String resource, boolean filterNormatives) throws IOException {
+		if(filterNormatives) {
+			if (resource.contains("/tosca."))
+				return null;
+		}
 		String sparql = MyUtils.fileToString("sparql/getNode.sparql");
 		String query = KB.PREFIXES + sparql;
 
