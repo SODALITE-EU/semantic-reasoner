@@ -194,7 +194,7 @@ public class DSLMappingService {
 		// Inputs
 		Set<Resource> inputs = aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Input")).subjects();
 		if (inputs.size() > 0) {
-			IRI inputKB = factory.createIRI(ws + "parameters");
+			IRI inputKB = factory.createIRI(ws + "topology_template_inputs");
 			builder.add(inputKB, RDF.TYPE, factory.createIRI(KB.TOSCA + "Input"));
 			builder.add(aadmKB, factory.createIRI(KB.SODA + "includesInput"), inputKB);
 
