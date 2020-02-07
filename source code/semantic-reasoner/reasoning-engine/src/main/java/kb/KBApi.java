@@ -381,8 +381,10 @@ public class KBApi {
 
 			Parameter p = new Parameter(_parameter);
 			p.setClassifiedBy(_classifier);
-			if (_value != null)
+			if (_value != null) {
+				System.err.println(_value);
 				p.setValue(_value, kb);
+			}
 			parameters.add(p);
 		}
 		result.close();

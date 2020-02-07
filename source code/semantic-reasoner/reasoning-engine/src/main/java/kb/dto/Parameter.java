@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
 
 import com.google.common.primitives.Ints;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -53,8 +54,17 @@ public class Parameter extends Resource {
 					parameter.addProperty(label, (int) i);
 				} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
 					parameter.addProperty(label, (boolean) i);
-				} else
-					parameter.addProperty(label, value);
+				} else {
+					
+					if(value.startsWith("[")) {
+						JsonArray fromJson = MyUtils.getGson(false).fromJson(value, JsonArray.class);
+						parameter.add(label, fromJson);
+					} else {
+						parameter.addProperty(label, value);
+					}
+								
+					//parameter.addProperty(label, value);
+				}
 			}
 
 		} else {
@@ -115,19 +125,24 @@ public class Parameter extends Resource {
 		
 		if (value instanceof Literal) {
 			this.value = value.stringValue();
-//			System.out.println(value);
+			System.out.println("VALUE1: " + value);
 
 		} else {
+			System.out.println("VALUE2: " + value);
 			IRI v = (IRI) value;
 			List<String> collect = Iterations.asList(
 					kb.connection.getStatements(v, kb.factory.createIRI(KB.TOSCA + "hasValue"), null))
 					.stream().map(x -> MyUtils.getStringValue(x.getObject())).collect(Collectors.toList());
-			if (collect.isEmpty()) {
+			if (collect.isEmpty() && !v.stringValue().contains("List")) { //this could be [], i.e. an instance of List without values...
+				System.out.println("collect.isEmpty() " + collect);
 				this.valueUri = v.toString();
 				this.value = v.getLocalName();
 //				this.value = v.toString();
-			} else
-				this.value = MyUtils.getGson(false).toJson(collect).replaceAll("\"", "");
+			} else {
+				System.out.println("collect.not emtpy() " + collect);
+				this.value = MyUtils.getGson(false).toJson(collect);//.replaceAll("\"", "");
+				System.out.println(this.value + " - " + collect);
+			}
 		}
 	}
 

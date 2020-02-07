@@ -335,18 +335,27 @@ public class DSLMappingService {
 						"No 'name' defined for property: " + exchangeParameter.getLocalName()))
 				.stringValue();
 
-		Optional<Literal> _value = Models
-				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "value"), null));
+//		Optional<Literal> _value = Models
+//				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "value"), null));
 
-		if (_value.isEmpty()) {
+		Set<String> _values = Models.getPropertyStrings(aadmModel, exchangeParameter,
+				factory.createIRI(KB.EXCHANGE + "value"));
+
+		Set<String> listValues = Models.getPropertyStrings(aadmModel, exchangeParameter,
+				factory.createIRI(KB.EXCHANGE + "listValue"));
+
+		System.err.println("------------------" + _values);
+		System.err.println("-----ListValues---" + listValues);
+
+		if (_values.isEmpty() && listValues.isEmpty()) {
 			System.err.println("No value found for property: " + exchangeParameter.getLocalName());
 		}
 
-		String value = _value.isPresent() ? _value.get().stringValue() : null;
+//		String value = _value.isPresent() ? _value.get().stringValue() : null;
 
 		definedPropertiesForValidation.add(propertyName);
 
-		System.out.println(String.format("Property name: %s, value: %s", propertyName, value));
+		System.out.println(String.format("Property name: %s, value: %s", propertyName, _values));
 
 		// create classifier
 		IRI propertyClassifierKB = factory.createIRI(ws + "PropClassifer_" + MyUtils.randomString());
@@ -361,19 +370,48 @@ public class DSLMappingService {
 		builder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
 
 		// handle values
-		if (value != null) {
-			Object i = null;
-			if ((i = Ints.tryParse(value)) != null) {
-				builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
-			} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
-				builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
-			} else
-				builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
-		}
-		else {
+		if (!_values.isEmpty()) {
+
+			if (_values.size() == 1) {
+				Object i = null;
+				String value = _values.iterator().next();
+				if ((i = Ints.tryParse(value)) != null) {
+					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+				} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
+					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
+				} else
+					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+			} else {
+				IRI list = factory.createIRI(ws + "List_" + MyUtils.randomString());
+				for (String string : _values) {
+					Object i = null;
+					if ((i = Ints.tryParse(string)) != null) {
+						builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+					} else if ((i = BooleanUtils.toBooleanObject(string)) != null) {
+						builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
+					} else
+						builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
+				}
+				builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+			}
+
+		} else if (!listValues.isEmpty()) {
+			System.err.println("*****************************} else if (!listValues.isEmpty()) {");
+			IRI list = factory.createIRI(ws + "List_" + MyUtils.randomString());
+			for (String string : listValues) {
+				Object i = null;
+				if ((i = Ints.tryParse(string)) != null) {
+					builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+				} else if ((i = BooleanUtils.toBooleanObject(string)) != null) {
+					builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
+				} else
+					builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
+			}
+			builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, exchangeParameter,
 					factory.createIRI(KB.EXCHANGE + "hasParameter"));
-			
+
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createPropertyOrAttributeKBModel(parameter);
@@ -387,6 +425,16 @@ public class DSLMappingService {
 
 		return propertyClassifierKB;
 
+	}
+
+	private Object mapValue(String value) {
+		Object i = null;
+		if ((i = Ints.tryParse(value)) != null) {
+			return (int) i;
+		} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
+			return (boolean) i;
+		} else
+			return value;
 	}
 
 	private IRI getKBNodeType(String label, String type) {

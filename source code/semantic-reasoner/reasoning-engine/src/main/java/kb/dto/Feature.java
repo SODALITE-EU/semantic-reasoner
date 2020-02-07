@@ -6,12 +6,16 @@ import java.util.Set;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.rdf4j.model.IRI;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 
 import com.google.common.primitives.Ints;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import kb.KBApi;
+import kb.utils.MyUtils;
 
 public abstract class Feature extends Parameter {
 
@@ -32,7 +36,6 @@ public abstract class Feature extends Parameter {
 		JsonObject data = new JsonObject();
 		if (description != null)
 			data.addProperty("description", description);
-//		System.err.println("value:" + value);
 		if (value != null) {
 			if (this.valueUri != null) {
 				JsonObject t = new JsonObject();
@@ -49,8 +52,14 @@ public abstract class Feature extends Parameter {
 					data.addProperty("value", (int) i);
 				} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
 					data.addProperty("value", (boolean) i);
-				} else
-					data.addProperty("value", value);
+				} else {
+					if(value.startsWith("[")) {
+						JsonArray fromJson = MyUtils.getGson(false).fromJson(value, JsonArray.class);
+						data.add("value",fromJson );
+					} else {
+						data.addProperty("value", value);
+					}
+				}
 				data.addProperty("label", label);
 			}
 
