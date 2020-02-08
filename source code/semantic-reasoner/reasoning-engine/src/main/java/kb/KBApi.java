@@ -441,11 +441,12 @@ public class KBApi {
 	}
 
 	public AADM getAADM(String aadmId) throws IOException {
+		System.out.println("AADM: " + aadmId);
 		String sparql = MyUtils.fileToString("sparql/getAADM.sparql");
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("var", kb.getFactory().createIRI(aadmId)));
+				new SimpleBinding("aadm", kb.getFactory().createIRI(aadmId)));
 
 		AADM aadm = null;
 		while (result.hasNext()) {
