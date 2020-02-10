@@ -52,7 +52,7 @@ public class Parameter extends Resource {
 				Object i = null;
 				if ((i = Ints.tryParse(value)) != null) {
 					parameter.addProperty(label, (int) i);
-				} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
+				} else if ((i = BooleanUtils.toBooleanObject(value)) != null && !value.equals("no") && !value.equals("yes")) {
 					parameter.addProperty(label, (boolean) i);
 				} else {
 					
