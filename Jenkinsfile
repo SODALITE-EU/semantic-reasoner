@@ -16,6 +16,7 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
+    
     stage ('Trigger a build of defect-prediction') {
       when { 
           not { 
