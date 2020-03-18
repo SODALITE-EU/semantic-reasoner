@@ -16,10 +16,20 @@ import io.swagger.annotations.ApiOperation;
 import kb.KBApi;
 import kb.dto.Node;
 
+/** A service that returns all the known TOSCA nodes in the KB
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @Path("/nodes")
 @Api()
 public class NodeService extends AbstractService {
-
+	/**
+	  * Getting all the known TOSCA nodes in the KB
+	  * @throws IOException if your input format is invalid
+	  * @return All the TOSCA nodes in JSON format
+	 */
 	@GET
 	@Produces("application/json")
 	@ApiOperation(value = "Returns all the known TOSCA nodes", responseContainer = "List")

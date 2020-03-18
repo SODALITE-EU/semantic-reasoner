@@ -18,10 +18,22 @@ import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Requirement;
 
+/** A service that returns the requirements of a single TOSCA node
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @Path("/requirements")
 @Api()
 public class RequirementService extends AbstractService {
 
+	/**
+	 * Getting the requirements of a single TOSCA resource.
+	 * @param resource The resource name
+	 * @throws IOException If your input format is invalid
+	 * @return The requirements in JSON format
+	*/
 	@GET
 	@Produces("application/json")
 	@ApiOperation(

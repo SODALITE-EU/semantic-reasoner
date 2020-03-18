@@ -18,10 +18,21 @@ import kb.dto.AADM;
 import kb.utils.AADMJsonFormat;
 import kb.utils.MyUtils;
 
+/** A service that returns the abstract application deployment model in JSON format.
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @Path("/aadm")
 @Api()
 public class AADMService extends AbstractService {
-
+	/**
+	 * Getting the abstract application deployment model in JSON format.
+	 * @param aadmIRI The IRI of AADM
+	 * @throws IOException if your input format is invalid
+	 * @return The AADM in JSON format
+	*/
 	@GET
 	@Produces("application/json")
 	@ApiOperation(

@@ -18,10 +18,22 @@ import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Property;
 
+/** A service that returns the properties of a single TOSCA node
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @Path("/properties")
 @Api()
 public class PropertyService extends AbstractService {
 
+	/**
+	 * Getting the properties of a single TOSCA resource.
+	 * @param resource The resource name
+	 * @throws IOException If your input format is invalid
+	 * @return The requirements in JSON format
+	*/
 	@GET
 	@Produces("application/json")
 	@ApiOperation(

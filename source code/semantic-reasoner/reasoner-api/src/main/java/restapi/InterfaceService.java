@@ -18,10 +18,21 @@ import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Interface;
 
+/** A service that returns the interfaces of a single TOSCA node
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @Path("/interfaces")
 @Api()
 public class InterfaceService extends AbstractService {
-
+	/**
+	  * Getting the the interfaces of a single TOSCA resource.
+	  * @param resource The resource name
+	  * @throws IOException If your input format is invalid
+	  * @return The interfaces in JSON format
+	 */
 	@GET
 	@Produces("application/json")
 	@ApiOperation(

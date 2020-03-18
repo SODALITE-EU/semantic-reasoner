@@ -18,10 +18,22 @@ import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Node;
 
+/** A service that returns nodes that satisfy a certain requirement of a node template of type nodeType.
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @Path("/valid-requirement-nodes")
 @Api()
 public class ValidRequirementNodesService extends AbstractService {
-
+	/**
+	 * Getting the nodes that satisfy a certain requirement of a node template of type nodeType
+	 * @param requirement The name of a requirement
+	 * @param nodeType The name of the node type
+	 * @throws IOException If your input format is invalid
+	 * @return The nodes in JSON format
+	*/
 	@GET
 	@Produces("application/json")
 	@ApiOperation(

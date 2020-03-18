@@ -21,6 +21,12 @@ import io.swagger.annotations.SwaggerDefinition;
 import kb.KBApi;
 import kb.dto.Attribute;
 
+/** A service that returns the attributes of a single TOSCA node
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @SwaggerDefinition(
 		info = @Info(
 				description = "REST API for the SODALITE Reasoner",
@@ -37,7 +43,12 @@ import kb.dto.Attribute;
 @Path("/attributes")
 @Api()
 public class AttributeService extends AbstractService {
-
+	/**
+	  * Getting the attributes of a single TOSCA resource.
+	  * @param resource The resource name
+	  * @throws IOException If your input format is invalid
+	  * @return The attributes in JSON format
+	 */
 	@GET
 	@Produces("application/json")
 	@ApiOperation(

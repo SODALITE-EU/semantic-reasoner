@@ -26,10 +26,25 @@ import kb.repository.KB;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
 
+/** A service that submits the abstract application deployment model to the Knowledge Base.
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @Path("/saveAADM")
 @Api()
 public class SubmitService extends AbstractService {
-
+	/**
+	 * Storing the submitted AADM in the KB and assigning a unique id.
+	 * @param aadmTTL The AADM in turtle format
+	 * @param submissionId A unique id
+	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
+	 * @throws UnsupportedRDFormatException  Α RuntimeException indicating that a specific RDF format is not supported.
+	 * @throws IOException If your input format is invalid
+	 * @throws MappingException Unknown entity issue
+	 * @return The AADM URI
+	*/
 	@POST
 	@Produces("text/plain")
 	@Consumes("application/x-www-form-urlencoded")
