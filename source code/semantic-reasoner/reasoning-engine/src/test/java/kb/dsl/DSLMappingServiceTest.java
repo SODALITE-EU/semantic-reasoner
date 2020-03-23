@@ -5,14 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.util.List;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.repository.Repository;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +21,11 @@ class DSLMappingServiceTest {
 	
 	@BeforeAll
 	static void beforeAll() {
-		kb = new KB("TOSCA");
+		String getenv = System.getenv("graphdb");
+		if (getenv != null)
+			kb = new KB(getenv, "TOSCA");
+		else
+			kb = new KB();
 	}
 
 	@Test
