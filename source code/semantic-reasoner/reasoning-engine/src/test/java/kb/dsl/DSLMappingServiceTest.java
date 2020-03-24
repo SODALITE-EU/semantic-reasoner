@@ -32,7 +32,7 @@ class DSLMappingServiceTest {
     private static KB kb;
 	
 	@BeforeAll
-    static void beforeAll() {
+	static void beforeAll() {
 			repositoryManager = new SodaliteRepository(".", "/config.ttl");
 			kb = new KB(repositoryManager, "SEMANTIC_REASONER_TEST");
 
@@ -40,45 +40,45 @@ class DSLMappingServiceTest {
 			
 			RepositoryConnection repositoryConnection = repository.getConnection();
 			try {
-	            InputStream input =
-	                    DSLMappingServiceTest.class.getResourceAsStream("/import/DUL.rdf");
-	            repositoryConnection.add(input, "", RDFFormat.RDFXML);
-	        } catch (IOException e) {
-	        	e.printStackTrace();
-	        }
+				InputStream input =
+					DSLMappingServiceTest.class.getResourceAsStream("/import/DUL.rdf");
+				repositoryConnection.add(input, "", RDFFormat.RDFXML);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			try {
 				InputStream input =
 						DSLMappingServiceTest.class.getResourceAsStream("/core/sodalite-metamodel.ttl");
 				repositoryConnection.add(input, "", RDFFormat.TURTLE);
-	        } catch (IOException e) {
-	        	e.printStackTrace();
-	        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			try {
 				InputStream input =
-	            		DSLMappingServiceTest.class.getResourceAsStream("/core/tosca-builtins.ttl");
-	            repositoryConnection.add(input, "", RDFFormat.TURTLE);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
+					DSLMappingServiceTest.class.getResourceAsStream("/core/tosca-builtins.ttl");
+				repositoryConnection.add(input, "", RDFFormat.TURTLE);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			try {
-	            InputStream input =
-	            		DSLMappingServiceTest.class.getResourceAsStream("/snow/snow_tier1.ttl");
-	            repositoryConnection.add(input, "", RDFFormat.TURTLE);
+				InputStream input =
+					DSLMappingServiceTest.class.getResourceAsStream("/snow/snow_tier1.ttl");
+				repositoryConnection.add(input, "", RDFFormat.TURTLE);
 			} catch (IOException e) {
-	        	e.printStackTrace();
-	        }
+				e.printStackTrace();
+			}
 
 			repositoryConnection.close();
 	}
 
 	@AfterAll
-    static void afterAll() {
+	static void afterAll() {
 		repository.shutDown();
-        repositoryManager.removeRepository("SEMANTIC_REASONER_TEST");
-        repositoryManager.shutDown("TEST");
+		repositoryManager.removeRepository("SEMANTIC_REASONER_TEST");
+		repositoryManager.shutDown("TEST");
 	}
 	
 	@Test
