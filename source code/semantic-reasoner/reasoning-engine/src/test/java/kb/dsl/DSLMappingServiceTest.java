@@ -33,45 +33,45 @@ class DSLMappingServiceTest {
 	
 	@BeforeAll
 	static void beforeAll() {
-			repositoryManager = new SodaliteRepository(".", "/config.ttl");
-			kb = new KB(repositoryManager, "SEMANTIC_REASONER_TEST");
+		repositoryManager = new SodaliteRepository(".", "/config.ttl");
+		kb = new KB(repositoryManager, "SEMANTIC_REASONER_TEST");
 
-			repository = repositoryManager.getRepository("SEMANTIC_REASONER_TEST");
-			
-			RepositoryConnection repositoryConnection = repository.getConnection();
-			try {
-				InputStream input =
-					DSLMappingServiceTest.class.getResourceAsStream("/import/DUL.rdf");
-				repositoryConnection.add(input, "", RDFFormat.RDFXML);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		repository = repositoryManager.getRepository("SEMANTIC_REASONER_TEST");
+		
+		RepositoryConnection repositoryConnection = repository.getConnection();
+		try {
+			InputStream input =
+				DSLMappingServiceTest.class.getResourceAsStream("/import/DUL.rdf");
+			repositoryConnection.add(input, "", RDFFormat.RDFXML);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-			try {
-				InputStream input =
-						DSLMappingServiceTest.class.getResourceAsStream("/core/sodalite-metamodel.ttl");
-				repositoryConnection.add(input, "", RDFFormat.TURTLE);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			InputStream input =
+					DSLMappingServiceTest.class.getResourceAsStream("/core/sodalite-metamodel.ttl");
+			repositoryConnection.add(input, "", RDFFormat.TURTLE);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-			try {
-				InputStream input =
-					DSLMappingServiceTest.class.getResourceAsStream("/core/tosca-builtins.ttl");
-				repositoryConnection.add(input, "", RDFFormat.TURTLE);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			InputStream input =
+				DSLMappingServiceTest.class.getResourceAsStream("/core/tosca-builtins.ttl");
+			repositoryConnection.add(input, "", RDFFormat.TURTLE);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-			try {
-				InputStream input =
-					DSLMappingServiceTest.class.getResourceAsStream("/snow/snow_tier1.ttl");
-				repositoryConnection.add(input, "", RDFFormat.TURTLE);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			InputStream input =
+				DSLMappingServiceTest.class.getResourceAsStream("/snow/snow_tier1.ttl");
+			repositoryConnection.add(input, "", RDFFormat.TURTLE);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-			repositoryConnection.close();
+		repositoryConnection.close();
 	}
 
 	@AfterAll
