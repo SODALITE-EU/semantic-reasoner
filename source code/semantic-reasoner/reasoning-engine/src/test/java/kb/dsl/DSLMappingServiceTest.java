@@ -26,9 +26,9 @@ import kb.validation.exceptions.models.ValidationModel;
 
 class DSLMappingServiceTest {
 	
-    private static SodaliteRepository repositoryManager;
-    private static Repository repository;
-    private static KB kb;
+	private static SodaliteRepository repositoryManager;
+	private static Repository repository;
+	private static KB kb;
 
 	static void loadRepository() {
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
