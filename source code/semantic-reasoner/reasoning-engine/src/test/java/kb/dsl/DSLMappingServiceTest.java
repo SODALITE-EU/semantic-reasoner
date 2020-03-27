@@ -78,7 +78,7 @@ class DSLMappingServiceTest {
 		repositoryManager.shutDown("TEST");
 	}
 	
-	//Test for a snow aadm is mapped without any error
+	//Test for a snow aadm. It is mapped without any error
 	@Test
 	void testDSLMappingService() {
 		
