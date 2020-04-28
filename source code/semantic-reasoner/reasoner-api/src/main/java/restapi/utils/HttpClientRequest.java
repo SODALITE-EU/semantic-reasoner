@@ -41,7 +41,7 @@ public final class HttpClientRequest {
 	private HttpClientRequest() { 
 		throw new UnsupportedOperationException();
 		
-    }
+	}
 
 	public static String bugPredictorApi(String submissionId) throws ClientProtocolException, IOException {
 		String bugPredictorEndpoint = bugPredictorServer + BUG_PREDICTOR_SERVICE;
