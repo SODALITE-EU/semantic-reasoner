@@ -457,11 +457,11 @@ public class KBApi {
 				.fileToString("sparql/capabilities/getNodeTemplateCapabilities.sparql");
 		String query_r = KB.PREFIXES + sparql_r;
 		
-		SimpleBinding[] bindings = null;
+		SimpleBinding bindings[] = new SimpleBinding [FRAMEWORKS.length + 1];
 		bindings[0] = new SimpleBinding("var_aadm_id", kb.getFactory().createLiteral(aadmId));
 		int j = 1; 
 		for (String f : FRAMEWORKS) {
-			 bindings[j] = new SimpleBinding("var_f" + j, kb.getFactory().createLiteral(f));
+			 bindings[j] = new SimpleBinding("var_f" + j++, kb.getFactory().createLiteral(f));
 		}
 		
 		//Check which resources have capabilities about which framework
