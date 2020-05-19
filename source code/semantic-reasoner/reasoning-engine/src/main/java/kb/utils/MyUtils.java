@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.model.IRI;
@@ -36,6 +38,16 @@ public class MyUtils {
 			return ((IRI) value).getLocalName();
 			// return ((IRI) value).toString();
 		}
+	}
+	
+	public static String getStringPattern (String string, String spattern) {
+		Pattern pattern = Pattern.compile(spattern);
+		Matcher matcher = pattern.matcher(string);
+		String pattern_string = null;
+		if (matcher.find()) {
+			pattern_string = matcher.group(1);
+		}
+		return pattern_string;
 	}
 
 	public static JsonObject getLabelIRIPair(IRI value) {

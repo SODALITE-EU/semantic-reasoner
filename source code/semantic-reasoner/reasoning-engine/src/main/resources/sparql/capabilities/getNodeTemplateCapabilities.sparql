@@ -1,0 +1,24 @@
+select ?resource ?capability ?framework
+where {
+		{
+			#capabilities of host nodes
+			?resource (soda:hasContext/tosca:requirements/tosca:hasObjectValue)+/soda:hasContext/tosca:capabilities  ?capability .
+		} UNION {	
+			#direct capabilities
+			?resource soda:hasContext/tosca:capabilities  ?capability .
+		} 
+		{
+			#requirements of host nodes
+			?resource (soda:hasContext/tosca:requirements/tosca:hasObjectValue)+/tosca:requirements  ?dependency.            
+		} UNION {
+			#direct requirements
+			?resource soda:hasContext/tosca:requirements  ?dependency .
+		}	 
+			
+		?dependency DUL:classifies tosca:dependency .
+		?dependency tosca:hasObjectValue ?framework .
+		FILTER(strends(str(?framework),?var_f1) || strends(str(?framework),?var_f2))
+				
+		?aadm soda:includesTemplate ?resource .
+		FILTER (contains(str(?aadm), ?var_aadm_id)).
+	}

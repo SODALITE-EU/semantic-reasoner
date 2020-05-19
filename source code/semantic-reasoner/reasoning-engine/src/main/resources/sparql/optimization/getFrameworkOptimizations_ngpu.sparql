@@ -1,0 +1,10 @@
+select ?optimization
+where {
+    ?framework rdf:type opt:Framework 
+	FILTER (strends(lcase(str(?framework)), ?var_1))
+	?framework opt:hasCapability ?g .
+	?g rdf:type opt:GPU .
+	?g opt:hasValue_greater_or_equal ?num_gpus .
+	FILTER ((xsd:integer(?var_2)) >= ?num_gpus)
+	?g opt:hasOptimization ?optimization .
+}

@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -58,6 +60,7 @@ public class DSLMappingService {
 
 	IRI aadmKB;
 	IRI context;
+	String aadmURI;
 
 	// Validation
 	Set<String> definedPropertiesForValidation = new HashSet<String>(),
@@ -65,7 +68,7 @@ public class DSLMappingService {
 
 	List<ValidationModel> validationModels = new ArrayList<>();
 
-	public DSLMappingService(KB kb, String aadmTTL, String submissionId)
+	public DSLMappingService(KB kb, String aadmTTL, String aadmURI)
 			throws RDFParseException, UnsupportedRDFormatException, IOException {
 		super();
 		this.kb = kb;
@@ -75,18 +78,17 @@ public class DSLMappingService {
 		builder.setNamespace("soda", KB.SODA).setNamespace("dul", KB.DUL).setNamespace("dcterms", KB.DCTERMS)
 				.setNamespace("exchange", KB.EXCHANGE).setNamespace("tosca", KB.TOSCA);
 
-//		System.out.println(aadmTTL);
+		//System.out.println(aadmTTL);
 		InputStream targetStream = IOUtils.toInputStream(aadmTTL, Charset.defaultCharset());
 		aadmModel = Rio.parse(targetStream, "", RDFFormat.TURTLE);
 		targetStream.close();
 
-		context = kb.factory.createIRI("http://" + submissionId);
-
-		ws += submissionId + "/";
-
+		this.aadmURI = aadmURI;
+	//	context = kb.factory.createIRI("http://" + submissionId);
+		//ws += MyUtils.randomString() + "/";
 	}
 
-	public IRI start() throws MappingException, ValidationException {
+	public IRI start() throws MappingException, ValidationException  {
 
 		// AADM
 		aadmKB = null;
@@ -97,9 +99,15 @@ public class DSLMappingService {
 					.orElseThrow(
 							() -> new MappingException("No 'userId' defined for AADM: " + ((IRI) _aadm).getLocalName()))
 					.stringValue();
-
+			
+			
+			ws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
+			System.out.println("namespace = " + ws);
 			builder.setNamespace("ws", ws);
-			aadmKB = factory.createIRI(ws + "AADM_" + MyUtils.randomString());
+
+			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(ws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
+			context = aadmKB;
+			System.out.println("context =" + context );
 			builder.add(aadmKB, RDF.TYPE, "soda:AbstractApplicationDeployment");
 
 			IRI user = factory.createIRI(ws + userId);
@@ -186,7 +194,16 @@ public class DSLMappingService {
 			}
 
 			// capabilities
+			for (Resource _capability : Models.getPropertyResources(aadmModel, _template,
+					factory.createIRI(KB.EXCHANGE + "capabilities"))) {
+				IRI capability = (IRI) _capability;
+				IRI capabilityClassifierKB = createCapabilityKBModel(capability);
 
+				// add attribute classifiers to the template context
+				builder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "capabilities"),
+						capabilityClassifierKB);
+			
+			}
 			// misc
 
 		}
@@ -358,7 +375,7 @@ public class DSLMappingService {
 		System.out.println(String.format("Property name: %s, value: %s", propertyName, _values));
 
 		// create classifier
-		IRI propertyClassifierKB = factory.createIRI(ws + "PropClassifer_" + MyUtils.randomString());
+		IRI propertyClassifierKB = factory.createIRI(ws + "PropClassifier_" + MyUtils.randomString());
 		builder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
 
 		// create rdf:property
@@ -424,6 +441,58 @@ public class DSLMappingService {
 		}
 
 		return propertyClassifierKB;
+
+	}
+	
+	private IRI createCapabilityKBModel(IRI capability) throws MappingException {
+		String capabilityName = Models
+				.objectLiteral(aadmModel.filter(capability, factory.createIRI(KB.EXCHANGE + "name"), null))
+				.orElseThrow(
+						() -> new MappingException("No 'name' defined for capability: " + capability.getLocalName()))
+				.stringValue();
+
+		// create classifier
+		IRI capabilityClassifierKB = factory.createIRI(ws + "CapClassifier_" + MyUtils.randomString());
+		builder.add(capabilityClassifierKB, RDF.TYPE, "tosca:Capability");
+
+		IRI capabilityProperty = getKBProperty(capabilityName);
+		if (capabilityProperty == null) {
+			throw new MappingException("Cannot find capability property: " + capabilityName);
+		}
+		builder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "classifies"), capabilityProperty);
+
+		// check for direct values of parameters
+		Literal value = Models
+				.objectLiteral(aadmModel.filter(capability, factory.createIRI(KB.EXCHANGE + "value"), null))
+				.orElse(null);
+
+		if (value != null) { // this means there is no parameters
+			IRI kbTemplate = getKBTemplate(value.getLabel());
+			if (kbTemplate == null) {
+				// throw new Exception("Cannot find node: " + value);
+				kbTemplate = factory.createIRI(ws + value.getLabel());
+			}
+			builder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+		} else {
+
+			Set<Resource> _properties = Models.getPropertyResources(aadmModel, capability,
+			factory.createIRI(KB.EXCHANGE + "properties"));
+			//definedPropertiesForValidation.clear();
+			if (_properties.isEmpty()) {
+				IRI root = createParameterKBModel(capability);
+				builder.add(capabilityClassifierKB, factory.createIRI("dul:hasParameter"), root);
+			} else {
+				for (Resource _property : _properties) {
+					IRI property = (IRI) _property;
+					IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
+
+					// add property classifiers to the template context
+					builder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "properties"), propertyClassifierKB);
+				}
+			}
+		}
+
+		return capabilityClassifierKB;
 
 	}
 
@@ -536,7 +605,7 @@ public class DSLMappingService {
 		String aadmTTL = MyUtils.fileToString("dsl/ide_snow_v3.ttl");
 
 		KB kb = new KB("TOSCA_automated");
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, "test");
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL,"test");
 		m.start();
 		m.save();
 		m.shutDown();

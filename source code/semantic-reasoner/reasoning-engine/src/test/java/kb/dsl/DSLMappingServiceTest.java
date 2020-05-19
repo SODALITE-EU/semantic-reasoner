@@ -86,7 +86,7 @@ class DSLMappingServiceTest {
 		IRI aadmIRI = null;
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "test");
+			DSLMappingService m  = new DSLMappingService(kb, aadmTTL,"");
 			try {
 				aadmIRI = m.start();
 				m.save();
@@ -117,7 +117,7 @@ class DSLMappingServiceTest {
 		loadRepository();
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3_required_property_missing.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "test");
+			DSLMappingService m  = new DSLMappingService(kb, aadmTTL,"");
 			try {
 				m.start();
 				m.save();
@@ -130,8 +130,6 @@ class DSLMappingServiceTest {
 				}
 				assertEquals(validationModels.size(),1);
 				System.out.println("Test Passed: registry_ip required property is missing");
-			} catch (Exception e) {
-				e.printStackTrace();
 			} finally {
 				m.shutDown();
 				removeRepository();
@@ -149,7 +147,7 @@ class DSLMappingServiceTest {
 		loadRepository();
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3_mapping_exception.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "test");
+			DSLMappingService m  = new DSLMappingService(kb, aadmTTL,"");
 			try {
 				m.start();
 				m.save();

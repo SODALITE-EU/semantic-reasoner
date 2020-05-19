@@ -1,0 +1,10 @@
+select ?optimization
+where { 
+    ?ms opt:hasOptimization ?optimization .
+    ?framework rdf:type opt:Framework .
+	FILTER (strends(lcase(str(?framework)), ?var_1))
+	?framework opt:hasCapability ?ms .
+	?ms rdf:type opt:Memsize .
+	?ms opt:hasValue_greater_or_equal ?memsize .
+	FILTER ((xsd:integer(?var_2)) >= ?memsize) .
+}

@@ -11,6 +11,10 @@ import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public final class HttpClientRequest {
 	
@@ -41,9 +45,25 @@ public final class HttpClientRequest {
 	private HttpClientRequest() { 
 		throw new UnsupportedOperationException();
 		
+    }
+	
+	/**
+	 * Calling the bug predictor for getting the potential warnings of the model.
+	 * @param response The response is the parameter in which the warnings are saved
+	 * @param submissionId
+	 * @throws IOException If your input format is invalid
+	 * @throws ClientProtocolException Signals an error in the HTTP protocol.
+	 * @throws ParseException Signals that an error has been reached unexpectedly while parsing
+	 */
+	public static void getWarnings(JSONObject response, String submissionId) throws ClientProtocolException, IOException, ParseException {
+		String warnings = bugPredictorApi(submissionId);
+		JSONParser parser = new JSONParser();
+		JSONArray warningsJson = (JSONArray)((JSONObject) parser.parse(warnings)).get("warnings");
+		if (!warningsJson.isEmpty())
+			response.put("warnings",warningsJson);
 	}
 
-	public static String bugPredictorApi(String submissionId) throws ClientProtocolException, IOException {
+	public static String bugPredictorApi(String aadmId) throws ClientProtocolException, IOException {
 		String bugPredictorEndpoint = bugPredictorServer + BUG_PREDICTOR_SERVICE;
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -52,7 +72,7 @@ public final class HttpClientRequest {
 		httpPost.setHeader("Accept", "application/json");
 		httpPost.setHeader("Content-type", "application/json");
 
-		String jsonInputString = "{\"server\": \"" + repositoryServer + "\","+ "\"repository\":\""+ REPOSITORY + "\","+ "\"deployment_id\":\""+ submissionId + "\"}";
+		String jsonInputString = "{\"server\": \"" + repositoryServer + "\","+ "\"repository\":\""+ REPOSITORY + "\","+ "\"aadmid\":\""+ aadmId + "\"}";
 		
 		StringEntity stringEntity = new StringEntity(jsonInputString);
 		httpPost.setEntity(stringEntity);

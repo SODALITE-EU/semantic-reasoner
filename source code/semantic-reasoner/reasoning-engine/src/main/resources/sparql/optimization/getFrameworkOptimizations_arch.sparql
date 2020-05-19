@@ -1,0 +1,10 @@
+select ?optimization
+where {
+	?a opt:hasOptimization ?optimization .
+	?framework rdf:type opt:Framework .
+	FILTER (strends(lcase(str(?framework)), ?var_1))
+	?framework opt:hasCapability ?a .
+	?a rdf:type opt:OSArchitecture .
+	?a opt:hasArchitecture ?osArch .
+    FILTER (?var_2 = ?osArch).
+ }

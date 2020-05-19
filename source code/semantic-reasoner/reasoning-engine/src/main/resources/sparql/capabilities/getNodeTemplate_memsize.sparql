@@ -1,0 +1,9 @@
+select  ?resource  ?memsize  ?framework
+where {
+    
+    #Retrieve memsize
+    ?capability DUL:classifies tosca:host .
+	?capability tosca:properties ?property .
+    ?property DUL:classifies tosca:mem_size .
+    ?property tosca:hasDataValue ?memsize .
+}

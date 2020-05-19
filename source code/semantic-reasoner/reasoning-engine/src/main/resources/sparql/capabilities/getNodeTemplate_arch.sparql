@@ -1,0 +1,9 @@
+select    ?arch 
+where {
+    
+    #Retrieve os architecture
+	?capability DUL:classifies tosca:os .
+    ?capability tosca:properties ?property .
+    ?property DUL:classifies tosca:architecture .
+    ?property tosca:hasDataValue ?arch .
+}

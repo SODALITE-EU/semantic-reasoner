@@ -1,0 +1,11 @@
+select  ?ngpu
+where {
+    
+	#Retrieve number of gpus
+    ?capability DUL:classifies tosca:host .
+    ?capability tosca:properties ?property .
+    ?property DUL:classifies ?property_gpus .
+    FILTER (strends(str(?property_gpus), "num_gpus")) .
+    ?property tosca:hasDataValue ?ngpu .
+
+}

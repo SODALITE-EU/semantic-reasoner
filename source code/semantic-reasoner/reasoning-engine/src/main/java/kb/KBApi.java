@@ -2,7 +2,10 @@ package kb;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -25,6 +28,7 @@ import kb.dto.Operation;
 import kb.dto.Parameter;
 import kb.dto.Property;
 import kb.dto.Requirement;
+import kb.dto.TemplateOptimization;
 import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
@@ -32,6 +36,7 @@ import kb.utils.QueryUtil;
 public class KBApi {
 
 	public KB kb;
+	static final String[] FRAMEWORKS = {"tensorflow", "solver"};
 
 	public KBApi() {
 		String getenv = System.getenv("graphdb");
@@ -440,6 +445,100 @@ public class KBApi {
 
 	}
 
+	public Set<TemplateOptimization> getOptimizations(String aadmId) throws IOException {
+		System.out.println("getOptimizations aadmid = " + aadmId);
+		Set<TemplateOptimization> templateOptimizations = new HashSet<>();
+		HashMap<IRI, Set<String>> resourceOptimizations = new HashMap<IRI, Set<String>>();
+		
+		//List<String> capabilityList = Arrays.asList("ngpu", "ncpu", "memsize", "disksize", "arch");
+		List<String> capabilityList = Arrays.asList("ngpu", "memsize", "arch");
+		
+		String sparql_r = MyUtils
+				.fileToString("sparql/capabilities/getNodeTemplateCapabilities.sparql");
+		String query_r = KB.PREFIXES + sparql_r;
+		
+		SimpleBinding[] bindings = null;
+		bindings[0] = new SimpleBinding("var_aadm_id", kb.getFactory().createLiteral(aadmId));
+		int j = 1; 
+		for (String f : FRAMEWORKS) {
+			 bindings[j] = new SimpleBinding("var_f" + j, kb.getFactory().createLiteral(f));
+		}
+		
+		//Check which resources have capabilities about which framework
+		TupleQueryResult result_r = QueryUtil.evaluateSelectQuery(kb.getConnection(), query_r,
+					bindings);
+		
+		while (result_r.hasNext()) {
+			BindingSet bindingSet_r = result_r.next();
+			IRI r = (IRI) bindingSet_r.getBinding("resource").getValue();
+			String framework = MyUtils.getStringValue(bindingSet_r.getBinding("framework").getValue());
+			IRI  capability_iri =  (IRI) bindingSet_r.getBinding("capability").getValue();
+			
+			System.out.println("Querying for resource =" + r.toString() + ", framework = " + framework + ", capability = " + capability_iri.toString());
+			for (String capability : capabilityList) {
+				
+				String sparql = MyUtils
+								.fileToString("sparql/capabilities/getNodeTemplate_"+ capability +".sparql");
+				String query = KB.PREFIXES + sparql;
+				
+				TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+								new SimpleBinding("capability", kb.getFactory().createIRI(capability_iri.toString())));
+				while (result.hasNext()) {
+					BindingSet bindingSet = result.next();
+					Set<String> optimizations;
+					String capability_value = bindingSet.hasBinding(capability) ? MyUtils.getStringValue(bindingSet.getBinding(capability).getValue()) : null;
+					if (capability_value != null) {
+						System.out.println("Querying for capability = " + capability +", capability value = " + capability_value);
+						optimizations = _getOptimizations(capability, capability_value, framework);
+						if (optimizations != null) {
+							if (resourceOptimizations.get(r)!= null) {
+								resourceOptimizations.get(r).addAll(optimizations);
+							} else {
+								resourceOptimizations.put(r,optimizations);
+							}
+						}
+					}
+				}
+				result.close();
+			}
+			
+		}
+		result_r.close();
+		
+		System.out.println("\nOptimizations: ");
+		resourceOptimizations.forEach((r,o)->{
+			System.out.println("Resource : " + r + " Optimizations : " + o);
+			TemplateOptimization to = new TemplateOptimization(r,o);
+			templateOptimizations.add(to);
+		});
+		
+		return templateOptimizations;
+	}
+	
+	
+	// This function is reasoning over optimization ontology for returning the applicable
+	// optimizations according to the framework and capabilities
+	private Set<String> _getOptimizations (String capability, String capability_value, String framework) throws IOException {
+		String sparql = MyUtils
+				.fileToString("sparql/optimization/getFrameworkOptimizations_" + capability + ".sparql");
+		String query = KB.OPT_PREFIXES + sparql;
+		
+		if (Arrays.asList("memsize", "disksize").contains(capability))
+			capability_value = MyUtils.getStringPattern(capability_value, "([0-9]+).*");
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_1", kb.getFactory().createLiteral(framework)),
+						new SimpleBinding("var_2", kb.getFactory().createLiteral(capability_value))});
+				
+		Set <String> optimizations= new HashSet<String>();
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			String _opt = MyUtils.getStringValue(bindingSet.getBinding("optimization").getValue());
+			optimizations.add(_opt.toString().replace("\"", ""));
+		}
+		result.close();
+		return optimizations.isEmpty() ? null : optimizations;
+	}
+	
+	
 	public AADM getAADM(String aadmId) throws IOException {
 		System.out.println("AADM: " + aadmId);
 		String sparql = MyUtils.fileToString("sparql/getAADM.sparql");

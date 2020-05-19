@@ -17,6 +17,12 @@ public class KB {
 			"PREFIX dcterms: <http://purl.org/dc/terms/> \r\n" +
 			"PREFIX owl: <http://www.w3.org/2002/07/owl#> \r\n" +
 			"PREFIX exchange: <https://www.sodalite.eu/ontologies/exchange/> \r\n";
+	
+	public static String OPT_PREFIXES = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \r\n" +
+			"PREFIX opt: <https://www.sodalite.eu/ontologies/optimizations#> \r\n" + 
+			"PREFIX owl: <http://www.w3.org/2002/07/owl#> \r\n" +
+			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \r\n" +
+			"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \r\n";
 
 	public static String DCTERMS = "http://purl.org/dc/terms/";
 	public static String DUL = "http://www.loa-cnr.it/ontologies/DUL.owl#";
