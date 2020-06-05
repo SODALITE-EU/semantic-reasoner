@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -146,7 +147,8 @@ public class DSLRMMappingService {
 			IRI nodeKB = factory.createIRI(ws + nodeName); // this will be always new
 			IRI kbNodeType = getKBNodeType(nodeType, "tosca:tosca.entity.Root");
 			
-			builder.add(nodeKB, RDF.TYPE, kbNodeType);
+			builder.add(nodeKB, RDF.TYPE, "owl:Class");
+			builder.add(nodeKB, RDFS.SUBCLASSOF, kbNodeType);
 			builder.add(rmKB, factory.createIRI(KB.SODA + "includes" + type), nodeKB);
 			
 			// create description
@@ -183,7 +185,7 @@ public class DSLRMMappingService {
 				IRI requirement = (IRI) _requirement;
 				IRI requirementClassifierKB = createRequirementKBModel(requirement);
 
-				// add attribute classifiers to the template context
+				// add requirement classifiers to the template context
 				builder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "requirements"),
 						requirementClassifierKB);
 			}
@@ -663,7 +665,12 @@ public class DSLRMMappingService {
 			builder.add(kbProperty, RDF.TYPE, "rdf:Property");
 		}
 		builder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
-
+		
+		Optional<String> description = Models.getPropertyString(rmModel, exchangeParameter,
+		factory.createIRI(KB.EXCHANGE + "description"));
+		if (description.isPresent())
+			builder.add(propertyClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+		
 		// handle values
 		if (!_values.isEmpty()) {
 

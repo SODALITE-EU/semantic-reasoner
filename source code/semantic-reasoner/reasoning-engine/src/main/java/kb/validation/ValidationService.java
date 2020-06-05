@@ -1,26 +1,33 @@
 package kb.validation;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.rdf4j.model.Model;
 
 import kb.validation.exceptions.CapabilityMismatchValidationException;
 import kb.validation.exceptions.NoRequirementDefinitionValidationException;
 import kb.validation.exceptions.NodeMismatchValidationException;
+import kb.validation.exceptions.models.RequirementModel;
 
 public class ValidationService {
 
 	RequirementValidation requirementValidation;
 
-	public ValidationService() {
-		requirementValidation = new RequirementValidation(null);
+	List<RequirementModel> models = new ArrayList<RequirementModel>();
+	
+	public ValidationService(Model model) {
+		requirementValidation = new RequirementValidation(model);
 	}
 
-	public void validate() {
+	public List<RequirementModel> validate() {
 		try {
-			requirementValidation.start();
+			models = requirementValidation.start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (NoRequirementDefinitionValidationException e) {
+		}/* catch (NoRequirementDefinitionValidationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NodeMismatchValidationException e) {
@@ -29,10 +36,11 @@ public class ValidationService {
 		} catch (CapabilityMismatchValidationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
+		}*/ finally {
 			if (requirementValidation != null)
 				requirementValidation.shutDown();
 		}
+		return models;
 	}
 
 }

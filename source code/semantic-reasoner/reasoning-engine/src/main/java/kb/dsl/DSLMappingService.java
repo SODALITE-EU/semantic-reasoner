@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -38,6 +36,11 @@ import kb.dsl.exceptions.MappingException;
 import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
+import kb.validation.RequirementValidation;
+import kb.validation.ValidationService;
+import kb.validation.exceptions.CapabilityMismatchValidationException;
+import kb.validation.exceptions.NoRequirementDefinitionValidationException;
+import kb.validation.exceptions.NodeMismatchValidationException;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
 import kb.validation.required.RequiredPropertyValidation;
@@ -65,6 +68,7 @@ public class DSLMappingService {
 	// Validation
 	Set<String> definedPropertiesForValidation = new HashSet<String>(),
 			definedAttributesForValidation = new HashSet<String>();
+
 
 	List<ValidationModel> validationModels = new ArrayList<>();
 
@@ -169,7 +173,6 @@ public class DSLMappingService {
 			validationModels.addAll(v.validate());
 
 			// attributes
-
 			definedAttributesForValidation.clear();
 			for (Resource _attribute : Models.getPropertyResources(aadmModel, _template,
 					factory.createIRI(KB.EXCHANGE + "attributes"))) {
@@ -562,7 +565,7 @@ public class DSLMappingService {
 		}
 	}
 
-	public void save() {
+	public void save() throws ValidationException, IOException {
 		Model model = builder.build();
 
 		for (Statement string : model) {
@@ -594,6 +597,13 @@ public class DSLMappingService {
 
 		// Rio.write(model, System.out, RDFFormat.TURTLE);
 		kb.connection.add(model, context);
+		
+		ValidationService v = new ValidationService(aadmModel);
+		validationModels.addAll(v.validate());
+		if (!validationModels.isEmpty()) {
+			kb.connection.clear(context);
+			throw new ValidationException(validationModels);
+		}
 	}
 
 	private boolean currentContextExists() {
