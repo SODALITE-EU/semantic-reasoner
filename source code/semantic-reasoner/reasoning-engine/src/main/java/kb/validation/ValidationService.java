@@ -20,6 +20,10 @@ public class ValidationService {
 	public ValidationService(Model model) {
 		requirementValidation = new RequirementValidation(model);
 	}
+	
+	public ValidationService(String aadmId) {
+		requirementValidation = new RequirementValidation(aadmId);
+	}
 
 	public List<RequirementModel> validate() {
 		try {

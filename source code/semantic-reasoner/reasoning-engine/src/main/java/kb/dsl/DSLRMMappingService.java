@@ -252,7 +252,7 @@ public class DSLRMMappingService {
 			Set<IRI> parameters = createrRequirementParameterKBModel(requirement);
 			
 			for (IRI parameter : parameters) {
-				builder.add(requirementClassifierKB, factory.createIRI("dul:hasParameter"), parameter);
+				builder.add(requirementClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), parameter);
 			}
 			//builder.add(requirementClassifierKB, factory.createIRI("dul:hasParameter"), root);
 		}
@@ -308,7 +308,7 @@ public class DSLRMMappingService {
 			} else {
 				Set<IRI> parameterList = createrRequirementParameterKBModel(parameter);
 				for (IRI parameter_1 : parameterList) {
-					builder.add(parameterClassifierKB, factory.createIRI("dul:hasParameter"), parameter_1);
+					builder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), parameter_1);
 				}
 			}
 		}
@@ -351,7 +351,7 @@ public class DSLRMMappingService {
 		} else {
 			Set<IRI> parameters = createCapabilityParameterKBModel(capability);
 			for (IRI parameter : parameters) {
-				builder.add(capabilityClassifierKB, factory.createIRI("dul:hasParameter"), parameter);
+				builder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), parameter);
 			}
 		}
 		return capabilityClassifierKB;
@@ -456,7 +456,7 @@ public class DSLRMMappingService {
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createInterfaceKBModel(parameter);
-				builder.add(interfaceClassifierKB, factory.createIRI("dul:hasParameter"), _p);
+				builder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
 			}
 		}
 		return interfaceClassifierKB;
@@ -532,7 +532,7 @@ public class DSLRMMappingService {
 			} else {
 				Set<IRI> parameterList = createCapabilityParameterKBModel(parameter);
 				for (IRI parameter_1 : parameterList) {
-					builder.add(parameterClassifierKB, factory.createIRI("dul:hasParameter"), parameter_1);
+					builder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), parameter_1);
 				}
 			}
 		}

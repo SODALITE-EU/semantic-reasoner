@@ -10,6 +10,10 @@ public class ValidationManager {
 
 	protected Model exchangeModel; // the submitted data (tier2)
 
+	public ValidationManager() {
+		kb = new KB();
+	}
+	
 	public ValidationManager(KB kb, Model model) {
 		this.kb = kb;
 		this.exchangeModel = model;

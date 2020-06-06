@@ -1,4 +1,4 @@
-# ctx, r_a, tempalte
+# ctx, r_a, template
 select ?type_r_a_node ?r_d_node {
 	?ctx tosca:requirements [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies tosca:node; DUL:hasRegion ?r_d_node]] .
 	?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a; DUL:hasRegion ?r_a_node]] .

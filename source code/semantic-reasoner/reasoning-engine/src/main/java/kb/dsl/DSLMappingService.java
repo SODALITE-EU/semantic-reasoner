@@ -297,7 +297,7 @@ public class DSLMappingService {
 		} else {
 
 			IRI root = createParameterKBModel(requirement);
-			builder.add(requirementClassifierKB, factory.createIRI("dul:hasParameter"), root);
+			builder.add(requirementClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
 		}
 
 		return requirementClassifierKB;
@@ -342,7 +342,7 @@ public class DSLMappingService {
 		} else {
 
 			IRI root = createParameterKBModel(parameter);
-			builder.add(parameterClassifierKB, factory.createIRI("dul:hasParameter"), root);
+			builder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
 
 		}
 		return parameterClassifierKB;
@@ -483,7 +483,7 @@ public class DSLMappingService {
 			//definedPropertiesForValidation.clear();
 			if (_properties.isEmpty()) {
 				IRI root = createParameterKBModel(capability);
-				builder.add(capabilityClassifierKB, factory.createIRI("dul:hasParameter"), root);
+				builder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
 			} else {
 				for (Resource _property : _properties) {
 					IRI property = (IRI) _property;
@@ -598,7 +598,8 @@ public class DSLMappingService {
 		// Rio.write(model, System.out, RDFFormat.TURTLE);
 		kb.connection.add(model, context);
 		
-		ValidationService v = new ValidationService(aadmModel);
+		//Sommelier validations
+		ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
 		validationModels.addAll(v.validate());
 		if (!validationModels.isEmpty()) {
 			kb.connection.clear(context);

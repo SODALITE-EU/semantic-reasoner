@@ -21,6 +21,7 @@ public class RequirementModel extends ValidationModel {
 		this.validationType = validationType;
 	}
 	
+	//related to capabilities and relationships
 	public RequirementModel(String templateName, String requirement, String type_r_a, String r_d, String nodeType, String validationType) {
 		super();
 		this.templateName = templateName;
@@ -45,11 +46,17 @@ public class RequirementModel extends ValidationModel {
 				info.put("description",String.format("The type of requirement assigment %s of template %s does not match the requirement definition %s.",
 						type_r_a, templateName, r_d));
 				break;
+			case "CapabilityExistsMismatch":
 			case "CapabilityMismatch":
 				info.put("description",
 				String.format("On requirement %s, node template %s has the capability type %s that does not match the capability of %s (%s).",
 						requirement, templateName, type_r_a , nodeType , r_d));
 				
+				break;
+			case "RelationshipMismatch":
+				info.put("description",
+						String.format("On requirement %s, node template %s has the relationship type %s that does not match the relationship of %s (%s).",
+								requirement, templateName, type_r_a , nodeType , r_d));
 				break;
 		}
 		info.put("name", requirement);
