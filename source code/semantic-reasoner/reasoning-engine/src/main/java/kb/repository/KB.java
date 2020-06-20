@@ -1,8 +1,24 @@
 package kb.repository;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.TreeModel;
+import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.config.RepositoryConfig;
+import org.eclipse.rdf4j.repository.config.RepositoryConfigSchema;
+import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.rio.RDFParser;
+import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 public class KB {
 
@@ -30,14 +46,15 @@ public class KB {
 	public static String SODA = "https://www.sodalite.eu/ontologies/sodalite-metamodel/";
 	public static String EXCHANGE = "https://www.sodalite.eu/ontologies/exchange/";
 
+	
 	SodaliteRepository manager;
 	public RepositoryConnection connection;
 	public ValueFactory factory;
 
 	public KB() {
-		manager = new SodaliteRepository(SERVER_URL, "", "");
-		connection = manager.getRepository(REPOSITORY).getConnection();
-		factory = connection.getValueFactory();
+			manager = new SodaliteRepository(SERVER_URL, "", "");
+			connection = manager.getRepository(REPOSITORY).getConnection();
+			factory = connection.getValueFactory();
 	}
 
 	public KB(String repoName) {
@@ -47,9 +64,12 @@ public class KB {
 	}
 
 	public KB(String serverUrl, String repoName) {
-		manager = new SodaliteRepository(serverUrl, "", "");
-		connection = manager.getRepository(repoName).getConnection();
-		factory = connection.getValueFactory();
+		    if (checkIfRepoExists(serverUrl, repoName)) {
+		    	manager = new SodaliteRepository(serverUrl, "", "");
+				connection = manager.getRepository(repoName).getConnection();
+				factory = connection.getValueFactory();
+		    }
+		
 	}
 
 	public KB(SodaliteRepository manager) {
@@ -74,6 +94,65 @@ public class KB {
 		manager.shutDown(null);
 	}
 
+	public boolean checkIfRepoExists(String serverUrl, String repoName)  {
+		 manager = new SodaliteRepository(serverUrl, "", "");
+
+		 if (manager.getRepository(repoName) != null)
+			 	return true;
+		 
+		 RepositoryManager repositoryManager =  manager.getManager();
+		 repositoryManager.init();
+		 
+		// Instantiate a repository graph model
+		 TreeModel graph = new TreeModel();
+
+		 // Read repository configuration file
+		 InputStream config = SodaliteRepository.class.getResourceAsStream("/repo_defaults.ttl");
+		 RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
+		 rdfParser.setRDFHandler(new StatementCollector(graph));
+		 try {
+			rdfParser.parse(config, RepositoryConfigSchema.NAMESPACE);
+			config.close();
+		} catch (RDFParseException | RDFHandlerException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+		 // Retrieve the repository node as a resource
+		 Resource repositoryNode = Models.subject(graph.filter(null, RDF.TYPE, RepositoryConfigSchema.REPOSITORY)).orElse(null);
+		 // Create a repository configuration object and add it to the repositoryManager
+		 RepositoryConfig repositoryConfig = RepositoryConfig.create(graph, repositoryNode);
+		 repositoryManager.addRepositoryConfig(repositoryConfig);
+		 
+		 connection = repositoryManager.getRepository(repoName).getConnection();
+		 factory = connection.getValueFactory();
+		 
+		 try {
+				InputStream input;
+				input =
+					KB.class.getResourceAsStream("/ontologies/import/DUL.rdf");
+				connection.add(input, "", RDFFormat.RDFXML);
+				
+				input =
+						KB.class.getResourceAsStream("/ontologies/core/tosca-builtins.ttl");
+					connection.add(input, "", RDFFormat.TURTLE);
+			
+				input =
+						KB.class.getResourceAsStream("/ontologies/core/sodalite-metamodel.ttl");
+					connection.add(input, "", RDFFormat.TURTLE);
+					
+				input =
+							KB.class.getResourceAsStream("/ontologies/core/optimizations.ttl");
+						connection.add(input, "", RDFFormat.TURTLE);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+
+		 return false;
+	}
+	
+	
 	public static void main(String[] args) {
 		KB api = new KB();
 		api.shutDown();

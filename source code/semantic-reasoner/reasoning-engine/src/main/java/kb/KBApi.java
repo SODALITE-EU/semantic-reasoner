@@ -299,7 +299,11 @@ public class KBApi {
 		return interfaces;
 	}
 
-	private IRI getMostSpecificRequirementNode(String requirementName, String ofNode) throws IOException {
+
+	private Set<IRI> getMostSpecificRequirementNode(String requirementName, String ofNode) throws IOException {
+
+		Set<IRI> nodeTypes = new HashSet<>();
+		
 		IRI requirement = null;
 
 		String sparql = MyUtils.fileToString("sparql/getMostSpecificRequirementNode.sparql");
@@ -313,18 +317,27 @@ public class KBApi {
 			BindingSet bindingSet = result.next();
 			IRI p1 = (IRI) bindingSet.getBinding("v").getValue();
 			requirement = p1;
+
+			nodeTypes.add(p1);
 		}
 		result.close();
-		return requirement;
+
+		return nodeTypes;
 	}
 
 	public Set<Node> getRequirementValidNodes(String requirement, String nodeType) throws IOException {
 		Set<Node> nodes = new HashSet<>();
 
-		IRI node = this.getMostSpecificRequirementNode(requirement, nodeType);
-		System.out.println("getMostSpecificRequirementNode: " + node);
 
-		if (node == null) {
+
+		Set<IRI> nodeTypes = this.getMostSpecificRequirementNode(requirement, nodeType);
+
+		for(IRI node : nodeTypes)
+			System.out.println("getMostSpecificRequirementNode: " + node);
+
+
+
+		if (nodeTypes.isEmpty()) {	
 			return nodes;
 		}
 
@@ -333,26 +346,31 @@ public class KBApi {
 				+ "	 ?node sesame:directType ?superclass . \r\n "
 				+ "    ?superclass rdfs:subClassOf tosca:tosca.nodes.Root . \r\n"
 				+ "    OPTIONAL {?node dcterms:description ?description .} \r\n" + "}";
+		
+		for(IRI node : nodeTypes){
+			// System.out.println(query);
+			TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+					new SimpleBinding("var", node));
 
-		// System.out.println(query);
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("var", node));
+			while (result.hasNext()) {
+				BindingSet bindingSet = result.next();
+				IRI _node = (IRI) bindingSet.getBinding("node").getValue();
+				String description = bindingSet.hasBinding("description")
+						? bindingSet.getBinding("description").getValue().stringValue()
+								: null;
+				IRI superclass = (IRI) bindingSet.getBinding("superclass").getValue();
 
-		while (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			IRI _node = (IRI) bindingSet.getBinding("node").getValue();
-			String description = bindingSet.hasBinding("description")
-					? bindingSet.getBinding("description").getValue().stringValue()
-					: null;
-			IRI superclass = (IRI) bindingSet.getBinding("superclass").getValue();
+				Node n = new Node(_node);
+				n.setDescription(description);
+				n.setType(superclass);
 
-			Node n = new Node(_node);
-			n.setDescription(description);
-			n.setType(superclass);
+				nodes.add(n);
+			}
+			
+			result.close();
+		}		
+		//ORDERING BASED ON HIERARCHY(MOST SPECIFIC TYPE FIRST IN THE LIST)	
 
-			nodes.add(n);
-		}
-		result.close();
 		return nodes;
 	}
 

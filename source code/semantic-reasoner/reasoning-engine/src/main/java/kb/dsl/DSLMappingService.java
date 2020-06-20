@@ -599,12 +599,12 @@ public class DSLMappingService {
 		kb.connection.add(model, context);
 		
 		//Sommelier validations
-		ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
-		validationModels.addAll(v.validate());
+		//ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
+		/*validationModels.addAll(v.validate());
 		if (!validationModels.isEmpty()) {
 			kb.connection.clear(context);
 			throw new ValidationException(validationModels);
-		}
+		}*/
 	}
 
 	private boolean currentContextExists() {

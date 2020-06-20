@@ -1,0 +1,21 @@
+version: '3'
+services:
+  web:
+    # will build ./docker/web/Dockerfile
+    build: 
+       context: .
+       dockerfile: ./docker/web/Dockerfile
+    depends_on:
+     - graph-db
+    ports:
+     - "8080:8080"
+    environment:
+      - WAIT_HOSTS=graph-db:7200
+
+
+  graph-db:
+    # will build ./docker/graph-db/Dockerfile
+    build:
+        ./docker/graph-db
+    ports:
+      - "7200:7200"

@@ -27,11 +27,25 @@ import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
 import restapi.utils.HttpClientRequest;
-
+/** A service that submits the resource model to the Knowledge Base.
+ * @author George Meditskos
+ * @author Zoe Vasileiou
+ * @version 1.0
+ * @since 1.0
+*/
 @Path("/saveRM")
 @Api()
 public class SubmitRMService extends AbstractService  {
-
+	/**
+	 * Storing the submitted RM in the KB and assigning a unique id.
+	 * @param  rmTTL The RM in turtle format
+	 * @param  rmURI A unique id
+	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
+	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
+	 * @throws IOException If your input format is invalid
+	 * @throws MappingException Unknown entity issue
+	 * @return The AADM URI
+	*/
 	@POST
 	//@Produces("text/plain")
 	@Produces("application/json")

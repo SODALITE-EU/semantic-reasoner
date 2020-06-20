@@ -8,12 +8,14 @@ where {
 	?r DUL:hasParameter [DUL:classifies tosca:node; DUL:hasRegion ?v] .
 	FILTER (STRENDS (str(?node), ?ofNode)) .
 	FILTER (STRENDS (str(?p), ?requirementName)) .
-	FILTER NOT EXISTS {
-		?node rdfs:subClassOf ?node2 .
-		FILTER (?node != ?node2).
-		?node2 soda:hasContext ?ctx2.
-		FILTER (?ctx2 != ?ctx).
-		?ctx2 tosca:requirements ?r2 .
-		?r2 DUL:classifies ?p.
-	}
+	#Only the node type of the ancenstor is returned
+	#FILTER NOT EXISTS {
+	#	?node rdfs:subClassOf ?node2 .
+	#	FILTER (?node != ?node2).
+	#	?node2 soda:hasContext ?ctx2.
+	#	FILTER (?ctx2 != ?ctx).
+	#	?ctx2 tosca:requirements ?r2 .
+	#	?r2 DUL:classifies ?p.
+	#}
 }
+
