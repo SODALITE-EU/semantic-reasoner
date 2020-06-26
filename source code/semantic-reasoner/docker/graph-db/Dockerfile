@@ -9,7 +9,7 @@ ENV GRAPHDB_HOME=${GRAPHDB_PARENT_DIR}/home
 
 ENV GRAPHDB_INSTALL_DIR=${GRAPHDB_PARENT_DIR}/dist
 
-ADD graphdb-free-${version}-dist.zip /tmp
+ADD http://160.40.52.200:8084/graph-db/graphdb-free-${version}-dist.zip /tmp
 
 RUN apk add --no-cache bash util-linux procps net-tools busybox-extras wget less && \
     mkdir -p ${GRAPHDB_PARENT_DIR} && \

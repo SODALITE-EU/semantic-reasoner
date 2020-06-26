@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -66,7 +67,8 @@ public class OptimizationService extends AbstractService {
 	@ApiOperation(
 			value = "Returns the optimizations of a specific aadm")
 	public Response getOptimizations(@ApiParam(value = "The TTL of AADM", required = true) @FormParam("aadmTTL") String aadmTTL,
-			@ApiParam(value = "An id to uniquely identify a submission", required = false) @FormParam("aadmURI") String aadmURI)
+			@ApiParam(value = "An id to uniquely identify a submission", required = false) @FormParam("aadmURI") String aadmURI,
+			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete)
 					throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException  {
 		
 		KB kb;
@@ -75,7 +77,7 @@ public class OptimizationService extends AbstractService {
 			kb = new KB(getenv, "TOSCA");
 		else
 			kb = new KB();
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI);
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete);
 		IRI aadmUri = null;
 
 		//Contains the final response

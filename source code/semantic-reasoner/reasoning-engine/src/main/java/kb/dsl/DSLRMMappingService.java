@@ -299,12 +299,18 @@ public class DSLRMMappingService {
 							.orElse(null);
 
 			if (value != null) { // this means there is no parameters
-				IRI kbNode = getKBNode(value.getLabel());
-				if (kbNode == null) {
-					// throw new Exception("Cannot find node: " + value);
-					kbNode = factory.createIRI(ws + value.getLabel());
-				}
-				builder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+				Object i = null;
+				//the int check was added for occurrences
+				if ((i = Ints.tryParse(value.stringValue())) != null) {
+					builder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+				} else {
+						IRI kbNode = getKBNode(value.getLabel());
+						if (kbNode == null) {
+							// throw new Exception("Cannot find node: " + value);
+							kbNode = factory.createIRI(ws + value.getLabel());
+						}
+						builder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+					}
 			} else {
 				Set<IRI> parameterList = createrRequirementParameterKBModel(parameter);
 				for (IRI parameter_1 : parameterList) {

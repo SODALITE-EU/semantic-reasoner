@@ -36,6 +36,7 @@ import kb.dsl.exceptions.MappingException;
 import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
+import kb.validation.RequirementExistenceValidation;
 import kb.validation.RequirementValidation;
 import kb.validation.ValidationService;
 import kb.validation.exceptions.CapabilityMismatchValidationException;
@@ -64,6 +65,8 @@ public class DSLMappingService {
 	IRI aadmKB;
 	IRI context;
 	String aadmURI;
+	
+	boolean complete;
 
 	// Validation
 	Set<String> definedPropertiesForValidation = new HashSet<String>(),
@@ -71,8 +74,11 @@ public class DSLMappingService {
 
 
 	List<ValidationModel> validationModels = new ArrayList<>();
+	List<ValidationModel> modifiedModels = new ArrayList<>();
+	List<ValidationModel> suggestedModels = new ArrayList<>();
+	
 
-	public DSLMappingService(KB kb, String aadmTTL, String aadmURI)
+	public DSLMappingService(KB kb, String aadmTTL, String aadmURI, boolean complete)
 			throws RDFParseException, UnsupportedRDFormatException, IOException {
 		super();
 		this.kb = kb;
@@ -90,6 +96,7 @@ public class DSLMappingService {
 		this.aadmURI = aadmURI;
 	//	context = kb.factory.createIRI("http://" + submissionId);
 		//ws += MyUtils.randomString() + "/";
+		this.complete = complete;
 	}
 
 	public IRI start() throws MappingException, ValidationException  {
@@ -558,6 +565,14 @@ public class DSLMappingService {
 		return x;
 	}
 
+	public List<ValidationModel> getModifiedModels() {
+		return modifiedModels;
+	}
+	
+	public List<ValidationModel> getSuggestedModels() {
+		return suggestedModels;
+	}
+	
 	public void shutDown() {
 		System.out.println("shutting down");
 		if (kb != null) {
@@ -598,6 +613,21 @@ public class DSLMappingService {
 		// Rio.write(model, System.out, RDFFormat.TURTLE);
 		kb.connection.add(model, context);
 		
+		String aadmId = MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*");
+		//Requirement first check about existence, and (complete = true) update models if matching nodes found
+		RequirementExistenceValidation r = new RequirementExistenceValidation(aadmId, complete, kb, ws, context);
+		//Check for required omitted requirements
+		validationModels.addAll(r.validate());
+		if (!validationModels.isEmpty()) {
+			kb.connection.clear(context);
+			throw new ValidationException(validationModels);
+		}
+		
+		suggestedModels.addAll(r.getSuggestions());
+		modifiedModels.addAll(r.getModifiedModels());
+		
+		
+		
 		//Sommelier validations
 		//ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
 		/*validationModels.addAll(v.validate());
@@ -616,7 +646,7 @@ public class DSLMappingService {
 		String aadmTTL = MyUtils.fileToString("dsl/ide_snow_v3.ttl");
 
 		KB kb = new KB("TOSCA_automated");
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL,"test");
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL,"test", false);
 		m.start();
 		m.save();
 		m.shutDown();

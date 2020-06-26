@@ -24,12 +24,14 @@ import kb.dto.Capability;
 import kb.dto.Interface;
 import kb.dto.Node;
 import kb.dto.NodeFull;
+import kb.dto.NodeType;
 import kb.dto.Operation;
 import kb.dto.Parameter;
 import kb.dto.Property;
 import kb.dto.Requirement;
 import kb.dto.TemplateOptimization;
 import kb.repository.KB;
+import kb.utils.InferencesUtil;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 
@@ -300,12 +302,11 @@ public class KBApi {
 	}
 
 
-	private Set<IRI> getMostSpecificRequirementNode(String requirementName, String ofNode) throws IOException {
-
+	private IRI getMostSpecificRequirementNode(String requirementName, String ofNode) throws IOException {
+	
+		//IRI requirement = null;
 		Set<IRI> nodeTypes = new HashSet<>();
 		
-		IRI requirement = null;
-
 		String sparql = MyUtils.fileToString("sparql/getMostSpecificRequirementNode.sparql");
 		String query = KB.PREFIXES + sparql;
 
@@ -316,64 +317,96 @@ public class KBApi {
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			IRI p1 = (IRI) bindingSet.getBinding("v").getValue();
-			requirement = p1;
-
 			nodeTypes.add(p1);
+			//requirement = p1;
 		}
 		result.close();
-
-		return nodeTypes;
+		
+		System.out.println("getMostSpecificRequirementNode nodeTypes = " + nodeTypes);
+		IRI nodeType = null;
+		if (!nodeTypes.isEmpty())
+			nodeType = InferencesUtil.getLowestSubclass(kb, nodeTypes);
+		
+		return nodeType;
 	}
 
 	public Set<Node> getRequirementValidNodes(String requirement, String nodeType) throws IOException {
 		Set<Node> nodes = new HashSet<>();
 
-
-
-		Set<IRI> nodeTypes = this.getMostSpecificRequirementNode(requirement, nodeType);
-
-		for(IRI node : nodeTypes)
-			System.out.println("getMostSpecificRequirementNode: " + node);
-
-
-
-		if (nodeTypes.isEmpty()) {	
+		IRI node = this.getMostSpecificRequirementNode(requirement, nodeType);
+		if (node == null) {	
 			return nodes;
 		}
-
+		System.out.println("getMostSpecificRequirementNode: " + node);
 		String query = KB.PREFIXES + "SELECT ?node ?description ?superclass WHERE {\r\n"
 				+ "	?node a tosca:tosca.nodes.Root .\r\n" + "    ?node a ?var .   \r\n"
 				+ "	 ?node sesame:directType ?superclass . \r\n "
 				+ "    ?superclass rdfs:subClassOf tosca:tosca.nodes.Root . \r\n"
 				+ "    OPTIONAL {?node dcterms:description ?description .} \r\n" + "}";
 		
-		for(IRI node : nodeTypes){
-			// System.out.println(query);
-			TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+		// System.out.println(query);
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 					new SimpleBinding("var", node));
 
-			while (result.hasNext()) {
-				BindingSet bindingSet = result.next();
-				IRI _node = (IRI) bindingSet.getBinding("node").getValue();
-				String description = bindingSet.hasBinding("description")
-						? bindingSet.getBinding("description").getValue().stringValue()
-								: null;
-				IRI superclass = (IRI) bindingSet.getBinding("superclass").getValue();
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI _node = (IRI) bindingSet.getBinding("node").getValue();
+			String description = bindingSet.hasBinding("description")
+					? bindingSet.getBinding("description").getValue().stringValue()
+							: null;
+			IRI superclass = (IRI) bindingSet.getBinding("superclass").getValue();
 
-				Node n = new Node(_node);
-				n.setDescription(description);
-				n.setType(superclass);
+			Node n = new Node(_node);
+			n.setDescription(description);
+			n.setType(superclass);
 
-				nodes.add(n);
-			}
+			nodes.add(n);
 			
 			result.close();
-		}		
-		//ORDERING BASED ON HIERARCHY(MOST SPECIFIC TYPE FIRST IN THE LIST)	PENDING
-
+		}
+		
 		return nodes;
 	}
 
+	/*
+	 * Getting the valid requirement node types, so as the IDE to know which are the compatible node types
+	 * for also proposing local applicable templates of the aadm
+	 */
+	public Set<NodeType> getRequirementValidNodeTypes(String requirement, String nodeType) throws IOException {
+		Set<NodeType> nodeTypes = new HashSet<>();
+		
+		IRI node = getMostSpecificRequirementNode(requirement, nodeType);
+		
+		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
+				"PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n" +
+				"PREFIX dcterms: <http://purl.org/dc/terms/> \r\n" +
+				"select distinct ?node ?description {\r\n" + 
+				"   ?node rdfs:subClassOf ?var .\r\n" +  
+				"    FILTER(?node != owl:Nothing).\r\n" + 
+				"    OPTIONAL {?node dcterms:description ?description .}\r\n" +
+				"}";
+		
+		TupleQueryResult result = null;
+		if (node != null) {
+			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("var", node));
+		
+			while (result.hasNext()) {
+				BindingSet bindingSet = result.next();
+				IRI p = (IRI) bindingSet.getBinding("node").getValue();
+			
+				String description = bindingSet.hasBinding("description")
+						? bindingSet.getBinding("description").getValue().stringValue()
+								: null;
+					NodeType n = new NodeType(p);
+				n.setDescription(description);
+				nodeTypes.add(n);
+			}
+			result.close();	
+		}
+		
+		return nodeTypes;
+	}
+	
 	public String getDescription(IRI uri) {
 		RepositoryResult<Statement> result = kb.getConnection().getStatements(uri,
 				kb.factory.createIRI(KB.DCTERMS + "description"), null);

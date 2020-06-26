@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -56,7 +57,8 @@ public class SubmitService extends AbstractService {
 	@Consumes("application/x-www-form-urlencoded")
 	@ApiOperation(value = "Stores submitted node templates in the KB")
 	public Response saveAADM(@ApiParam(value = "The TTL of AADM", required = true) @FormParam("aadmTTL") String aadmTTL,
-			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("aadmURI") String aadmURI)
+			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("aadmURI") String aadmURI,
+			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException {
 
 		KB kb;
@@ -66,8 +68,7 @@ public class SubmitService extends AbstractService {
 		else
 			kb = new KB();
 		
-		
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI);
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete);
 		IRI aadmUri = null;
 
 		//Contains the final response
@@ -77,6 +78,8 @@ public class SubmitService extends AbstractService {
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
 			HttpClientRequest.getWarnings(response, aadmid);
+			
+			addRequirementModels(m, response);
 		} catch (MappingException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {	
@@ -98,5 +101,19 @@ public class SubmitService extends AbstractService {
 		
 		response.put("aadmuri", aadmUri.stringValue());
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
+	}
+	
+	public void addRequirementModels(DSLMappingService m, JSONObject response) {
+		JSONArray marray = new JSONArray();
+		for (ValidationModel validationModel : m.getModifiedModels()) {
+			marray.add(validationModel.toJson());
+		}
+		response.put("modifications", marray);
+		
+		JSONArray sarray = new JSONArray();
+		for (ValidationModel validationModel : m.getSuggestedModels()) {
+			sarray.add(validationModel.toJson());
+		}
+		response.put("suggestions", sarray);
 	}
 }

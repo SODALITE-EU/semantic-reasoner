@@ -13,3 +13,9 @@ The repository contains the Maven modules for the Semantic Reasoner component of
 - cd to `semantic-reasoner` folder
 - run: `mvn install`
 - Deploy the war file in a web container (e.g. Tomcat)
+
+## Running the reasoner on docker containers
+Run 
+```docker-compose up```
+You can access the graph database [here](http://localhost:7200/)
+and send requests to the reasoner http://localhost:8080/reasoner-api/v0.6/<service_name>
