@@ -9,6 +9,10 @@ import kb.repository.KB;
 
 public class InferencesUtil {
 	
+	/* Given a set of a classes, it returns the class that is lowest in the class hierarchy.
+	* e.g. tosca.nodes.Compute, sodalite.nodes.OpenStack.VM node types. 
+	* sodalite.nodes.OpenStack.VM should be returned. 
+	*/
 	public static IRI getLowestSubclass(KB kb,Set<IRI> classes) {
 		
 		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
