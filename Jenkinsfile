@@ -28,6 +28,33 @@ pipeline {
       }
     }
   }
+  
+   stage('Build docker images') {
+            steps {
+                sh "cd docker/web; docker build -t semantic_web -f Dockerfile ."
+                sh "cd docker/graph-db; docker build -t graph_db -f Dockerfile ."
+            }
+   }
+   
+   stage('Push Dockerfile to DockerHub') {
+            when {
+               branch "master"
+            }
+            steps {
+                withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
+                    sh  """#!/bin/bash                       
+                            docker tag semantic_web sodaliteh2020/semantic_web:${BUILD_NUMBER}
+                            docker tag semantic_web sodaliteh2020/semantic_web
+                            docker push sodaliteh2020/semantic_web:${BUILD_NUMBER}
+                            docker push sodaliteh2020/semantic_web
+                            docker tag graph_db sodaliteh2020/graph_db:${BUILD_NUMBER}
+                            docker tag graph_db sodaliteh2020/graph_db
+                            docker push sodaliteh2020/graph_db:${BUILD_NUMBER}
+                            docker push sodaliteh2020/graph_db
+                        """
+                }
+            }
+   }
   post {
     failure {
         slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")

@@ -92,15 +92,15 @@ public class RequirementExistenceValidation extends ValidationManager {
 		List<RequirementExistenceModel> models;
 
 		for (Map.Entry e : map.entrySet()) {
-			// System.out.println("Template: "+ e.getKey());
+			 System.out.println("Template: "+ e.getKey());
 			 IRI template = (IRI) e.getKey();
 			 HashMap<IRI,HashMap<IRI,Set<IRI>>> innerMap =  (HashMap<IRI,HashMap<IRI,Set<IRI>>>) e.getValue();
 			 for (Map.Entry e2 : innerMap.entrySet()) {
-				 //System.out.println("r_a: "+ e2.getKey());
+				 System.out.println("r_a: "+ e2.getKey());
 				 IRI r_a = (IRI) e2.getKey();
 				 HashMap<IRI,Set<IRI>> in_inMap = (HashMap<IRI,Set<IRI>>)e2.getValue();
 				 for (Map.Entry e3 : in_inMap.entrySet()) {
-					 //System.out.println("r_i: "+ e3.getKey() + ", types = " + e3.getValue());
+					 System.out.println("r_i: "+ e3.getKey() + ", types = " + e3.getValue());
 					 IRI r_i = (IRI) e3.getKey();
 					 //Get the most specific type
 					 IRI type = InferencesUtil.getLowestSubclass(kb, (Set<IRI>)e3.getValue());
