@@ -28,8 +28,8 @@ pipeline {
     }
    stage('Build docker images') {
             steps {
-                sh "cd source\ code/semantic-reasoner/docker/web; docker build -t semantic_web -f Dockerfile ."
-                sh "cd source\ code/semantic-reasoner/docker/graph-db; docker build -t graph_db -f Dockerfile ."
+                sh "cd source\\ code/semantic-reasoner/docker/web; docker build -t semantic_web -f Dockerfile ."
+                sh "cd source\\ code/semantic-reasoner/docker/graph-db; docker build -t graph_db -f Dockerfile ."
             }
    }
    stage('Push Dockerfile to DockerHub') {
