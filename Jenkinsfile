@@ -27,7 +27,6 @@ pipeline {
         build job: 'defect-prediction/master', wait: false
       }
     }
-  }
   
    stage('Build docker images') {
             steps {
@@ -55,6 +54,7 @@ pipeline {
                 }
             }
    }
+  }
   post {
     failure {
         slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
