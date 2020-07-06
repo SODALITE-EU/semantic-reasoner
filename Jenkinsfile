@@ -16,7 +16,6 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
-    
     stage ('Trigger a build of defect-prediction') {
       when { 
           not { 
@@ -27,14 +26,12 @@ pipeline {
         build job: 'defect-prediction/master', wait: false
       }
     }
-  
    stage('Build docker images') {
             steps {
                 sh "cd source\ code/semantic-reasoner/docker/web; docker build -t semantic_web -f Dockerfile ."
                 sh "cd source\ code/semantic-reasoner/docker/graph-db; docker build -t graph_db -f Dockerfile ."
             }
    }
-   
    stage('Push Dockerfile to DockerHub') {
             when {
                branch "master"
