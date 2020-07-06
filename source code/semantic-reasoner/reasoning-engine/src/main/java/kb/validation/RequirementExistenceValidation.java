@@ -36,7 +36,7 @@ public class RequirementExistenceValidation extends ValidationManager {
 	
 	boolean complete;
 	String aadmId;
-	KB kb;
+
 	String ws;
 	IRI context;
 	
@@ -45,6 +45,7 @@ public class RequirementExistenceValidation extends ValidationManager {
 	List<RequirementExistenceModel> modifiedModels = new ArrayList<RequirementExistenceModel>();
 		
 	public RequirementExistenceValidation(String aadm, boolean complete, KB kb, String ws, IRI context) {
+		super(kb);
 		this.aadmId = aadm;
 		this.complete = complete;
 		this.kb = kb;

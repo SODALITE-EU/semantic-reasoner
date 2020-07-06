@@ -134,15 +134,15 @@ public class KB {
 				connection.add(input, "", RDFFormat.RDFXML);
 				
 				input =
-						KB.class.getResourceAsStream("/ontologies/core/tosca-builtins.ttl");
+					KB.class.getResourceAsStream("/ontologies/core/tosca-builtins.ttl");
 					connection.add(input, "", RDFFormat.TURTLE);
 			
 				input =
-						KB.class.getResourceAsStream("/ontologies/core/sodalite-metamodel.ttl");
+					KB.class.getResourceAsStream("/ontologies/core/sodalite-metamodel.ttl");
 					connection.add(input, "", RDFFormat.TURTLE);
 					
 				input =
-							KB.class.getResourceAsStream("/ontologies/core/optimizations.ttl");
+					KB.class.getResourceAsStream("/ontologies/core/optimizations.ttl");
 						connection.add(input, "", RDFFormat.TURTLE);
 			} catch (IOException e) {
 				e.printStackTrace();

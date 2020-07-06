@@ -23,6 +23,10 @@ public class ValidationManager {
 		kb = new KB();
 		this.exchangeModel = model;
 	}
+	
+	public ValidationManager(KB kb) {
+		this.kb = kb;
+	}
 
 	public void shutDown() {
 		kb.shutDown();
