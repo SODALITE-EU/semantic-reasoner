@@ -27,13 +27,12 @@ and send requests to the reasoner http://localhost:8080/reasoner-api/v0.6/<servi
 ### Testing communication of reasoner with its dependent components
 A sample scenario for checking that reasoner communicates successfully with knowledge base (graph-db) and the bug predictor (tosca-smell)
 Send a GET request with no parameter:
+```
 http://<hostname>/reasoner-api/v0.6/testReasoner 
-
+```
+Cases:
 - Reasoner communicates successfully with its dependencies, a 200 code response will be returned.
-- Reasoner cannot communicate with the defect predictor, a response with bad request status code will be returned,
-and a message "error while trying to connect to defect-predictor".
-- Reasoner cannot communicate with the graph-db, a response with bad request status code will be returned,
-and a message "graphdb host is unknown: <graph-db url>".
+- Reasoner cannot communicate with the defect predictor or graph-db, a response with bad request status code will be returned.
 
  
 
