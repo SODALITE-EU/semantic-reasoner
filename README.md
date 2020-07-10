@@ -23,7 +23,19 @@ and send requests to the reasoner http://localhost:8080/reasoner-api/v0.6/<servi
 
 # REST APIs
 ## Semantic Reasoner
-A sample scenario for checking that reasoner communicates successfully with knowledge base (graph-db) and the bug predictor (tosca-smells)
+
+### Testing communication of reasoner with its dependent components
+A sample scenario for checking that reasoner communicates successfully with knowledge base (graph-db) and the bug predictor (tosca-smell)
+Send a GET request with no parameter:
+http://<hostname>/reasoner-api/v0.6/testReasoner 
+
+- Reasoner communicates successfully with its dependencies, a 200 code response will be returned.
+- Reasoner cannot communicate with the defect predictor, a response with bad request status code will be returned,
+and a message "error while trying to connect to defect-predictor".
+- Reasoner cannot communicate with the graph-db, a response with bad request status code will be returned,
+and a message "graphdb host is unknown: <graph-db url>".
+
+ 
 
 ### Save a resource model:
 ```
@@ -34,67 +46,7 @@ Send a POST request with two parameters as x-www-form-urlencoded to the above ur
 
 **rmTTL:**
 ```turtle
-# baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
-# imports: https://www.sodalite.eu/ontologies/exchange/
-@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
-@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-:
-  rdf:type owl:Ontology ;
-  owl:imports exchange: ;
-  owl:versionInfo "Created by the SODALITE IDE" ;
-.
-:RM_1
-  rdf:type exchange:RM ;
-  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
-.
-:Parameter_1
-  rdf:type exchange:Parameter ;
-  exchange:name "type" ;
-  exchange:value 'string' ;
-.
-:Parameter_2
-  rdf:type exchange:Parameter ;
-  exchange:name "required" ;
-  exchange:value 'true' ;
-.
-:Parameter_3
-  rdf:type exchange:Parameter ;
-  exchange:name "default" ;
-  exchange:value 'tcp' ;	  
-.
-:Parameter_4
-  rdf:type exchange:Parameter ;
-  exchange:name "constraints" ;
-  exchange:hasParameter :Parameter_5 ;
-.
-:Parameter_5
-  rdf:type exchange:Parameter ;
-  exchange:name "valid_values" ;
-  exchange:listValue "udp" ;
-  exchange:listValue "tcp" ;
-  exchange:listValue "icmp" ;
-.	
-:Property_1
-  rdf:type exchange:Property ;
-  exchange:name "protocol" ;
-  exchange:hasParameter :Parameter_1 ;
-  exchange:hasParameter :Parameter_2 ;
-  exchange:hasParameter :Parameter_3 ;
-  exchange:hasParameter :Parameter_4 ;
-.
-:DataType_1
-  rdf:type exchange:DataType ;
-  exchange:name "sodalite.types.OpenStack.SecurityRule" ;
-  exchange:derivesFrom "tosca.datatypes.Root" ;
-  exchange:properties :Property_1 ; 
-  exchange:properties :Property_2 ; 
-  exchange:properties :Property_3 ; 
-  exchange:properties :Property_4 ; 
-.
+RM MODEL HERE IN TURTLE FORMAT
 ```
 **rmURI:** <LEAVE IT EMPTY>
 
