@@ -31,8 +31,25 @@ Send a GET request with no parameter:
 http://<hostname>/reasoner-api/v0.6/testReasoner 
 ```
 Cases:
-- Reasoner communicates successfully with its dependencies, a 200 code response will be returned.
-- Reasoner cannot communicate with the defect predictor or graph-db, a response with bad request status code will be returned.
+- **Successful scenario**
+
+Reasoner communicates successfully with its dependencies, a 200 code response will be returned
+with plain/text message:
+>"Successfully connected to both defect predictor and graph-db"
+
+- **Wrong url set**
+
+Defect predictor or graph-db url has not been set.
+A 400 status response will be returned with plain/text message:
+>"no <defect predictor/graphdb> url set"
+- **Error in communication**
+
+Reasoner cannot communicate with the defect predictor or graph-db, a response with 400 status code will be returned:
+For defect predictor, the error plain/text message is:
+>"error while trying to connect to defect-predictor"
+
+For graph-db, the error plain/text message is:
+>"graphdb host is unknown: <graphdb url>"
 
  
 

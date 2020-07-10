@@ -34,6 +34,12 @@ public class TestReasonerService extends AbstractService {
 	@ApiOperation(
 			value = "Returns the result of the communication between reasoner and its dependent components")
 	public Response testReasoner() {
+		//Test defect predictor
+		String getenv = System.getenv("bugPredictorServer");
+		if (getenv == null) {
+			return Response.status(Status.BAD_REQUEST).entity("no defect predictor url set").build();
+		}
+		
 		try {
 			HttpClientRequest.bugPredictorApi("123");
 		} catch (ClientProtocolException e) {
@@ -44,24 +50,22 @@ public class TestReasonerService extends AbstractService {
 			return Response.status(Status.BAD_REQUEST).entity("error while trying to connect to defect-predictor").build();
 		}
 		
-		
-		String getenv = System.getenv("graphdb");
+		//test graphdb
+		getenv = System.getenv("graphdb");
 		String message = null;
-		System.out.println("getenv = " + getenv);
-		if (getenv != null) {
-			RepositoryManager _manager;
-			
-			_manager = new RemoteRepositoryManager(getenv);
-			try {
-				_manager.getAllRepositoryInfos();
-			} catch (Exception exception) {
-				message = "graphdb host is unknown: " + getenv;
-				return Response.status(Status.BAD_REQUEST).entity(message).build();
-	        }
-		} else {
+
+		if (getenv == null) {
 			return Response.status(Status.BAD_REQUEST).entity("no graphdb url set").build();
 		}
 		
+		RepositoryManager _manager;
+		_manager = new RemoteRepositoryManager(getenv);
+		try {
+			_manager.getAllRepositoryInfos();
+		} catch (Exception exception) {
+			message = "graphdb host is unknown: " + getenv;
+			return Response.status(Status.BAD_REQUEST).entity(message).build();
+		}
 		return Response.ok("Successfully connected to both defect predictor and graph-db").build();
 	}
 }
