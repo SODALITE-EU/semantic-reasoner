@@ -23,7 +23,7 @@ DUL:hasParameter
   owl:imports dc: ;
   owl:imports soda: ;
   owl:versionInfo "Created with TopBraid Composer" ;
-  dc:date "2020-03-18" ;
+  dc:date "2020-06-09" ;
   dc:creator "George Meditskos" ;
   dc:creator "Zoe Vasileiou" ;
   dc:title "TOSCA BUILTINS Ontology" .
@@ -1867,6 +1867,11 @@ DUL:hasParameter
   rdf:type owl:ObjectProperty ;
   rdfs:subPropertyOf soda:specification ;
 .
+:optimizations
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain :SodaliteDescription ;
+  rdfs:range :string ;
+.
 :os
   rdf:type rdf:Property ;
 .
@@ -1902,6 +1907,11 @@ DUL:hasParameter
 .
 :properties
   rdf:type owl:ObjectProperty ;
+  rdf:domain  [ rdf:type owl:Class ;
+                          owl:unionOf ( :SodaliteDescription
+                                        :Capability
+                                      )
+                        ] ;
   rdfs:range :Property ;
   rdfs:subPropertyOf soda:specification ;
 .

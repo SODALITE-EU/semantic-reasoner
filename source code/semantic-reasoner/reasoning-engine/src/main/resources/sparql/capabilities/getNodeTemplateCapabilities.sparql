@@ -1,4 +1,4 @@
-select ?resource ?capability ?framework
+select ?resource ?capability ?optimizations ?templateType
 where {
 		{
 			#capabilities of host nodes
@@ -6,18 +6,10 @@ where {
 		} UNION {	
 			#direct capabilities
 			?resource soda:hasContext/tosca:capabilities  ?capability .
-		} 
-		{
-			#requirements of host nodes
-			?resource (soda:hasContext/tosca:requirements/tosca:hasObjectValue)+/tosca:requirements  ?dependency.            
-		} UNION {
-			#direct requirements
-			?resource soda:hasContext/tosca:requirements  ?dependency .
-		}	 
-			
-		?dependency DUL:classifies tosca:dependency .
-		?dependency tosca:hasObjectValue ?framework .
-		FILTER(strends(str(?framework),?var_f1) || strends(str(?framework),?var_f2))
+		}
+		?resource soda:hasContext/tosca:optimization ?optimizations .
+		?resource sesame:directType ?templateType .
+		?templateType rdfs:subClassOf tosca:tosca.entity.Root .
 				
 		?aadm soda:includesTemplate ?resource .
 		FILTER (contains(str(?aadm), ?var_aadm_id)).

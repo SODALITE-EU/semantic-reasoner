@@ -26,9 +26,9 @@ import restapi.utils.HttpClientRequest;
 @Path("/testReasoner")
 @Api()
 public class TestReasonerService extends AbstractService {
-	
-	
-	
+
+
+
 	@GET
 	@Produces("text/plain")
 	@ApiOperation(

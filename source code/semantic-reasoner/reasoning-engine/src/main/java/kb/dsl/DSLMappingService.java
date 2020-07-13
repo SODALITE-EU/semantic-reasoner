@@ -214,6 +214,14 @@ public class DSLMappingService {
 						capabilityClassifierKB);
 			
 			}
+			
+			// optimizations
+			Optional<String> _optimizations = Models.getPropertyString(aadmModel, _template,
+					factory.createIRI(KB.EXCHANGE + "optimization"));
+
+			if (_optimizations.isPresent())
+				builder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "optimization"),
+					_optimizations.get());
 			// misc
 
 		}

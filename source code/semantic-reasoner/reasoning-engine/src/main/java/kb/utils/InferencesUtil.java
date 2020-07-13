@@ -13,7 +13,7 @@ public class InferencesUtil {
 	* e.g. tosca.nodes.Compute, sodalite.nodes.OpenStack.VM node types. 
 	* sodalite.nodes.OpenStack.VM should be returned. 
 	*/
-	public static IRI getLowestSubclass(KB kb,Set<IRI> classes) {
+	public static IRI getLowestSubclass(KB kb, Set<IRI> classes) {
 		
 		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
 						"ASK {?var_class1 rdfs:subclassOf ?var_class2" + "}";
@@ -35,6 +35,21 @@ public class InferencesUtil {
 			}
 		}
 		return lowestClass;
+	}
+	
+	/* Given a class, and a set of classes, it returns if the class is subclass of any of the classes of the list. */ 
+	public static boolean checkSubclassList(KB kb, IRI subclass, Set<String> classes) {
+		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
+				"ASK {?var_subclass rdfs:subclassOf ?superclass ." + 
+				"FILTER (strends(str(?superclass), ?var_superclass)) ." + 
+				"}";
+		for  (String superclass : classes) {
+			boolean	result = QueryUtil.evaluateAskQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_subclass", subclass),
+								new SimpleBinding("var_superclass", kb.getFactory().createLiteral(superclass))});
+			if (result)
+				return true;
+		}
+		return false;
 	}
 
 }

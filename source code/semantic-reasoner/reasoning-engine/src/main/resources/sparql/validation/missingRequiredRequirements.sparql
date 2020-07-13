@@ -1,7 +1,7 @@
 select ?template  ?v  ?r_a ?r_i
 where {
 	?aadm soda:includesTemplate ?template .
-    FILTER (contains(str(?aadm), ?aadmId)) .
+	FILTER (contains(str(?aadm), ?aadmId)) .
     
 	?template a soda:SodaliteSituation ;
             sesame:directType ?templateType .

@@ -2,12 +2,17 @@ package kb;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
 import java.util.Set;
 
+
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
@@ -17,6 +22,9 @@ import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 
 import com.google.common.base.Strings;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import kb.dto.AADM;
 import kb.dto.Attribute;
@@ -30,15 +38,19 @@ import kb.dto.Parameter;
 import kb.dto.Property;
 import kb.dto.Requirement;
 import kb.dto.TemplateOptimization;
+import kb.optimization.exceptions.OptimizationException;
+import kb.optimization.exceptions.models.ApplicationTypeModel;
+import kb.optimization.exceptions.models.OptimizationMismatchModel;
+import kb.optimization.exceptions.models.OptimizationModel;
 import kb.repository.KB;
 import kb.utils.InferencesUtil;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 
+
 public class KBApi {
 
 	public KB kb;
-	static final String[] FRAMEWORKS = {"tensorflow", "solver"};
 
 	public KBApi() {
 		String getenv = System.getenv("graphdb");
@@ -495,39 +507,72 @@ public class KBApi {
 		return operations;
 
 	}
-
-	public Set<TemplateOptimization> getOptimizations(String aadmId) throws IOException {
+	
+	public Set<TemplateOptimization> getOptimizations(String aadmId) throws IOException, OptimizationException {
 		System.out.println("getOptimizations aadmid = " + aadmId);
 		Set<TemplateOptimization> templateOptimizations = new HashSet<>();
 		HashMap<IRI, Set<String>> resourceOptimizations = new HashMap<IRI, Set<String>>();
+		HashMap<IRI, String>  resourceOptimizationJson = new HashMap<IRI, String>();//templates -  optimization json pairs
+		
+		ApplicationTypeModel a = null;
+		List<OptimizationModel> errorModels = new ArrayList<>();
+		String optimization_json = null;
 		
 		//List<String> capabilityList = Arrays.asList("ngpu", "ncpu", "memsize", "disksize", "arch");
 		List<String> capabilityList = Arrays.asList("ngpu", "memsize", "arch");
+		
+		//Initialize app type compatible node types - In the future, there will be many node types, we should find ANOTHER SOLUTION
+		HashMap<String, Set<String>> appTypes = new HashMap<String, Set<String>>();
+		appTypes.put("hpc", new HashSet<String>(){{
+		    add("my.nodes.hpc.wm.torque");
+		    add("my.nodes.hpc.job.torque");
+		}});
+		appTypes.put("ai_training", new HashSet<String>(){{
+		    add("sodalite.nodes.OpenStack.VM");
+		    add("sodalite.nodes.DockerizedComponent");
+		    add("sodalite.nodes.DockerHost");
+		}});
 		
 		String sparql_r = MyUtils
 				.fileToString("sparql/capabilities/getNodeTemplateCapabilities.sparql");
 		String query_r = KB.PREFIXES + sparql_r;
 		
-		SimpleBinding bindings[] = new SimpleBinding [FRAMEWORKS.length + 1];
-		bindings[0] = new SimpleBinding("var_aadm_id", kb.getFactory().createLiteral(aadmId));
-		int j = 1; 
-		for (String f : FRAMEWORKS) {
-			 bindings[j] = new SimpleBinding("var_f" + j++, kb.getFactory().createLiteral(f));
-		}
-		
-		//Check which resources have capabilities about which framework
-		TupleQueryResult result_r = QueryUtil.evaluateSelectQuery(kb.getConnection(), query_r,
-					bindings);
+		//Check which resources have capabilities
+		TupleQueryResult result_r = QueryUtil.evaluateSelectQuery(kb.getConnection(), query_r, new SimpleBinding("var_aadm_id", kb.getFactory().createLiteral(aadmId)));
 		
 		while (result_r.hasNext()) {
 			BindingSet bindingSet_r = result_r.next();
 			IRI r = (IRI) bindingSet_r.getBinding("resource").getValue();
-			String framework = MyUtils.getStringValue(bindingSet_r.getBinding("framework").getValue());
+			optimization_json = MyUtils.getStringValue(bindingSet_r.getBinding("optimizations").getValue());
 			IRI  capability_iri =  (IRI) bindingSet_r.getBinding("capability").getValue();
+			IRI nodeType_iri = (IRI) bindingSet_r.getBinding("templateType").getValue();
+			String  nodeType = MyUtils.getStringValue(nodeType_iri);
 			
-			System.out.println("Querying for resource =" + r.toString() + ", framework = " + framework + ", capability = " + capability_iri.toString());
+			resourceOptimizationJson.put(r, optimization_json);
+			
+			System.out.println("Querying for resource =" + r.toString() + ", optimizations = " + optimization_json + ", capability = " + capability_iri.toString());
+			JsonObject jsonObject = JsonParser.parseString(optimization_json).getAsJsonObject();
+			String app_type = jsonObject.getAsJsonObject("optimization").get("app_type").getAsString();
+			String ai_framework = null;
+			if	(app_type.equals("ai_training"))
+				ai_framework = jsonObject.getAsJsonObject("optimization").getAsJsonObject("app_type-" + app_type).getAsJsonObject("config").get("ai_framework").getAsString();
+			System.out.println("app_type = " + app_type + ", ai_framework=" + ai_framework);
+			
+			//Check app type
+			if(!appTypes.containsKey(app_type)) {
+				errorModels.add(new ApplicationTypeModel(app_type, r));
+			} else {
+				//Check if the derived node type is compatible with the app type in optimization json
+				if(!appTypes.get(app_type).contains(nodeType)) {
+					InferencesUtil.checkSubclassList(kb, nodeType_iri, appTypes.get(app_type));
+					errorModels.add(new ApplicationTypeModel(app_type, r, nodeType_iri));
+				}
+			}
+			if (!errorModels.isEmpty()) {
+				throw new OptimizationException(errorModels);
+			}
+			
 			for (String capability : capabilityList) {
-				
 				String sparql = MyUtils
 								.fileToString("sparql/capabilities/getNodeTemplate_"+ capability +".sparql");
 				String query = KB.PREFIXES + sparql;
@@ -536,11 +581,13 @@ public class KBApi {
 								new SimpleBinding("capability", kb.getFactory().createIRI(capability_iri.toString())));
 				while (result.hasNext()) {
 					BindingSet bindingSet = result.next();
-					Set<String> optimizations;
+					Set<String> optimizations=null;
 					String capability_value = bindingSet.hasBinding(capability) ? MyUtils.getStringValue(bindingSet.getBinding(capability).getValue()) : null;
 					if (capability_value != null) {
 						System.out.println("Querying for capability = " + capability +", capability value = " + capability_value);
-						optimizations = _getOptimizations(capability, capability_value, framework);
+						String opt_element = (ai_framework != null) ? ai_framework : app_type;
+						optimizations = _getOptimizations(capability, capability_value, opt_element);
+						
 						if (optimizations != null) {
 							if (resourceOptimizations.get(r)!= null) {
 								resourceOptimizations.get(r).addAll(optimizations);
@@ -552,38 +599,95 @@ public class KBApi {
 				}
 				result.close();
 			}
-			
 		}
 		result_r.close();
 		
 		System.out.println("\nOptimizations: ");
 		resourceOptimizations.forEach((r,o)->{
 			System.out.println("Resource : " + r + " Optimizations : " + o);
-			TemplateOptimization to = new TemplateOptimization(r,o);
-			templateOptimizations.add(to);
+			HashMap<String,String> targetValue = new HashMap <String,String>();
+			//Validation of the returned optimizations compared with the given optimization json in the aadm
+			for (String opt: o) {
+				JsonObject jo = JsonParser.parseString(opt).getAsJsonObject();
+				//e.g. {"path":{ "app_type-ai_training": {"ai_framework-tensorflow":{}}}, "jsonelement": xla, "value": true}
+				String path = jo.getAsJsonObject("path").toString();//the path where the optimization will be added
+				String jsonelement = jo.getAsJsonPrimitive("jsonelement").getAsString();//the key(e.g. xla) to which "value" will be added
+				String expectedValue = null;//the value that will be added
+				//e.g. "true" is json primitive for jsonelement "xla"
+				if (jo.getAsJsonObject().get("value").isJsonPrimitive())
+					expectedValue =	jo.getAsJsonPrimitive("value").toString();
+				else
+					//e.g. { "prefetch": 100, "cache": 100 } is jsonobject for jsonelement "etl" 
+					expectedValue =	jo.getAsJsonObject("value").toString();
+				
+				JsonObject targetJson = new JsonObject();
+				try {
+					List userOptValue = MyUtils.getValueFromJson(resourceOptimizationJson.get(r), jsonelement.replace("\"", ""));
+					if (!userOptValue.isEmpty()) {
+						
+						String user_opt_value = userOptValue.get(0).toString();
+						if (BooleanUtils.toBooleanObject(user_opt_value) != null) {
+							if (!userOptValue.contains(expectedValue)) {
+								targetJson.add(jsonelement, JsonParser.parseString(expectedValue).getAsJsonPrimitive());
+								//e.g. if given xla: false, but ngpus > 0, then xla: true, exception is thrown 
+								errorModels.add(new OptimizationMismatchModel(r, path, targetJson.toString(), user_opt_value, expectedValue));
+							} else //the expected optimization is already included in the opt json. Do not include it
+								continue;
+						}
+						else {
+							if (!MyUtils.equals(user_opt_value, expectedValue.replace("\"", ""))) {
+								targetJson.add(jsonelement, JsonParser.parseString(expectedValue).getAsJsonObject());
+								//e.g. if given xla: false, but ngpus > 0, then xla: true, exception is thrown 
+								errorModels.add(new OptimizationMismatchModel(r, path, targetJson.toString(), user_opt_value, expectedValue
+));
+							} else //the expected optimization is already included in the opt json. Do not include it
+								continue;
+						}
+					} else {
+						if (BooleanUtils.toBooleanObject(expectedValue) != null) {
+							targetJson.add(jsonelement, JsonParser.parseString(expectedValue).getAsJsonPrimitive());
+						} else {
+							targetJson.add(jsonelement, JsonParser.parseString(expectedValue).getAsJsonObject());
+						}
+						
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				if (targetJson.entrySet().size() != 0)
+					targetValue.put(path, targetJson.toString());
+			}
+			if(!targetValue.isEmpty()) {
+				TemplateOptimization to = new TemplateOptimization(r,targetValue);
+				templateOptimizations.add(to);
+			}
 		});
+		
+		if (!errorModels.isEmpty())
+				throw new OptimizationException(errorModels);
 		
 		return templateOptimizations;
 	}
 	
-	
 	// This function is reasoning over optimization ontology for returning the applicable
-	// optimizations according to the framework and capabilities
-	private Set<String> _getOptimizations (String capability, String capability_value, String framework) throws IOException {
+	// optimizations according to the app_type/framework and capabilities
+	private Set<String> _getOptimizations (String capability, String capability_value, String opt_concept) throws IOException {
 		String sparql = MyUtils
 				.fileToString("sparql/optimization/getFrameworkOptimizations_" + capability + ".sparql");
 		String query = KB.OPT_PREFIXES + sparql;
 		
 		if (Arrays.asList("memsize", "disksize").contains(capability))
 			capability_value = MyUtils.getStringPattern(capability_value, "([0-9]+).*");
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_1", kb.getFactory().createLiteral(framework)),
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_1", kb.getFactory().createLiteral(opt_concept)),
 						new SimpleBinding("var_2", kb.getFactory().createLiteral(capability_value))});
 				
 		Set <String> optimizations= new HashSet<String>();
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			String _opt = MyUtils.getStringValue(bindingSet.getBinding("optimization").getValue());
-			optimizations.add(_opt.toString().replace("\"", ""));
+			optimizations.add(_opt.toString());
 		}
 		result.close();
 		return optimizations.isEmpty() ? null : optimizations;

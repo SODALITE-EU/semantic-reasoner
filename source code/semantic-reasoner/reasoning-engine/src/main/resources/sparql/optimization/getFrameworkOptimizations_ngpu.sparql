@@ -1,8 +1,8 @@
-select ?optimization
+select distinct ?optimization
 where {
-    ?framework rdf:type opt:Framework 
-	FILTER (strends(lcase(str(?framework)), ?var_1))
-	?framework opt:hasCapability ?g .
+    ?concept rdf:type opt:OptimConcept 
+	FILTER (strends(lcase(str(?concept)), ?var_1))
+	?concept opt:hasCapability ?g .
 	?g rdf:type opt:GPU .
 	?g opt:hasValue_greater_or_equal ?num_gpus .
 	FILTER ((xsd:integer(?var_2)) >= ?num_gpus)

@@ -1,0 +1,47 @@
+package kb.optimization.exceptions.models;
+
+import org.eclipse.rdf4j.model.IRI;
+import org.json.simple.JSONObject;
+
+import kb.utils.MyUtils;
+
+public class ApplicationTypeModel  extends OptimizationModel {
+
+	String appType;
+	IRI template;
+	IRI templateType;
+	
+	public ApplicationTypeModel(String appType, IRI template) {
+		this.appType = appType;
+		this.template = template;
+	}
+	
+	public ApplicationTypeModel(String appType, IRI template, IRI templateType) {
+		this.appType = appType;
+		this.template = template;
+		this.templateType = templateType;
+	}
+	
+	@Override
+	public JSONObject toJson() {
+		// TODO Auto-generated method stub
+		JSONObject t = new JSONObject();
+		String description = null;
+
+		if (templateType != null)
+			description = String.format("%s template of type %s is not an %s application", MyUtils.getStringValue(template), templateType, appType);
+		else
+			description = String.format("%s application type is not valid", appType);
+				
+		JSONObject json = new JSONObject();
+		json.put("type", "Optimization");
+
+		JSONObject info = new JSONObject();
+		info.put("description", description);
+		info.put("context", template);
+
+		json.put("info", info);
+		return t;
+	}
+	
+}

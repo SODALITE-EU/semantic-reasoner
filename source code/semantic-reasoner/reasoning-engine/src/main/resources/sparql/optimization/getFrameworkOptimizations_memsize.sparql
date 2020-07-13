@@ -1,3 +1,4 @@
+#THIS SHOULD CHANGE - IT IS NOT VALID ANYMORE
 select ?optimization
 where { 
     ?ms opt:hasOptimization ?optimization .
