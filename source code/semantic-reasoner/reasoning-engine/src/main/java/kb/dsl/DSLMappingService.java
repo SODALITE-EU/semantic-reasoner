@@ -572,7 +572,11 @@ public class DSLMappingService {
 		result.close();
 		return x;
 	}
-
+	
+	public IRI getContext() {
+		return this.context;
+	}
+	
 	public List<ValidationModel> getModifiedModels() {
 		return modifiedModels;
 	}
