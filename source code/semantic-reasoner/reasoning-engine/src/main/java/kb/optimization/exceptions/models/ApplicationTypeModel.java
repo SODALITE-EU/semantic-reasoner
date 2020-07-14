@@ -33,14 +33,13 @@ public class ApplicationTypeModel  extends OptimizationModel {
 		else
 			description = String.format("%s application type is not valid", appType);
 				
-		JSONObject json = new JSONObject();
-		json.put("type", "Optimization");
+		t.put("type", "Optimization");
 
 		JSONObject info = new JSONObject();
 		info.put("description", description);
-		info.put("context", template);
+		info.put("context", template.toString());
 
-		json.put("info", info);
+		t.put("info", info);
 		return t;
 	}
 	
