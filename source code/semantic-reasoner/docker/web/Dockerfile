@@ -1,4 +1,5 @@
-FROM tomcat:8.0.51-jre8-alpine
+#FROM tomcat:8.0.51-jre8-alpine
+FROM tomcat:jdk14-openjdk-slim-buster
 
 COPY ./reasoner-api/target/reasoner-api.war /usr/local/tomcat/webapps/reasoner-api.war
 EXPOSE 8080
