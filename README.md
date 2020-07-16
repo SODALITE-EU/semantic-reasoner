@@ -70,7 +70,7 @@ For the sake of this testing, leave rmURI empty.
 When rmURI is empty, a new resource model is created. Otherwise, the resource model with rmURI is overriden.
 If success, you 'll get an rmURI as response.
 
-**Successfull Response**
+**Successful Response**
 ```
 {
     "rmuri": "https://www.sodalite.eu/ontologies/workspace/1/q03i5hhp8oac5ogftbmgr7ra4v/RM_nom7pmrlja496e5kkb026ub7d8"
