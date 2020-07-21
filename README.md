@@ -8,6 +8,15 @@ The repository contains the Maven modules for the Semantic Reasoner component of
     1. `reasoner-api`: The reasoner's REST API (war)
     2. `reasoning-engine`: The reasoning infrastructure and application API (jar)
 
+## Prerequisites
+This module depends on:
+
+- The SODALITE sub-project “defect-prediction”. Thus, first built it
+The information about building semantic reasoner can be found at
+ ` https://github.com/SODALITE-EU/defect-prediction `
+- The graph-db which can be downloaded from [here](http://graphdb.ontotext.com/documentation/free/index.html). 
+After started, you can access it here http://localhost:7200/. 
+ 
 ## Installation (Maven)
 
 - cd to `semantic-reasoner` folder
@@ -20,6 +29,9 @@ Run
 
 You can access the graph database [here](http://localhost:7200/)
 and send requests to the reasoner http://localhost:8080/reasoner-api/v0.6/<service_name>
+
+  Prerequisite:
+ - Docker engine 19.03 or newer
 
 # REST APIs
 ## Semantic Reasoner
