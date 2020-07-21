@@ -11,8 +11,8 @@ The repository contains the Maven modules for the Semantic Reasoner component of
 ## Prerequisites
 This module depends on:
 
-- The SODALITE sub-project “defect-prediction”. Thus, first built it
-The information about building semantic reasoner can be found at
+- The SODALITE sub-project “defect-prediction”. Thus, first built it.
+The information about building defect predictor can be found at
  ` https://github.com/SODALITE-EU/defect-prediction `
 - The graph-db which can be downloaded from [here](http://graphdb.ontotext.com/documentation/free/index.html). 
 After started, you can access it here http://localhost:7200/. 
