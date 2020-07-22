@@ -3,8 +3,6 @@ package restapi;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -23,23 +21,19 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
-import kb.dto.TemplateOptimization;
-import kb.optimization.exceptions.OptimizationException;
-import kb.optimization.exceptions.models.OptimizationModel;
+
 import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
 import restapi.utils.HttpClientRequest;
+
 
 /** A service that submits the abstract application deployment model to the Knowledge Base and
  * returns applicable optimizations according to the capabilities.
@@ -102,19 +96,6 @@ public class OptimizationService extends AbstractService {
 			JSONObject errors = new JSONObject();
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
-		} catch (OptimizationException e) {
-			kb.connection.clear(m.getContext());
-			List<OptimizationModel> opts = e.optimizationModels;
-			JSONObject o = new JSONObject();
-			JSONObject errors = new JSONObject();
-			JSONArray array = new JSONArray();
-			for (OptimizationModel opt : opts) {
-				array.add(opt.toJson());
-			}
-			o.put("templates_optimizations",array);
-			errors.put("errors", o);
-			
-			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -125,15 +106,15 @@ public class OptimizationService extends AbstractService {
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}
 	
-	public void getOptimizations(JSONObject response, String aadmId) throws ClientProtocolException, IOException, ParseException, OptimizationException {	
+	public void getOptimizations(JSONObject response, String aadmId) throws ClientProtocolException, IOException, ParseException, ValidationException {	
 		KBApi api = new KBApi();
-		Set<TemplateOptimization> optimizations = api.getOptimizations(aadmId);
+		Set<ValidationModel> optimizations = api.getOptimizations(aadmId);
 		api.shutDown();
 		
 		JSONObject _optimizations = new JSONObject();
 		JSONArray array = new JSONArray();
-		for (TemplateOptimization optimization : optimizations) {
-			array.add(optimization.serialise());
+		for (ValidationModel optimization : optimizations) {
+			array.add(optimization.toJson());
 		}
 		if (!optimizations.isEmpty())
 			response.put("templates_optimizations", array);

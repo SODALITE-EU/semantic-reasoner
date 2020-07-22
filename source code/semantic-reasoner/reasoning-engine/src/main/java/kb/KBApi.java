@@ -37,16 +37,17 @@ import kb.dto.Operation;
 import kb.dto.Parameter;
 import kb.dto.Property;
 import kb.dto.Requirement;
-import kb.dto.TemplateOptimization;
-import kb.optimization.exceptions.OptimizationException;
-import kb.optimization.exceptions.models.ApplicationTypeModel;
-import kb.optimization.exceptions.models.OptimizationMismatchModel;
-import kb.optimization.exceptions.models.OptimizationModel;
+
 import kb.repository.KB;
 import kb.utils.InferencesUtil;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 
+import kb.validation.exceptions.ValidationException;
+import kb.validation.exceptions.models.ValidationModel;
+import kb.validation.exceptions.models.optimization.ApplicationTypeModel;
+import kb.validation.exceptions.models.optimization.OptimizationMismatchModel;
+import kb.validation.exceptions.models.optimization.OptimizationModel;
 
 public class KBApi {
 
@@ -440,7 +441,7 @@ public class KBApi {
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("var", classifier));
-
+		
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			IRI _classifier = (IRI) bindingSet.getBinding("classifier").getValue();
@@ -456,7 +457,7 @@ public class KBApi {
 			parameters.add(p);
 		}
 		result.close();
-
+		
 		for (Parameter parameter : parameters) {
 			parameter.setParameters(getParameters(parameter.getClassifiedBy()));
 		}
@@ -508,14 +509,14 @@ public class KBApi {
 
 	}
 	
-	public Set<TemplateOptimization> getOptimizations(String aadmId) throws IOException, OptimizationException {
+	public Set<ValidationModel> getOptimizations(String aadmId) throws IOException, ValidationException {
 		System.out.println("getOptimizations aadmid = " + aadmId);
-		Set<TemplateOptimization> templateOptimizations = new HashSet<>();
+		Set<ValidationModel> templateOptimizations = new HashSet<>();
 		HashMap<IRI, Set<String>> resourceOptimizations = new HashMap<IRI, Set<String>>();
 		HashMap<IRI, String>  resourceOptimizationJson = new HashMap<IRI, String>();//templates -  optimization json pairs
 		
 		ApplicationTypeModel a = null;
-		List<OptimizationModel> errorModels = new ArrayList<>();
+		List<ValidationModel> errorModels = new ArrayList<>();
 		String optimization_json = null;
 		
 		//List<String> capabilityList = Arrays.asList("ngpu", "ncpu", "memsize", "disksize", "arch");
@@ -556,7 +557,7 @@ public class KBApi {
 			String ai_framework = null;
 			if	(app_type.equals("ai_training"))
 				ai_framework = jsonObject.getAsJsonObject("optimization").getAsJsonObject("app_type-" + app_type).getAsJsonObject("config").get("ai_framework").getAsString();
-			System.out.println("app_type = " + app_type + ", ai_framework=" + ai_framework);
+			System.out.println("app_type= " + app_type + ", ai_framework=" + ai_framework);
 			
 			//Check app type
 			if(!appTypes.containsKey(app_type)) {
@@ -569,7 +570,7 @@ public class KBApi {
 				}
 			}
 			if (!errorModels.isEmpty()) {
-				throw new OptimizationException(errorModels);
+				throw new ValidationException(errorModels);
 			}
 			
 			for (String capability : capabilityList) {
@@ -626,11 +627,12 @@ public class KBApi {
 					if (!userOptValue.isEmpty()) {
 						
 						String user_opt_value = userOptValue.get(0).toString();
+						System.out.println("Resource = " + r.toString() + " has user optimization " + jsonelement + ":" + user_opt_value);
 						if (BooleanUtils.toBooleanObject(user_opt_value) != null) {
 							if (!userOptValue.contains(expectedValue)) {
 								targetJson.add(jsonelement, JsonParser.parseString(expectedValue).getAsJsonPrimitive());
 								//e.g. if given xla: false, but ngpus > 0, then xla: true, exception is thrown 
-								errorModels.add(new OptimizationMismatchModel(r, path, targetJson.toString(), user_opt_value, expectedValue));
+								templateOptimizations.add(new OptimizationMismatchModel(r, path, targetJson.toString(), user_opt_value, expectedValue));
 							} else //the expected optimization is already included in the opt json. Do not include it
 								continue;
 						}
@@ -638,7 +640,7 @@ public class KBApi {
 							if (!MyUtils.equals(user_opt_value, expectedValue.replace("\"", ""))) {
 								targetJson.add(jsonelement, JsonParser.parseString(expectedValue).getAsJsonObject());
 								//e.g. if given xla: false, but ngpus > 0, then xla: true, exception is thrown 
-								errorModels.add(new OptimizationMismatchModel(r, path, targetJson.toString(), user_opt_value, expectedValue
+								templateOptimizations.add(new OptimizationMismatchModel(r, path, targetJson.toString(), user_opt_value, expectedValue
 ));
 							} else //the expected optimization is already included in the opt json. Do not include it
 								continue;
@@ -649,24 +651,20 @@ public class KBApi {
 						} else {
 							targetJson.add(jsonelement, JsonParser.parseString(expectedValue).getAsJsonObject());
 						}
-						
-					}
+						targetValue.put(path, targetJson.toString());
+					}			
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				
-				if (targetJson.entrySet().size() != 0)
-					targetValue.put(path, targetJson.toString());
+				
 			}
 			if(!targetValue.isEmpty()) {
-				TemplateOptimization to = new TemplateOptimization(r,targetValue);
+				OptimizationModel to = new OptimizationModel(r,targetValue);
 				templateOptimizations.add(to);
 			}
 		});
-		
-		if (!errorModels.isEmpty())
-				throw new OptimizationException(errorModels);
 		
 		return templateOptimizations;
 	}

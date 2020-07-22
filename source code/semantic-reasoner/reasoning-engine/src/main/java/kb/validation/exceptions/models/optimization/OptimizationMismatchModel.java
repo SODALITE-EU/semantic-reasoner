@@ -1,11 +1,13 @@
-package kb.optimization.exceptions.models;
+package kb.validation.exceptions.models.optimization;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.json.simple.JSONObject;
 
+import kb.validation.exceptions.models.ValidationModel;
+
 import kb.utils.MyUtils;
 
-public class OptimizationMismatchModel extends OptimizationModel {
+public class OptimizationMismatchModel extends ValidationModel {
 
 	IRI template;
 	String path;

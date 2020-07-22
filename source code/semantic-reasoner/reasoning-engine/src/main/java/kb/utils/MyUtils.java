@@ -77,7 +77,7 @@ public class MyUtils {
 		Object json = new Gson().fromJson(jsonString, Object.class);
 		List values = new ArrayList();
 		collectAllTheKeys(values, json, attr);
-		System.out.println("values = " + values);
+
 		return values;
 	}
 
