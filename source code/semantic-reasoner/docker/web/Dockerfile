@@ -1,11 +1,10 @@
-#FROM tomcat:8.0.51-jre8-alpine
-#FROM tomcat:jdk14-openjdk-slim-buster
 FROM tomcat:7.0.103-jdk8-corretto
 
 COPY ./reasoner-api/target/reasoner-api.war /usr/local/tomcat/webapps/reasoner-api.war
 EXPOSE 8080
-ENV graphdb http://graph-db:7200
-ENV bugPredictorServer  http://tosca-smell:8080/
+ENV environment docker
+
+RUN mkdir -p /usr/local/tomcat/webapps/Ansibles
 
 # Add docker-compose-wait tool -------------------
 ENV WAIT_VERSION 2.7.3

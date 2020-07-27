@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,11 +72,11 @@ public class MyUtils {
 		return new BigInteger(130, new SecureRandom()).toString(32);
 	}
 	
+	//Get the value from attr attribute of json jsonString
 	public static List getValueFromJson(String jsonString, String attr) throws Exception {
 		Object json = new Gson().fromJson(jsonString, Object.class);
 		List values = new ArrayList();
 		collectAllTheKeys(values, json, attr);
-
 		return values;
 	}
 
@@ -104,7 +103,7 @@ public class MyUtils {
 		}
 	}
 	
-	
+	//Returns if two json objects have same values
 	public static boolean equals(String s1, String s2) {
 		Gson g = new Gson();
 		Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
@@ -113,5 +112,11 @@ public class MyUtils {
 		MapDifference<String, Object> diff =  Maps.difference(firstMap, secondMap);
 		return diff.areEqual();
     }
+	
+	//Extract the namespace from a sodalite iri
+	public static String getNamespaceFromIRI(String iri) {
+		return getStringPattern(iri, "(.*\\/)[a-zA-Z0-9_]+");
+		
+	}
 
 }

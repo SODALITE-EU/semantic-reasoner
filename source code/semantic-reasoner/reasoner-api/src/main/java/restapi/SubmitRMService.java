@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiParam;
 import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;
 import kb.repository.KB;
+import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
@@ -36,6 +37,11 @@ import restapi.utils.HttpClientRequest;
 @Path("/saveRM")
 @Api()
 public class SubmitRMService extends AbstractService  {
+	static ConfigsLoader configInstance;
+	static {
+		configInstance = ConfigsLoader.getInstance();
+		configInstance.loadProperties();
+	}
 	/**
 	 * Storing the submitted RM in the KB and assigning a unique id.
 	 * @param  rmTTL The RM in turtle format
@@ -55,13 +61,7 @@ public class SubmitRMService extends AbstractService  {
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("rmURI") String rmURI)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException {
 		
-		KB kb;
-		String getenv = System.getenv("graphdb");
-		if (getenv != null)
-			kb = new KB(getenv, "TOSCA");
-		else
-			kb = new KB();
-		
+		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
 		DSLRMMappingService m = new DSLRMMappingService(kb, rmTTL, rmURI);
 		IRI rmUri = null;
@@ -72,7 +72,10 @@ public class SubmitRMService extends AbstractService  {
 				rmUri = m.start();
 				String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(RM_.*).*");
 				m.save();
-				HttpClientRequest.getWarnings(response, rmid);
+				if(!HttpClientRequest.getWarnings(response, rmid)) {
+					kb.connection.clear(m.getContext());
+					return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
+				}
 			} catch (MappingException e) {
 				e.printStackTrace();
 			} catch (ValidationException e) {	

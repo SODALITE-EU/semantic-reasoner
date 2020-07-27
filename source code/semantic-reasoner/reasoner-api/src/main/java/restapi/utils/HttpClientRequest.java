@@ -16,31 +16,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import kb.repository.KB;
+import kb.utils.ConfigsLoader;
+
 public final class HttpClientRequest {
 	
-	public static String bugPredictorServer;
-	public static String repositoryServer;
-	
-	public static String BUG_PREDICTOR_SERVER = "http://localhost:8084/";
 	public static String BUG_PREDICTOR_SERVICE = "bug-predictor-api/v0.1/bugs/tosca/jsonv2";
 
-	public static String REPOSITORY_SERVER_URL = "http://localhost:7200";
-	public static String REPOSITORY = "TOSCA";
-	
-	
-	static {
-		String getenv = System.getenv("bugPredictorServer");
-		if (getenv != null)
-			bugPredictorServer = getenv;
-		else
-			bugPredictorServer = BUG_PREDICTOR_SERVER;
-		
-		getenv = System.getenv("graphdb");
-		if (getenv != null)
-			repositoryServer = getenv;
-		else
-			repositoryServer = REPOSITORY_SERVER_URL;
-	}
 	
 	private HttpClientRequest() { 
 		throw new UnsupportedOperationException();
@@ -55,16 +37,21 @@ public final class HttpClientRequest {
 	 * @throws ClientProtocolException Signals an error in the HTTP protocol.
 	 * @throws ParseException Signals that an error has been reached unexpectedly while parsing
 	 */
-	public static void getWarnings(JSONObject response, String submissionId) throws ClientProtocolException, IOException, ParseException {
+	public static boolean getWarnings(JSONObject response, String submissionId) throws ClientProtocolException, IOException, ParseException {
 		String warnings = bugPredictorApi(submissionId);
+		if (warnings.equals("Unreachable"))
+			return false;
+				
 		JSONParser parser = new JSONParser();
 		JSONArray warningsJson = (JSONArray)((JSONObject) parser.parse(warnings)).get("warnings");
 		if (!warningsJson.isEmpty())
 			response.put("warnings",warningsJson);
+		return true;
 	}
 
 	public static String bugPredictorApi(String aadmId) throws ClientProtocolException, IOException {
-		String bugPredictorEndpoint = bugPredictorServer + BUG_PREDICTOR_SERVICE;
+		ConfigsLoader configLoader = ConfigsLoader.getInstance();
+		String bugPredictorEndpoint = configLoader.getBugPredictorServer() + BUG_PREDICTOR_SERVICE;
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(bugPredictorEndpoint);
@@ -72,7 +59,8 @@ public final class HttpClientRequest {
 		httpPost.setHeader("Accept", "application/json");
 		httpPost.setHeader("Content-type", "application/json");
 
-		String jsonInputString = "{\"server\": \"" + repositoryServer + "\","+ "\"repository\":\""+ REPOSITORY + "\","+ "\"aadmid\":\""+ aadmId + "\"}";
+		String jsonInputString = "{\"server\": \"" + configLoader.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"aadmid\":\""+ aadmId + "\"}";
+		System.out.println("jsonInputString = " + jsonInputString);
 		
 		StringEntity stringEntity = new StringEntity(jsonInputString);
 		httpPost.setEntity(stringEntity);
@@ -94,8 +82,9 @@ public final class HttpClientRequest {
 			}
 			return responseResult.toString();
 		} catch(HttpHostConnectException e) {
-			System.err.println("Bug Predictor service unreachable at " + bugPredictorEndpoint);
-			return "";
+			e.printStackTrace();
+			System.err.println("Bug Predictor service at " + bugPredictorEndpoint + "returned an HttpHostConnectException" );
+			return "Unreachable";
 		}		 
 
 	}

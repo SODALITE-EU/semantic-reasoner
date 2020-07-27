@@ -48,6 +48,14 @@ public abstract class Resource {
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
+	
+	public String getLabel() {
+		return label;
+	}
+
+	public void setlabel(String label) {
+		this.label = label;
+	}
 
 	public String getName() {
 		return label;

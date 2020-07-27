@@ -39,7 +39,9 @@ import kb.dto.Property;
 import kb.dto.Requirement;
 
 import kb.repository.KB;
+import kb.utils.ConfigsLoader;
 import kb.utils.InferencesUtil;
+import kb.utils.MyFileUtil;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 
@@ -52,13 +54,13 @@ import kb.validation.exceptions.models.optimization.OptimizationModel;
 public class KBApi {
 
 	public KB kb;
-
+	static ConfigsLoader configInstance = ConfigsLoader.getInstance();
+	static {
+		configInstance.loadProperties();
+	}
+	
 	public KBApi() {
-		String getenv = System.getenv("graphdb");
-		if (getenv != null)
-			kb = new KB(getenv, "TOSCA");
-		else
-			kb = new KB();
+		kb = new KB(configInstance.getGraphdb(), "TOSCA");
 	}
 
 	public void shutDown() {
@@ -435,26 +437,57 @@ public class KBApi {
 	public Set<Parameter> getParameters(IRI classifier) {
 		Set<Parameter> parameters = new HashSet<>();
 
-		String query = KB.PREFIXES + "select ?parameter ?classifier ?value " + " where {"
+		String query = KB.PREFIXES + "select ?parameter ?classifier ?value ?rootClassifier " + " where {"
 				+ "		?var DUL:hasParameter ?classifier. " + "		OPTIONAL {?classifier tosca:hasValue ?value .} "
-				+ " 	?classifier DUL:classifies ?parameter . " + "}";
+				+ " 	?classifier DUL:classifies ?parameter . " 
+				+ "     ?var DUL:classifies ?rootClassifier ."+ "}";
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("var", classifier));
 		
+		
+		String content = null;
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			IRI _classifier = (IRI) bindingSet.getBinding("classifier").getValue();
 			IRI _parameter = (IRI) bindingSet.getBinding("parameter").getValue();
+			IRI _rootClassifier = (IRI) bindingSet.getBinding("rootClassifier").getValue();
 			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
 
-			Parameter p = new Parameter(_parameter);
-			p.setClassifiedBy(_classifier);
-			if (_value != null) {
-				System.err.println(_value);
-				p.setValue(_value, kb);
+			String parameter = MyUtils.getStringValue(_parameter);
+			String rootParameter = MyUtils.getStringValue(_rootClassifier);
+			
+			/*implementation:
+							primary:
+								path:"/home/yosu/Projects/Sodalite/Git/iac-management/use-cases/modules/docker/playbooks/add_cert.yml"
+								relative_path: "playbooks" //optional
+								content: "script content" //not returned in aadm json
+								url: "http://160.40.52.200:8084/Ansibles/b035b421-3aba-4cfb-b856-dfc473e5c71d"
+			 */
+			if (parameter.equals("content")) {
+				if ((rootParameter.equals("file") || rootParameter.equals("primary"))) {
+						content = _value.toString();
+						String fileUrl = MyFileUtil.uploadFile(content);
+						Value fileUrlValue = kb.getFactory().createLiteral(fileUrl);
+				
+						//This parameter is not added to the KB model, it is only added for returning it to aadm json
+						String ws = MyUtils.getNamespaceFromIRI(classifier.toString());
+						Parameter p = new Parameter(kb.getFactory().createIRI( ws +"url"));
+						p.setClassifiedBy(kb.getFactory().createIRI(ws + "ParamClassifier_" + MyUtils.randomString()));
+						
+						p.setValue(fileUrlValue, kb);
+						parameters.add(p);
+				}
+			} else {	
+				Parameter p = new Parameter(_parameter);
+				p.setClassifiedBy(_classifier);		
+				if (_value != null) {
+					System.err.println(_value);
+					p.setValue(_value, kb);
+				}
+				parameters.add(p);
 			}
-			parameters.add(p);
+			
 		}
 		result.close();
 		

@@ -785,6 +785,10 @@ public class DSLRMMappingService {
 		return x;
 	}
 	
+	public IRI getContext() {
+		return this.context;
+	}
+	
 	public void shutDown() {
 		System.out.println("shutting down");
 		if (kb != null) {

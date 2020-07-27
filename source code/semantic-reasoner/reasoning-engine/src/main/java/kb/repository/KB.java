@@ -20,6 +20,8 @@ import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
+import kb.utils.ConfigsLoader;
+
 public class KB {
 
 	public static String SERVER_URL = "http://localhost:7200";
@@ -64,12 +66,12 @@ public class KB {
 	}
 
 	public KB(String serverUrl, String repoName) {
-		    if (checkIfRepoExists(serverUrl, repoName)) {
+		String env = ConfigsLoader.getInstance().getEnvironment();
+		if ((!env.equals("dev") && checkIfRepoExists(serverUrl, repoName)) || (env.equals("dev"))) {
 		    	manager = new SodaliteRepository(serverUrl, "", "");
 				connection = manager.getRepository(repoName).getConnection();
 				factory = connection.getValueFactory();
-		    }
-		
+		} 		
 	}
 
 	public KB(SodaliteRepository manager) {

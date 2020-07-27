@@ -29,6 +29,7 @@ import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
 
 import kb.repository.KB;
+import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
@@ -45,6 +46,11 @@ import restapi.utils.HttpClientRequest;
 @Path("/optimizations")
 @Api()
 public class OptimizationService extends AbstractService {
+	static ConfigsLoader configInstance;
+	static {
+		configInstance = ConfigsLoader.getInstance();
+		configInstance.loadProperties();
+	}
 	/**
 	 * Storing the submitted AADM in the KB , assigning a unique id
 	 * and returning applicable optimizations according to the capabilities
@@ -67,12 +73,8 @@ public class OptimizationService extends AbstractService {
 			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete)
 					throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException  {
 		
-		KB kb;
-		String getenv = System.getenv("graphdb");
-		if (getenv != null)
-			kb = new KB(getenv, "TOSCA");
-		else
-			kb = new KB();
+		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
+		
 		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete);
 		IRI aadmUri = null;
 
