@@ -110,7 +110,7 @@ public class OptimizationService extends AbstractService {
 	
 	public void getOptimizations(JSONObject response, String aadmId) throws ClientProtocolException, IOException, ParseException, ValidationException {	
 		KBApi api = new KBApi();
-		Set<ValidationModel> optimizations = api.getOptimizations(aadmId);
+		Set<ValidationModel> optimizations = api.getOptimizationSuggestions(aadmId);
 		api.shutDown();
 		
 		JSONObject _optimizations = new JSONObject();
