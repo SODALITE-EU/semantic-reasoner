@@ -21,7 +21,10 @@ public class NodeFull extends Node {
 	Set<IRI> validTargetTypes;
 	Set<Operation> operations;
 
-	Set<Property> inputs;
+	Set<Property> inputs;	
+	Optimization optimization;
+
+
 
 	public boolean isTemplate = false, isInput = false;
 
@@ -45,6 +48,7 @@ public class NodeFull extends Node {
 
 		operations = api.getOperations(uri.toString(), isTemplate);
 //		System.err.println("validTargetTypes " + validTargetTypes);
+		optimization = api.getOptimization(uri.toString());
 
 		// inputs
 		inputs = api.getInputs(uri.toString(), false);
@@ -144,6 +148,9 @@ public class NodeFull extends Node {
 		if (!inputs.isEmpty())
 			data.add("inputs", array);
 
+		if(optimization != null)
+			data.addProperty("optimization", optimization.getJson());
+		
 		return data;
 	}
 

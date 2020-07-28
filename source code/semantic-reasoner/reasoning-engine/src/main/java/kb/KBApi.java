@@ -34,6 +34,7 @@ import kb.dto.Node;
 import kb.dto.NodeFull;
 import kb.dto.NodeType;
 import kb.dto.Operation;
+import kb.dto.Optimization;
 import kb.dto.Parameter;
 import kb.dto.Property;
 import kb.dto.Requirement;
@@ -542,7 +543,26 @@ public class KBApi {
 
 	}
 	
-	public Set<ValidationModel> getOptimizations(String aadmId) throws IOException, ValidationException {
+	public Optimization getOptimization(String resource) throws IOException {
+		Optimization optimization = null;
+		String sparql = MyUtils
+				.fileToString("sparql/getOptimization.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("var", kb.getFactory().createLiteral(resource)));
+
+		if (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			Value _opt = bindingSet.getBinding("opt_json").getValue();
+			optimization = new Optimization(_opt.toString());
+		}
+		result.close();
+		
+		return optimization;
+	}
+	
+	public Set<ValidationModel> getOptimizationSuggestions(String aadmId) throws IOException, ValidationException {
 		System.out.println("getOptimizations aadmid = " + aadmId);
 		Set<ValidationModel> templateOptimizations = new HashSet<>();
 		HashMap<IRI, Set<String>> resourceOptimizations = new HashMap<IRI, Set<String>>();
@@ -620,7 +640,7 @@ public class KBApi {
 					if (capability_value != null) {
 						System.out.println("Querying for capability = " + capability +", capability value = " + capability_value);
 						String opt_element = (ai_framework != null) ? ai_framework : app_type;
-						optimizations = _getOptimizations(capability, capability_value, opt_element);
+						optimizations = _getOptimizationSuggestions(capability, capability_value, opt_element);
 						
 						if (optimizations != null) {
 							if (resourceOptimizations.get(r)!= null) {
@@ -704,7 +724,7 @@ public class KBApi {
 	
 	// This function is reasoning over optimization ontology for returning the applicable
 	// optimizations according to the app_type/framework and capabilities
-	private Set<String> _getOptimizations (String capability, String capability_value, String opt_concept) throws IOException {
+	private Set<String> _getOptimizationSuggestions (String capability, String capability_value, String opt_concept) throws IOException {
 		String sparql = MyUtils
 				.fileToString("sparql/optimization/getFrameworkOptimizations_" + capability + ".sparql");
 		String query = KB.OPT_PREFIXES + sparql;
