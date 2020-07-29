@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
+import java.util.Map;
 import java.util.Set;
 
 
@@ -22,7 +22,7 @@ import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 
 import com.google.common.base.Strings;
-
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -447,7 +447,6 @@ public class KBApi {
 				new SimpleBinding("var", classifier));
 		
 		
-		String content = null;
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			IRI _classifier = (IRI) bindingSet.getBinding("classifier").getValue();
@@ -458,44 +457,74 @@ public class KBApi {
 			String parameter = MyUtils.getStringValue(_parameter);
 			String rootParameter = MyUtils.getStringValue(_rootClassifier);
 			
-			/*implementation:
-							primary:
-								path:"/home/yosu/Projects/Sodalite/Git/iac-management/use-cases/modules/docker/playbooks/add_cert.yml"
-								relative_path: "playbooks" //optional
-								content: "script content" //not returned in aadm json
-								url: "http://160.40.52.200:8084/Ansibles/b035b421-3aba-4cfb-b856-dfc473e5c71d"
-			 */
+		
+			Parameter p = null;
 			if (parameter.equals("content")) {
 				if ((rootParameter.equals("file") || rootParameter.equals("primary"))) {
-						content = _value.toString();
+						/*implementation:
+							primary:
+								content: "script content" //not returned in aadm json
+							dependencies:
+								file: content: "script content" //not returned in aadm json
+					 	*/
+						String content = _value.toString();
 						String fileUrl = MyFileUtil.uploadFile(content);
 						Value fileUrlValue = kb.getFactory().createLiteral(fileUrl);
 				
-						//This parameter is not added to the KB model, it is only added for returning it to aadm json
+						//This parameter is not added to the KB model, it is only added to aadm json
+						//e.g. url: "http://160.40.52.200:8084/Ansibles/b035b421-3aba-4cfb-b856-dfc473e5c71d"
 						String ws = MyUtils.getNamespaceFromIRI(classifier.toString());
-						Parameter p = new Parameter(kb.getFactory().createIRI( ws +"url"));
+						p = new Parameter(kb.getFactory().createIRI( ws +"url"));
 						p.setClassifiedBy(kb.getFactory().createIRI(ws + "ParamClassifier_" + MyUtils.randomString()));
 						
 						p.setValue(fileUrlValue, kb);
-						parameters.add(p);
 				}
-			} else {	
-				Parameter p = new Parameter(_parameter);
+			} else if (parameter.equals("occurrences")){
+				Map<String, String> limitsMap = _getOccurrencesLimits(_classifier);
+				
+				p = new Parameter(_parameter);
+				p.setClassifiedBy(_classifier);	
+				p.setValue(kb.getFactory().createLiteral("["+limitsMap.get("min")+"," + limitsMap.get("max") +"]"), kb);
+				
+			} else {
+				p = new Parameter(_parameter);
 				p.setClassifiedBy(_classifier);		
 				if (_value != null) {
 					System.err.println(_value);
 					p.setValue(_value, kb);
 				}
-				parameters.add(p);
+				
 			}
-			
+			parameters.add(p);
 		}
-		result.close();
+		result.close();			
 		
 		for (Parameter parameter : parameters) {
 			parameter.setParameters(getParameters(parameter.getClassifiedBy()));
 		}
 		return parameters;
+	}
+	
+	public Map<String, String> _getOccurrencesLimits(IRI classifier) {
+		
+		Map<String, String> limitsMap = new HashMap<String, String>();
+		String query = KB.PREFIXES + "select ?parameter ?value " + " where {"
+				+ "		?var DUL:hasParameter ?classifier. " + "		OPTIONAL {?classifier tosca:hasValue ?value .} "
+				+ " 	?classifier DUL:classifies ?parameter . " 
+				+ " }";
+		
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("var", classifier));
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI _parameter = (IRI) bindingSet.getBinding("parameter").getValue();
+			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
+		
+			String parameter = MyUtils.getStringValue(_parameter);
+			limitsMap.put(parameter, _value.toString());
+		}
+		
+		return limitsMap;
 	}
 
 	public Set<IRI> getValidTargetTypes(String resource, boolean isTemplate) throws IOException {

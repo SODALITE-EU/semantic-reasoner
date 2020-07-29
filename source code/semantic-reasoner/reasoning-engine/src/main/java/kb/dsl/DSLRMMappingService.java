@@ -57,6 +57,7 @@ public class DSLRMMappingService {
 	String rmURI;
 	
 	static final String[] TYPES = {"Node", "DataType", "RelationshipType"};
+	Set<String> nodeNames = new HashSet<>();
 
 
 	public DSLRMMappingService(KB kb, String rmTTL, String rmURI) throws RDFParseException, UnsupportedRDFormatException, IOException {
@@ -113,8 +114,8 @@ public class DSLRMMappingService {
 			throw new MappingException("No RM container found.");
 		}
 		
-		
-		// NODES
+		retrieveLocalNodeNames();
+
 		for (String type : TYPES) {
 			createTypes(type);
 		}
@@ -123,6 +124,24 @@ public class DSLRMMappingService {
 
 	}
 	
+	//Retrieve node names of the local resource model, so as to be used as object values in requirements, properties e.t.c
+	private void retrieveLocalNodeNames() throws MappingException {
+		for (String type : TYPES) {
+			for (Resource _node : rmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + type))
+					.subjects()) {
+				IRI node = (IRI) _node;
+				
+				String nodeName = Models
+						.objectLiteral(rmModel.filter(node, factory.createIRI(KB.EXCHANGE + "name"), null))
+						.orElseThrow(
+								() -> new MappingException("No 'name' defined for node: " + node.getLocalName()))
+						.stringValue();
+				
+				nodeNames.add(nodeName);
+			}
+		}
+	}
+		
 	private void createTypes (String type) throws MappingException {
 		System.out.println("Add type = " + type + " to the Resource Model");
 		for (Resource _node : rmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + type))
@@ -683,12 +702,21 @@ public class DSLRMMappingService {
 			if (_values.size() == 1) {
 				Object i = null;
 				String value = _values.iterator().next();
-				if ((i = Ints.tryParse(value)) != null) {
+
+				IRI kbNode = null; 
+				//Check if the node object exists in this local resource model
+				if (nodeNames.contains(value)) {
+					kbNode = factory.createIRI(ws + factory.createLiteral(value).getLabel());
+					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+				} else if ((kbNode = getKBNode(factory.createLiteral(value).getLabel())) != null) {
+					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+				} else if ((i = Ints.tryParse(value)) != null) {
 					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 				} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
 					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
-				} else
+				} else {
 					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+				}
 			} else {
 				IRI list = factory.createIRI(ws + "List_" + MyUtils.randomString());
 				for (String string : _values) {

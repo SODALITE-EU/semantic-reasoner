@@ -43,13 +43,13 @@ public class TestReasonerService extends AbstractService {
 		try {
 			String response = HttpClientRequest.bugPredictorApi("123");
 			if (response.equals("Unreachable"))
-				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
+				return Response.status(Status.BAD_REQUEST).entity("Error connecting to defect predictor host: " + configInstance.getBugPredictorServer()).build();
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
-			return Response.status(Status.BAD_REQUEST).entity("error while trying to connect to defect-predictor").build();
+			return Response.status(Status.BAD_REQUEST).entity("Error while trying to connect to defect-predictor").build();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return Response.status(Status.BAD_REQUEST).entity("error while trying to connect to defect-predictor").build();
+			return Response.status(Status.BAD_REQUEST).entity("Error while trying to connect to defect-predictor").build();
 		}
 		
 		//test graphdb
