@@ -23,6 +23,19 @@ After started, you can access it here http://localhost:7200/.
 - run: `mvn install`
 - Deploy the war file in a web container (e.g. Tomcat)
 
+## Running the reasoner on a local environment
+1) Set an environment variable with name as 'environment'
+and value as dev'.
+2) Download the [defect predictor](https://github.com/SODALITE-EU/defect-prediction), and build it as a maven project.
+Extract the bug-predictor.war to the tomcat webapps folder.
+3) Download graph-db from [here](http://graphdb.ontotext.com/). 
+After graph-db is up and running, create a TOSCA repository with ruleset = owl-2rl.
+Load the ontologies from [semantic-models](https://github.com/SODALITE-EU/semantic-models/tree/master/ontology%20definitions).
+Specifically, load the ontologies under ontology-definitions folder:
+optimizations.ttl, sodalite-metamodel.ttl, import/DUL.ttl, tosca-builtins.ttl
+4) Build the semantic reasoner as a maven project. Run it on a tomcat server. 
+The reasoner should be up and running, waiting for receiving API requests.
+
 ## Running the reasoner on docker containers
 Run 
 ```docker-compose up```
@@ -34,9 +47,8 @@ and send requests to the reasoner http://localhost:8080/reasoner-api/v0.6/<servi
  - Docker engine 19.03 or newer
 
 # REST APIs
-## Semantic Reasoner
 
-### Testing communication of reasoner with its dependent components
+## Testing communication of reasoner with its dependent components
 A sample scenario for checking that reasoner communicates successfully with knowledge base (graph-db) and the bug predictor (tosca-smell)
 Send a GET request with no parameter:
 ```
@@ -65,7 +77,8 @@ For graph-db, the error plain/text message is:
 
  
 
-### Save a resource model:
+## Sample scenarios:
+### Save a resource model
 ```
 http://<server_ip>:8080/reasoner-api/v0.6/saveRM
 ```
