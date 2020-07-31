@@ -4,6 +4,12 @@ COPY ./reasoner-api/target/reasoner-api.war /usr/local/tomcat/webapps/reasoner-a
 EXPOSE 8080
 ENV environment docker
 
+ENV graphdb  http://graph-db:7200
+ENV bugPredictorServer  http://tosca-smell:8080/
+ENV ansiblePath  /usr/local/tomcat/webapps/Ansibles/
+ENV reasonerServer  http://web:8080/
+
+
 RUN mkdir -p /usr/local/tomcat/webapps/Ansibles
 
 # Add docker-compose-wait tool -------------------

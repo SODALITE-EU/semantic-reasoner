@@ -34,23 +34,32 @@ public class ConfigsLoader {
 	
 		environment =  System.getenv("environment");
 		System.out.println("environment = " + environment);
-		if (environment == null)
-			environment = "qa";
-		String configPath = "/envs/" + environment + "/config.properties";
+		if (environment.equals("docker")) {
+			graphdb = System.getenv("graphdb");
+			bugPredictorServer = System.getenv("bugPredictorServer");
+			ansiblePath = System.getenv("ansiblePath");
+			reasonerServer = System.getenv("reasonerServer");
+		} else {
+			if (environment == null)
+				environment = "dev";
+		
+			String configPath = "/envs/" + environment + "/config.properties";
 	
-		InputStream is = ConfigsLoader.class.getResourceAsStream(configPath);
-		try {
-			properties.load(is);
-		} catch (IOException e) {
-			System.out.println("Property file not found");
-			e.printStackTrace();
-		}
+			InputStream is = ConfigsLoader.class.getResourceAsStream(configPath);
+			try {
+				properties.load(is);
+			} catch (IOException e) {
 
-		// Read properties
-		graphdb = properties.getProperty("graphdb");
-		bugPredictorServer = properties.getProperty("bugPredictorServer");
-		ansiblePath = properties.getProperty("ansiblePath");
-		reasonerServer = properties.getProperty("reasonerServer");
+				System.out.println("Property file not found");
+				e.printStackTrace();
+			}
+
+			// Read properties
+			graphdb = properties.getProperty("graphdb");
+			bugPredictorServer = properties.getProperty("bugPredictorServer");
+			ansiblePath = properties.getProperty("ansiblePath");
+			reasonerServer = properties.getProperty("reasonerServer");
+		}
 		
 		System.out.println("graphdb = " + graphdb + "\nbugpredictorServer=" + bugPredictorServer + "\nansiblePath = " + ansiblePath + "\nreasonerServer = " + reasonerServer);
 
@@ -80,3 +89,4 @@ public class ConfigsLoader {
 		configInstance.loadProperties();
 	}
 }
+
