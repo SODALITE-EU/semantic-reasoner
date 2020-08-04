@@ -1,8 +1,6 @@
 package kb.repository;
 
-import java.io.IOException;
-import java.io.InputStream;
-
+import kb.utils.ConfigsLoader;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -13,14 +11,11 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.config.RepositoryConfigSchema;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFHandlerException;
-import org.eclipse.rdf4j.rio.RDFParseException;
-import org.eclipse.rdf4j.rio.RDFParser;
-import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.*;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
-import kb.utils.ConfigsLoader;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class KB {
 
@@ -66,7 +61,12 @@ public class KB {
 	}
 
 	public KB(String serverUrl, String repoName) {
-		String env = ConfigsLoader.getInstance().getEnvironment();
+		ConfigsLoader configLoaderIns = ConfigsLoader.getInstance();
+		String env = configLoaderIns.getEnvironment();
+		if (env == null) {
+			configLoaderIns.loadProperties();
+			env = configLoaderIns.getEnvironment();
+		}
 		if ((!env.equals("dev") && checkIfRepoExists(serverUrl, repoName)) || (env.equals("dev"))) {
 		    	manager = new SodaliteRepository(serverUrl, "", "");
 				connection = manager.getRepository(repoName).getConnection();

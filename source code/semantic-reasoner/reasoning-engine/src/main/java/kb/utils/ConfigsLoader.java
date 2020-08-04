@@ -34,17 +34,12 @@ public class ConfigsLoader {
 	
 		environment =  System.getenv("environment");
 		System.out.println("environment = " + environment);
-		if (environment.equals("docker")) {
-			graphdb = System.getenv("graphdb");
-			bugPredictorServer = System.getenv("bugPredictorServer");
-			ansiblePath = System.getenv("ansiblePath");
-			reasonerServer = System.getenv("reasonerServer");
-		} else {
-			if (environment == null)
-				environment = "dev";
-		
+
+		if (environment == null) {
+			environment = "dev";
+
 			String configPath = "/envs/" + environment + "/config.properties";
-	
+
 			InputStream is = ConfigsLoader.class.getResourceAsStream(configPath);
 			try {
 				properties.load(is);
@@ -59,6 +54,11 @@ public class ConfigsLoader {
 			bugPredictorServer = properties.getProperty("bugPredictorServer");
 			ansiblePath = properties.getProperty("ansiblePath");
 			reasonerServer = properties.getProperty("reasonerServer");
+		} else if (environment.equals("docker")) {
+			graphdb = System.getenv("graphdb");
+			bugPredictorServer = System.getenv("bugPredictorServer");
+			ansiblePath = System.getenv("ansiblePath");
+			reasonerServer = System.getenv("reasonerServer");
 		}
 		
 		System.out.println("graphdb = " + graphdb + "\nbugpredictorServer=" + bugPredictorServer + "\nansiblePath = " + ansiblePath + "\nreasonerServer = " + reasonerServer);
