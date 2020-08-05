@@ -69,7 +69,7 @@ public class KB {
             configLoaderIns.loadProperties();
             env = configLoaderIns.getEnvironment();
         }
-        if (env.equals("dev")) {
+        if ("dev".equals(env)) {
             manager = new SodaliteRepository(serverUrl, "", "");
             connection = getRepositoryConnection(repoName);
             factory = connection.getValueFactory();
