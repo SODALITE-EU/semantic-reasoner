@@ -108,11 +108,14 @@ public class KB {
         manager.shutDown(null);
     }
 
-    public boolean checkIfRepoExists(String serverUrl, String repoName) {
+    private boolean checkIfRepoExists(String serverUrl, String repoName) {
         manager = new SodaliteRepository(serverUrl, "", "");
 
-        if (manager.getRepository(repoName) != null)
+        if (manager.getRepository(repoName) != null) {
+            connection = getRepositoryConnection(repoName);
+            factory = connection.getValueFactory();
             return true;
+        }
 
         RepositoryManager repositoryManager = manager.getManager();
         repositoryManager.init();
