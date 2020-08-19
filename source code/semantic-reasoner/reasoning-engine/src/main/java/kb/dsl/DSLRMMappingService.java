@@ -305,7 +305,8 @@ public class DSLRMMappingService {
 			parameterClassifiers.add(parameterClassifierKB);
 		
 			IRI paramProperty = getKBProperty(parameterName);
-			if (paramProperty == null) {
+			//Checking equality in case there are properties ending with the same words e.g. configuration_job, job
+			if (paramProperty == null || ((paramProperty != null) && !MyUtils.getStringValue(paramProperty).equals(parameterName))) {
 				//throw new MappingException("Cannot find requirement parameter: " + parameterName);
 				paramProperty = factory.createIRI(ws + parameterName);
 				builder.add(paramProperty, RDF.TYPE, "rdf:Property");
