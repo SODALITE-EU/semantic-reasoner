@@ -185,7 +185,8 @@ public class RequirementExistenceValidation extends ValidationManager {
 			String query = KB.PREFIXES +
 					"select distinct ?template {\r\n" +
 					"?template a soda:SodaliteSituation ; \r\n" +
-					" rdf:type ?var .\r\n" +  
+					" rdf:type ?t .\r\n" + 
+					" ?t rdfs:subClassOf ?var" +
 					"}";
 			
 			TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("var", type));

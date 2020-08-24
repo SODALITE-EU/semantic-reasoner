@@ -21,6 +21,8 @@ public class InferencesUtil {
 		
 		if (!classes.isEmpty()) {
 			lowestClass = classes.stream().iterator().next();
+			if (classes.size() == 1)
+				return lowestClass;
 			for (IRI class1 : classes) {
 				for  (IRI class2 : classes) {
 					boolean	result = QueryUtil.evaluateAskQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_class1", class1),

@@ -6,7 +6,9 @@ where {
 	?template a soda:SodaliteSituation ;
             sesame:directType ?templateType .
 	?templateType soda:hasInferredContext ?ctx;
-			rdfs:subClassOf tosca:tosca.entity.Root. 
+		rdfs:subClassOf tosca:tosca.entity.Root.
+	#?templateType soda:hasContext ?ctx;		 			
+	FILTER (?ctx != tosca:tosca.nodes.Root_Description).
 	?ctx tosca:requirements ?r .
 	?r DUL:classifies ?r_a .
 	?r DUL:hasParameter [DUL:classifies ?r_i; DUL:hasRegion ?v;] .
