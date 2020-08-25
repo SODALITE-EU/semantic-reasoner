@@ -36,8 +36,8 @@ public class MyUtils {
 
 	public static Gson getGson(boolean pretty) {
 		if (pretty)
-			return new GsonBuilder().setPrettyPrinting().create();
-		return new GsonBuilder().create();
+			return new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+		return new GsonBuilder().disableHtmlEscaping().create();
 	}
 
 	public static String getStringValue(Value value) {

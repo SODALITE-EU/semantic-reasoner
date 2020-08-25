@@ -709,7 +709,8 @@ public class DSLRMMappingService {
 				if (nodeNames.contains(value)) {
 					kbNode = factory.createIRI(ws + factory.createLiteral(value).getLabel());
 					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-				} else if ((kbNode = getKBNode(factory.createLiteral(value).getLabel())) != null) {
+				} else if (!value.isEmpty() && (kbNode = getKBNode(factory.createLiteral(value).getLabel())) != null) {
+
 					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 				} else if ((i = Ints.tryParse(value)) != null) {
 					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
@@ -799,7 +800,9 @@ public class DSLRMMappingService {
 	}
 	
 	private IRI getKBNode(String label) {
-		String sparql = "select ?x { ?x a owl:Thing . FILTER (strends(str(?x), \"" + label + "\")). }";
+		String sparql = "select ?x { ?x a owl:Thing . ?x rdfs:subClassOf ?class .\r\n" +
+						" FILTER (?class IN (tosca:tosca.entity.Root, tosca:DataType ))\r\n"+
+						" FILTER (strends(str(?x), \"" + label + "\")). }";
 		System.out.println(sparql);
 		String query = KB.PREFIXES + sparql;
 
