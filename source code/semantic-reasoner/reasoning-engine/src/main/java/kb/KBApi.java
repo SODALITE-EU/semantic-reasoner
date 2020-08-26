@@ -377,10 +377,10 @@ public class KBApi {
 			n.setType(superclass);
 
 			nodes.add(n);
-			
-			result.close();
+
 		}
 		
+		result.close();
 		return nodes;
 	}
 
