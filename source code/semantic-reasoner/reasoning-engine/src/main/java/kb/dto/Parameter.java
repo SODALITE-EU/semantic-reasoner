@@ -69,14 +69,22 @@ public class Parameter extends Resource {
 
 		} else {
 			JsonObject temp = new JsonObject();
+			JsonArray fileArray = new JsonArray();
 			for (Parameter p : parameters) {
 				JsonObject serialise = p.serialise();
 				relevantUris.addAll(p.relevantUris);
 				Set<Entry<String, JsonElement>> entrySet = serialise.entrySet();
 				for (Entry<String, JsonElement> entry : entrySet) {
-					temp.add(entry.getKey(), entry.getValue());
+					//All file parameters(in interfaces) are added to a files array 
+					if (entry.getKey().equals("file")) {
+						fileArray.add(entry.getValue());
+					} else {
+						temp.add(entry.getKey(), entry.getValue());
+					}
 				}
 			}
+			if (fileArray.size() > 0)
+				temp.add("files", fileArray);
 			parameter.add(label, temp);
 		}
 
