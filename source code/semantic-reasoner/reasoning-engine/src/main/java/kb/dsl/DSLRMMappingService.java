@@ -246,7 +246,7 @@ public class DSLRMMappingService {
 		builder.add(requirementClassifierKB, RDF.TYPE, "tosca:Requirement");
 
 		IRI requirementProperty = getKBProperty(requirementName);
-		if (requirementProperty == null) {
+		if (requirementProperty == null || requirementProperty.toString().equals(ws + requirementName)) {
 			//throw new MappingException("Cannot find requirement property: " + requirementName);
 			requirementProperty = factory.createIRI(ws + requirementName);
 			builder.add(requirementProperty, RDF.TYPE, "rdf:Property");
@@ -305,8 +305,9 @@ public class DSLRMMappingService {
 			parameterClassifiers.add(parameterClassifierKB);
 		
 			IRI paramProperty = getKBProperty(parameterName);
-			//Checking equality in case there are properties ending with the same words e.g. configuration_job, job
-			if (paramProperty == null || ((paramProperty != null) && !MyUtils.getStringValue(paramProperty).equals(parameterName))) {
+			//Create property in case it  already exists in the same namespace (since it ll be removed in save)
+			//or a different property found (having the same suffix e.g. configuration_job, job)
+			if (paramProperty == null || ((paramProperty.toString().equals(ws + parameterName) || !MyUtils.getStringValue(paramProperty).equals(parameterName)))) {
 				//throw new MappingException("Cannot find requirement parameter: " + parameterName);
 				paramProperty = factory.createIRI(ws + parameterName);
 				builder.add(paramProperty, RDF.TYPE, "rdf:Property");
@@ -355,7 +356,7 @@ public class DSLRMMappingService {
 		builder.add(capabilityClassifierKB, RDF.TYPE, "tosca:Capability");
 
 		IRI capabilityProperty = getKBProperty(capabilityName);
-		if (capabilityProperty == null) {
+		if (capabilityProperty == null || capabilityProperty.toString().equals(ws + capabilityName)) {
 			//throw new MappingException("Cannot find capability property: " + capabilityName);
 			capabilityProperty = factory.createIRI(ws + capabilityName);
 			builder.add(capabilityProperty, RDF.TYPE, "rdf:Property");
@@ -435,7 +436,7 @@ public class DSLRMMappingService {
 				.stringValue();
 
 		IRI interfaceProperty = getKBProperty(interfaceName);
-		if (interfaceProperty == null) {
+		if (interfaceProperty == null || interfaceProperty.toString().equals(ws + interfaceName)) {
 			//throw new MappingException("Cannot find interface property: " + interfaceName);
 			interfaceProperty = factory.createIRI(ws + interfaceName);
 			builder.add(interfaceProperty, RDF.TYPE, "rdf:Property");
@@ -519,7 +520,7 @@ public class DSLRMMappingService {
 			parameterClassifiers.add(parameterClassifierKB);
 		
 			IRI paramProperty = getKBProperty(parameterName);
-			if (paramProperty == null) {
+			if (paramProperty == null || paramProperty.toString().equals(ws + parameterName)) {
 				//throw new MappingException("Cannot find requirement parameter: " + parameterName);
 				paramProperty = factory.createIRI(ws + parameterName);
 				builder.add(paramProperty, RDF.TYPE, "rdf:Property");
@@ -686,7 +687,8 @@ public class DSLRMMappingService {
 		
 		// create rdf:property
 		IRI kbProperty = getKBProperty(propertyName);
-		if (kbProperty == null) {
+		
+		if (kbProperty == null || kbProperty.toString().equals(ws + propertyName)) {
 			kbProperty = factory.createIRI(ws + propertyName);
 			builder.add(kbProperty, RDF.TYPE, "rdf:Property");
 		}
