@@ -101,3 +101,4 @@ If success, you 'll get an rmURI as response.
     "rmuri": "https://www.sodalite.eu/ontologies/workspace/1/q03i5hhp8oac5ogftbmgr7ra4v/RM_nom7pmrlja496e5kkb026ub7d8"
 }
 ```
+ 
