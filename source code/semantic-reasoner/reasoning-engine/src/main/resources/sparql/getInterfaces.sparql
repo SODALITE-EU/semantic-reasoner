@@ -9,10 +9,12 @@ where {
 		FILTER(?context != ?context2).
 		?context2 tosca:interfaces ?classifier2.
 		?classifier2 DUL:classifies ?interface .
+		?resource sesame:directSubClassOf ?nodeType .
 		
+		#Get interface of the node type lowest in class hierarchy
 		?resource2 soda:hasContext ?context2 .
 		#FILTER(?resource != ?resource2).	
-		FILTER(?resource2 != owl:Nothing).
-		?resource2 rdfs:subClassOf ?resource.	
+		FILTER(?resource2 != owl:Nothing)
+		?resource2 rdfs:subClassOf ?nodeType.
 	}
 }
