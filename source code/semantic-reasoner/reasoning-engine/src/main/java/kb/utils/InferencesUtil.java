@@ -16,22 +16,23 @@ public class InferencesUtil {
 	public static IRI getLowestSubclass(KB kb, Set<IRI> classes) {
 		
 		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
-						"ASK {?var_class1 rdfs:subclassOf ?var_class2" + "}";
+						"ASK {?var_class1 rdfs:subClassOf ?var_class2" + "}";
 		IRI lowestClass = null;
-		
 		if (!classes.isEmpty()) {
 			lowestClass = classes.stream().iterator().next();
 			if (classes.size() == 1)
 				return lowestClass;
 			for (IRI class1 : classes) {
 				for  (IRI class2 : classes) {
+					System.out.println("CLASS2 = " + class2.toString());
 					boolean	result = QueryUtil.evaluateAskQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_class1", class1),
 										new SimpleBinding("var_class2", class2)});
 					if (result) {
 						boolean	result2 = QueryUtil.evaluateAskQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_class1", class1),
 								new SimpleBinding("var_class2", lowestClass)});
-						if (result2)
-							lowestClass = class2;
+						if (result2) {
+							lowestClass = class1;
+						}
 					}
 				}
 			}

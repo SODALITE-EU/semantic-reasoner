@@ -287,12 +287,17 @@ public class KBApi {
 	}
 
 	public Set<Interface> getInterfaces(String resource, boolean isTemplate) throws IOException {
+		System.out.println("getInterfaces: " + resource);
 		Set<Interface> interfaces = new HashSet<>();
-
+		
+		Set<IRI> nodes =  new HashSet<>();
+		HashMap<IRI, IRI>  conceptMap = new HashMap<IRI, IRI>();
+		HashMap<IRI, IRI>  interfaceMap = new HashMap<IRI, IRI>();
+		
 		String sparql = MyUtils
 				.fileToString(!isTemplate ? "sparql/getInterfaces.sparql" : "sparql/getInterfacesTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
-
+		
 		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("var", kb.getFactory().createLiteral(resource)));
@@ -302,12 +307,23 @@ public class KBApi {
 			IRI p1 = (IRI) bindingSet.getBinding("interface").getValue();
 			IRI concept = (IRI) bindingSet.getBinding("classifier").getValue();
 
-			Interface c = new Interface(p1);
-			c.setClassifiedBy(concept);
+			IRI r = (IRI) bindingSet.getBinding("resource2").getValue();
+				
+			interfaceMap.put(r, p1);
+			conceptMap.put(r, concept);
+			nodes.add(r);
+		}
+		
+		if (!nodes.isEmpty()) {
+			IRI lowestNode = InferencesUtil.getLowestSubclass(kb, nodes);
+			
+			Interface c = new Interface(interfaceMap.get(lowestNode));
+			c.setClassifiedBy(conceptMap.get(lowestNode));
 
 			interfaces.add(c);
 
 		}
+		
 		result.close();
 
 		for (Interface _interface : interfaces) {
