@@ -391,10 +391,29 @@ public class DSLMappingService {
 		definedPropertiesForValidation.add(propertyName);
 
 		System.out.println(String.format("Property name: %s, value: %s", propertyName, _values));
-
-		// create classifier
-		IRI propertyClassifierKB = factory.createIRI(ws + "PropClassifier_" + MyUtils.randomString());
-		builder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
+		
+		Optional<Resource> _parameterType  = Models.getPropertyResource(aadmModel, exchangeParameter,
+				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+		String parameterType = MyUtils.getStringValue(_parameterType.get());
+		System.out.println("parameterType = " + parameterType);
+		
+		IRI propertyClassifierKB = null;
+		switch (parameterType) {
+			case "Attribute":
+				propertyClassifierKB = factory.createIRI(ws + "AttrClassifer_" + MyUtils.randomString());
+				builder.add(propertyClassifierKB, RDF.TYPE, "tosca:Attribute");
+				break;
+			case "Parameter":
+				propertyClassifierKB = factory.createIRI(ws + "ParamClassifer_" + MyUtils.randomString());
+				builder.add(propertyClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				break;
+			case "Property" :
+				propertyClassifierKB = factory.createIRI(ws + "PropClassifer_" + MyUtils.randomString());
+				builder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
+				break;
+			default:
+				System.err.println("parameterType = " + parameterType + " does not exist");
+		}
 
 		// create rdf:property
 		IRI kbProperty = getKBProperty(propertyName);
