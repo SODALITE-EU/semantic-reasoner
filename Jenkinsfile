@@ -16,6 +16,19 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
+    stage('SonarQube analysis'){
+        environment {
+          scannerHome = tool 'SonarQubeScanner'
+        }
+        steps {
+            withSonarQubeEnv('SonarCloud') {
+                sh  """ #!/bin/bash
+                        cd "source code/semantic-reasoner"
+                        ${scannerHome}/bin/sonar-scanner
+                    """
+            }
+        }
+    }
     stage ('Trigger a build of defect-prediction') {
       when { 
           not { 
