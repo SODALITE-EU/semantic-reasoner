@@ -56,7 +56,7 @@ public class DSLRMMappingService {
 	IRI context;
 	String rmURI;
 	
-	static final String[] TYPES = {"Node", "DataType", "RelationshipType"};
+	static final String[] TYPES = {"NodeType", "DataType", "RelationshipType", "CapabilityType"};
 	Set<String> nodeNames = new HashSet<>();
 
 
@@ -166,6 +166,13 @@ public class DSLRMMappingService {
 			IRI nodeKB = factory.createIRI(ws + nodeName); // this will be always new
 			IRI kbNodeType = getKBNodeType(nodeType, "tosca:tosca.entity.Root");
 			
+			if (kbNodeType == null) {
+				if (nodeNames.contains(nodeType))
+					// throw new Exception("Cannot find node: " + value);
+					kbNodeType = factory.createIRI(ws + nodeType);
+				else
+					throw new MappingException("Cannot find Node type: " + nodeType + " for node name =" + nodeName);
+			}
 			builder.add(nodeKB, RDF.TYPE, "owl:Class");
 			builder.add(nodeKB, RDFS.SUBCLASSOF, kbNodeType);
 			builder.add(rmKB, factory.createIRI(KB.SODA + "includes" + type), nodeKB);
@@ -262,8 +269,10 @@ public class DSLRMMappingService {
 		if (value != null) { // this means there is no parameters
 			IRI kbNode = getKBNode(value.getLabel());
 			if (kbNode == null) {
-				// throw new Exception("Cannot find node: " + value);
-				kbNode = factory.createIRI(ws + value.getLabel());
+				if (nodeNames.contains(value.getLabel()))
+					kbNode = factory.createIRI(ws + value.getLabel());
+				else
+					throw new MappingException("Cannot find Node: " + value.getLabel() + " for requirement =" + requirement);
 			}
 			builder.add(requirementClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 		} else {
@@ -328,7 +337,10 @@ public class DSLRMMappingService {
 						IRI kbNode = getKBNode(value.getLabel());
 						if (kbNode == null) {
 							// throw new Exception("Cannot find node: " + value);
-							kbNode = factory.createIRI(ws + value.getLabel());
+							if (nodeNames.contains(value.getLabel()))
+								kbNode = factory.createIRI(ws + value.getLabel());
+							else
+								throw new MappingException("Cannot find Node: " + value.getLabel() + " for requirement parameter =" + parameterName);
 						}
 						builder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 					}
@@ -372,7 +384,10 @@ public class DSLRMMappingService {
 			IRI kbNode = getKBNode(value.getLabel());
 			if (kbNode == null) {
 				// throw new Exception("Cannot find node: " + value);
-				kbNode = factory.createIRI(ws + value.getLabel());
+				if (nodeNames.contains(value.getLabel()))
+					kbNode = factory.createIRI(ws + value.getLabel());
+				else
+					throw new MappingException("Cannot find Node: " + value.getLabel() + " for capability =" + capabilityName);
 			}
 			builder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 		} else {
@@ -471,7 +486,10 @@ public class DSLRMMappingService {
 				IRI kbNode = getKBNode(value.getLabel());
 				if (kbNode == null) {
 					// throw new Exception("Cannot find node: " + value);
-					kbNode = factory.createIRI(ws + value.getLabel());
+					if (nodeNames.contains(value.getLabel()))
+						kbNode = factory.createIRI(ws + value.getLabel());
+					else
+						throw new MappingException("Cannot find Node: " + value.getLabel() + " for interface = " + interfaceName);
 				}
 				builder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 			} else {
@@ -542,8 +560,11 @@ public class DSLRMMappingService {
 			if (value != null) { // this means there is no parameters
 				IRI kbNode = getKBNode(value.getLabel());
 				if (kbNode == null) {
+					if (nodeNames.contains(value.getLabel()))
 					// throw new Exception("Cannot find node: " + value);
-					kbNode = factory.createIRI(ws + value.getLabel());
+						kbNode = factory.createIRI(ws + value.getLabel());
+					else
+						throw new MappingException("Cannot find Node: " + value.getLabel() +" for capability parameter =" + parameterName);
 				}
 				builder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 			} else if (listValue != null) { 
@@ -552,8 +573,11 @@ public class DSLRMMappingService {
 				builder.add(list, RDF.TYPE, "tosca:List");
 				IRI kbNode = getKBNode(listValue.getLabel());
 				if (kbNode == null) {
-					// throw new Exception("Cannot find node: " + value);
-					kbNode = factory.createIRI(ws + listValue.getLabel());
+					if (nodeNames.contains(listValue.getLabel()))
+						// throw new Exception("Cannot find node: " + value);
+						kbNode = factory.createIRI(ws + listValue.getLabel());
+					else
+						throw new MappingException("Cannot find Node: " + listValue.getLabel() + " for capability parameter =" + parameterName);
 				}
 				builder.add(list, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 			} else {

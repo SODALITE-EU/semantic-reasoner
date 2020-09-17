@@ -69,6 +69,7 @@ public class KBApi {
 	}
 
 	public Set<Attribute> getAttributes(String resource, boolean isTemplate) throws IOException {
+		System.out.println("getAttributes: " + resource);
 		Set<Attribute> attributes = new HashSet<>();
 		String sparql = MyUtils
 				.fileToString(!isTemplate ? "sparql/getAttributes.sparql" : "sparql/getAttributesTemplate.sparql");
@@ -83,9 +84,13 @@ public class KBApi {
 			BindingSet bindingSet = result.next();
 			IRI attr = (IRI) bindingSet.getBinding("attribute").getValue();
 			IRI concept = (IRI) bindingSet.getBinding("p").getValue();
+			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
 
 			Attribute a = new Attribute(attr);
 			a.setClassifiedBy(concept);
+			
+			if (_value != null)
+				a.setValue(_value, kb);
 
 			attributes.add(a);
 		}
