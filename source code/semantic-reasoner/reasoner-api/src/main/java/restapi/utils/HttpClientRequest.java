@@ -65,9 +65,11 @@ public final class HttpClientRequest {
 		StringEntity stringEntity = new StringEntity(jsonInputString);
 		httpPost.setEntity(stringEntity);
 		System.out.println("Executing request " + httpPost.getRequestLine());
+		
+		BufferedReader br = null;
 		try {		 
 			HttpResponse response = httpclient.execute(httpPost);
-			BufferedReader br = new BufferedReader(
+			br = new BufferedReader(
 					new InputStreamReader((response.getEntity().getContent())));
 						 
 			if (response.getStatusLine().getStatusCode() != 200) {
@@ -85,6 +87,8 @@ public final class HttpClientRequest {
 			e.printStackTrace();
 			System.err.println("Bug Predictor service at " + bugPredictorEndpoint + "returned an HttpHostConnectException" );
 			return "Unreachable";
+		} finally {
+			br.close();
 		}		 
 
 	}

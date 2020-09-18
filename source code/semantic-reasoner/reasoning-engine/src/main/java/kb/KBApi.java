@@ -489,7 +489,12 @@ public class KBApi {
 								file: content: "script content" //not returned in aadm json
 					 	*/
 						String content = _value.toString();
-						String fileUrl = MyFileUtil.uploadFile(content);
+						String fileUrl = null;
+						try {
+							fileUrl = MyFileUtil.uploadFile(content);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 						Value fileUrlValue = kb.getFactory().createLiteral(fileUrl);
 				
 						//This parameter is not added to the KB model, it is only added to aadm json

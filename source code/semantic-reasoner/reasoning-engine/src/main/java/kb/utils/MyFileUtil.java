@@ -27,36 +27,38 @@ public class MyFileUtil {
 		REASONER_SERVER = c.getReasonerServer();
 	}
 	
-	public static String uploadFile(String content) {
+	public static String uploadFile(String content) throws IOException {
 		
 		String fileName = null;
-        try {
+		FileWriter myWriter = null;
+		try {
 			//Files.write(Paths.get("C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0_Tomcat92\\webapps\\Ansibles\\" + fileName), content.getBytes());
 			//String path = "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0_Tomcat92\\webapps\\Ansibles\\" + fileName;
         	
-        	fileName = UUID.randomUUID().toString();
-        	String path = ANSIBLE_PATH + fileName;
-        	System.out.println("path = " + path);
-        	File myObj = new File(path);
-		      if (myObj.createNewFile()) {
-		        System.out.println("File created: " + myObj.getName());
-		      } else {
-		        System.out.println("File already exists.");
-		      }
-		      
-		      FileWriter myWriter = new FileWriter(path);
-		      //removing the outer double quotes
-		      String _content = content.replaceAll("^\"|\"$", "");
-		      myWriter.write(_content);
-		      myWriter.close();
-		      System.out.println("Successfully wrote to the file.");
-        } catch (IOException e) {
-			// TODO Auto-generated catch block
+			fileName = UUID.randomUUID().toString();
+			String path = ANSIBLE_PATH + fileName;
+			System.out.println("path = " + path);
+			File myObj = new File(path);
+			if (myObj.createNewFile()) {
+				System.out.println("File created: " + myObj.getName());
+			} else {
+				System.out.println("File already exists.");
+			}
+
+			myWriter = new FileWriter(path);
+			//removing the outer double quotes
+			String _content = content.replaceAll("^\"|\"$", "");
+			myWriter.write(_content);
+			myWriter.close();
+			System.out.println("Successfully wrote to the file.");
+		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+				myWriter.close();
 		}
 
-        String playbookURL = REASONER_SERVER + ANSIBLE_FOLDER + fileName;
-        return playbookURL;
+		String playbookURL = REASONER_SERVER + ANSIBLE_FOLDER + fileName;
+		return playbookURL;
 	}
 
 }
