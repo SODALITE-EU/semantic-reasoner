@@ -88,7 +88,8 @@ public final class HttpClientRequest {
 			System.err.println("Bug Predictor service at " + bugPredictorEndpoint + "returned an HttpHostConnectException" );
 			return "Unreachable";
 		} finally {
-			br.close();
+			if (br != null)
+				br.close();
 		}		 
 
 	}

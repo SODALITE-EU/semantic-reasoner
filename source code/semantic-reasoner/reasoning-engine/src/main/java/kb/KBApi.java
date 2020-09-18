@@ -488,22 +488,31 @@ public class KBApi {
 							dependencies:
 								file: content: "script content" //not returned in aadm json
 					 	*/
-						String content = _value.toString();
-						String fileUrl = null;
-						try {
-							fileUrl = MyFileUtil.uploadFile(content);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						Value fileUrlValue = kb.getFactory().createLiteral(fileUrl);
-				
-						//This parameter is not added to the KB model, it is only added to aadm json
-						//e.g. url: "http://160.40.52.200:8084/Ansibles/b035b421-3aba-4cfb-b856-dfc473e5c71d"
-						String ws = MyUtils.getNamespaceFromIRI(classifier.toString());
-						p = new Parameter(kb.getFactory().createIRI( ws +"url"));
-						p.setClassifiedBy(kb.getFactory().createIRI(ws + "ParamClassifier_" + MyUtils.randomString()));
 						
-						p.setValue(fileUrlValue, kb);
+						if (_value != null) {
+							String content = _value.toString();
+						
+							String fileUrl = null;
+							try {
+								fileUrl = MyFileUtil.uploadFile(content);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						
+							Value fileUrlValue = null;
+							if (fileUrl != null)
+								fileUrlValue = kb.getFactory().createLiteral(fileUrl);
+							
+							//This parameter is not added to the KB model, it is only added to aadm json
+							//e.g. url: "http://160.40.52.200:8084/Ansibles/b035b421-3aba-4cfb-b856-dfc473e5c71d"
+							String ws = MyUtils.getNamespaceFromIRI(classifier.toString());
+							p = new Parameter(kb.getFactory().createIRI( ws +"url"));
+							p.setClassifiedBy(kb.getFactory().createIRI(ws + "ParamClassifier_" + MyUtils.randomString()));
+							
+							if (fileUrlValue != null)
+								p.setValue(fileUrlValue, kb);
+						}
+
 				}
 			} else if (parameter.equals("occurrences")){
 				Map<String, String> limitsMap = _getOccurrencesLimits(_classifier);

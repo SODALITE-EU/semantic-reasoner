@@ -54,6 +54,7 @@ public class MyFileUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
+			if (myWriter != null)
 				myWriter.close();
 		}
 
