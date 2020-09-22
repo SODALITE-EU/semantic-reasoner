@@ -556,7 +556,8 @@ public class KBApi {
 			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
 		
 			String parameter = MyUtils.getStringValue(_parameter);
-			limitsMap.put(parameter, _value.toString());
+			if (_value != null)
+				limitsMap.put(parameter, _value.toString());
 		}
 		
 		return limitsMap;

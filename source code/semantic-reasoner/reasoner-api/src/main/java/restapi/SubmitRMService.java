@@ -94,8 +94,9 @@ public class SubmitRMService extends AbstractService  {
 		} finally {
 			m.shutDown();
 		}
-				
-		response.put("rmuri", rmUri.stringValue());
+
+		if (rmUri != null)
+			response.put("rmuri", rmUri.stringValue());
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}
 

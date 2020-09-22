@@ -104,7 +104,8 @@ public class OptimizationService extends AbstractService {
 			m.shutDown();
 		}
 		
-		response.put("aadmuri", aadmUri.stringValue());
+		if (aadmUri != null)
+			response.put("aadmuri", aadmUri.stringValue());
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}
 	
