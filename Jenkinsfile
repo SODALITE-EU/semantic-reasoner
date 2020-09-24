@@ -112,6 +112,7 @@ pipeline {
                     openstack-network-name: ${network_name}
                     security-groups: ${security_groups}
                     flavor-name: ${flavor_name}
+                    identity_file: ${xOpera_ssh_key_file}                    
                     # DOCKER SETTINGS
                     docker-network: ${docker_network}
                     dockerhub-user: ${dockerhub_user}

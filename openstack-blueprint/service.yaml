@@ -45,6 +45,8 @@ topology_template:
     docker-registry-cert-email-address: 
       type: string
       default: ""
+    identity_file:
+      type: string      
 
   node_templates: 
 
@@ -96,6 +98,7 @@ topology_template:
         network:          { get_input: openstack-network-name } 
         security_groups:  { get_input: security-groups } 
         flavor:           { get_input: flavor-name }
+        identity_file:    { get_input: identity_file }        
         username: centos
       requirements:  
         - protected_by: security-rules-sodalite 
