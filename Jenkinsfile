@@ -68,15 +68,14 @@ pipeline {
       }
     }
    stage('Build docker images') {
+            when { branch "master" }
             steps {
                 sh "cd source\\ code/semantic-reasoner; docker build -t semantic_web -f  ./docker/web/Dockerfile ."
                 sh "cd source\\ code/semantic-reasoner; docker build -t graph_db -f  ./docker/graph-db/Dockerfile ."
             }
    }
-   stage('Push Dockerfile to DockerHub') {
-            when {
-               branch "master"
-            }
+   stage('Push images to DockerHub') {
+            when { branch "master" }
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
                     sh  """#!/bin/bash                       
