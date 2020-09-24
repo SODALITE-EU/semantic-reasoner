@@ -95,7 +95,7 @@ pipeline {
             when { branch "master" }
             steps {
                 sh "virtualenv venv"
-                sh "sudo apt-get install build-essential"
+                sh "apt-get install build-essential"
                 sh ". venv/bin/activate; python -m pip install -U 'opera[openstack]==0.5.7'"
                 sh ". venv/bin/activate; python -m pip install docker"
                 sh ". venv/bin/activate; ansible-galaxy install -r openstack-blueprint/requirements.yml"
