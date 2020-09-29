@@ -74,8 +74,10 @@ pipeline {
                 sh "cd source\\ code/semantic-reasoner; docker build -t graph_db -f  ./docker/graph-db/Dockerfile ."
             }
    }
-   stage('Push images to DockerHub') {
-            when { branch "master" }
+   stage('Push Reasoner to DockerHub') {
+            when {
+               branch "master"
+            }
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
                     sh  """#!/bin/bash                       
@@ -83,6 +85,17 @@ pipeline {
                             docker tag semantic_web sodaliteh2020/semantic_web
                             docker push sodaliteh2020/semantic_web:${BUILD_NUMBER}
                             docker push sodaliteh2020/semantic_web
+                        """
+                }
+            }
+   }
+   stage('Push graphdb to DockerHub') {
+            when {
+               branch "graphdb-*"
+            }
+            steps {
+                withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
+                    sh  """#!/bin/bash                       
                             docker tag graph_db sodaliteh2020/graph_db:${BUILD_NUMBER}
                             docker tag graph_db sodaliteh2020/graph_db
                             docker push sodaliteh2020/graph_db:${BUILD_NUMBER}
