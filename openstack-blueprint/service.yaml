@@ -137,6 +137,8 @@ topology_template:
         restart_policy: always
         ports:  ['7200:7200']
         exposed_ports:  ['7200']
+        volumes:
+          - "/home/centos/graphdb-home:/opt/graphdb/home"   
       requirements:
         - host: docker-host
         - registry: docker-public-registry   
