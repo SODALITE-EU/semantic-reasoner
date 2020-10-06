@@ -109,7 +109,11 @@ public class KB {
     }
 
     private boolean checkIfRepoExists(String serverUrl, String repoName) {
-        manager = new SodaliteRepository(serverUrl, "", "");
+    	String env = ConfigsLoader.getInstance().getEnvironment();
+    	if ("docker".equals(env))
+        	manager = new SodaliteRepository(serverUrl, "admin", "123");
+    	else 
+    		manager = new SodaliteRepository(serverUrl, "", "");
 
         if (manager.getRepository(repoName) != null) {
             connection = getRepositoryConnection(repoName);

@@ -3,6 +3,7 @@ package restapi.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -83,9 +84,9 @@ public final class HttpClientRequest {
 				System.out.println("Response: \n" + responseResult.append(line));
 			}
 			return responseResult.toString();
-		} catch(HttpHostConnectException e) {
+		} catch(HttpHostConnectException|UnknownHostException e) {
 			e.printStackTrace();
-			System.err.println("Bug Predictor service at " + bugPredictorEndpoint + "returned an HttpHostConnectException" );
+			System.err.println("Bug Predictor service at " + bugPredictorEndpoint + " is unreachable");
 			return "Unreachable";
 		} finally {
 			if (br != null)
