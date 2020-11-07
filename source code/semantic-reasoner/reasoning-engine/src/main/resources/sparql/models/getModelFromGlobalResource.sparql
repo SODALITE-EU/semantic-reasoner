@@ -1,0 +1,19 @@
+SELECT ?m ?time ?user ?dsl ?name {
+		?m a ?modelType .
+		FILTER (?modelType  IN (soda:AbstractApplicationDeployment, soda:ResourceModel)) 
+		?m soda:createdAt ?time .
+		?m soda:createdBy ?user .
+		?m soda:hasDSL ?dsl .
+		?m soda:hasName ?name .
+        
+		?m DUL:isSettingFor ?n .
+        
+		?n soda:hasContext ?c .
+        ?n soda:hasName ?name .
+		  
+		FILTER NOT EXISTS
+		{ 
+			GRAPH ?g { ?n ?p ?o }
+		}
+    	
+}

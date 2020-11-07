@@ -6,7 +6,7 @@ where {
 	?ctx tosca:requirements ?r .
 	?r DUL:classifies ?p.
 	?r DUL:hasParameter [DUL:classifies tosca:node; DUL:hasRegion ?v] .
-	FILTER (STRENDS (str(?node), ?ofNode)) .
+	#FILTER (STRENDS (str(?node), ?ofNode)) .
 	FILTER (STRENDS (str(?p), ?requirementName)) .
 	#Only the node type of the ancenstor is returned
 	#FILTER NOT EXISTS {

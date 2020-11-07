@@ -1,7 +1,7 @@
 select distinct ?interface ?classifier ?resource2
 where {
 	?resource soda:hasInferredContext ?context .
-	FILTER (strends(str(?resource), ?var)).
+	#FILTER (strends(str(?resource), ?var)).
 	?context tosca:interfaces ?classifier.
 	?classifier DUL:classifies ?interface .
 	?resource2 soda:hasContext ?context .

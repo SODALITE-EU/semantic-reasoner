@@ -1,5 +1,7 @@
 package kb.utils;
 
+import java.util.Set;
+
 import org.eclipse.rdf4j.query.Binding;
 import org.eclipse.rdf4j.query.BooleanQuery;
 import org.eclipse.rdf4j.query.GraphQuery;
@@ -107,4 +109,16 @@ public class QueryUtil {
 		// Sending the query to GraphDB and evaluating it
 		return booleanQuery.evaluate();
 	}
+	
+	public static String convertToSPARQLList(Set<String> list) {
+	    StringBuffer sb = new StringBuffer();
+	    for(String item: list) {
+	    	 sb.append("\"");
+	         sb.append(item);
+	         sb.append("\" ");
+	    }
+	    sb.setLength(sb.length() - 1); // remove last whitespace
+	    return sb.toString();
+	 }
+
 }

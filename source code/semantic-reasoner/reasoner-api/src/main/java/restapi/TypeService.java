@@ -1,11 +1,15 @@
 package restapi;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.JsonArray;
@@ -13,6 +17,7 @@ import com.google.gson.JsonObject;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Node;
 
@@ -22,9 +27,9 @@ import kb.dto.Node;
  * @version 1.0
  * @since 1.0
 */
-@Path("/nodes")
+@Path("/types")
 @Api()
-public class NodeService extends AbstractService {
+public class TypeService extends AbstractService {
 	/**
 	  * Getting all the known TOSCA nodes in the KB
 	  * @throws IOException if your input format is invalid
@@ -33,10 +38,18 @@ public class NodeService extends AbstractService {
 	@GET
 	@Produces("application/json")
 	@ApiOperation(value = "Returns all the known TOSCA nodes", responseContainer = "List")
-	public Response getNodes() throws IOException {
-
+	public Response getNodes(@ApiParam(
+			value = "the namespaces",
+			required = true,
+			defaultValue = "") @MatrixParam("imports") List<String> imports, @ApiParam(
+					value = "the type e.g. data, node",
+					required = true,
+					defaultValue = "") @MatrixParam("type") String type ) throws IOException {
+		
+		 System.out.println("imports are " + Arrays.toString(imports.toArray()) + ", type is " + type);
+		
 		KBApi api = new KBApi();
-		Set<Node> nodes = api.getNodes();
+		Set<Node> nodes = api.getNodes(imports, type);
 		api.shutDown();
 		// Gson gson = new Gson();
 

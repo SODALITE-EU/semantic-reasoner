@@ -29,10 +29,17 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.joda.time.DateTime;
+import org.joda.time.base.AbstractDateTime;
 
 import com.google.common.primitives.Ints;
 
+import kb.clean.ModifyKB;
 import kb.dsl.exceptions.MappingException;
+import kb.dsl.exceptions.models.DslValidationModel;
+import kb.dsl.exceptions.models.MappingValidationModel;
+import kb.dsl.utils.GetResources;
+import kb.dsl.utils.NamedResource;
+import kb.dsl.verify.singularity.VerifySingularity;
 import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
@@ -43,6 +50,7 @@ import kb.validation.exceptions.CapabilityMismatchValidationException;
 import kb.validation.exceptions.NoRequirementDefinitionValidationException;
 import kb.validation.exceptions.NodeMismatchValidationException;
 import kb.validation.exceptions.ValidationException;
+import kb.validation.exceptions.models.RequiredPropertyAttributeModel;
 import kb.validation.exceptions.models.ValidationModel;
 import kb.validation.required.RequiredPropertyValidation;
 
@@ -53,7 +61,8 @@ public class DSLMappingService {
 
 	public Model aadmModel;
 
-	public ModelBuilder builder;
+	public ModelBuilder aadmBuilder;
+	public ModelBuilder templateBuilder;
 
 	IRI aadmContainer;
 
@@ -61,12 +70,19 @@ public class DSLMappingService {
 //	String ws = base + "workspace/woq2a8g0gscuqos88bn2p7rvlq3/";
 //	String ws = "http://";
 	String ws = base + "workspace/1/";
-
+	String namespacews = base + "workspace/1/";
+	
 	IRI aadmKB;
-	IRI context;
 	String aadmURI;
+	String aadmDSL;
+	IRI namespace;
+	String name;
 	
 	boolean complete;
+	
+	String currentTemplate;
+	List<String> namespacesOfType;
+	
 
 	// Validation
 	Set<String> definedPropertiesForValidation = new HashSet<String>(),
@@ -76,16 +92,23 @@ public class DSLMappingService {
 	List<ValidationModel> validationModels = new ArrayList<>();
 	List<ValidationModel> modifiedModels = new ArrayList<>();
 	List<ValidationModel> suggestedModels = new ArrayList<>();
+	List<DslValidationModel>  mappingModels =  new ArrayList<>();
+	
+	Set<String> templateNames = new HashSet<>();
 	
 
-	public DSLMappingService(KB kb, String aadmTTL, String aadmURI, boolean complete)
+	public DSLMappingService(KB kb, String aadmTTL, String aadmURI, boolean complete, String namespace, String aadmDSL, String name)
 			throws RDFParseException, UnsupportedRDFormatException, IOException {
 		super();
 		this.kb = kb;
 		this.factory = SimpleValueFactory.getInstance();
 
-		builder = new ModelBuilder();
-		builder.setNamespace("soda", KB.SODA).setNamespace("dul", KB.DUL).setNamespace("dcterms", KB.DCTERMS)
+		aadmBuilder = new ModelBuilder();
+		aadmBuilder.setNamespace("soda", KB.SODA).setNamespace("dul", KB.DUL).setNamespace("dcterms", KB.DCTERMS)
+				.setNamespace("exchange", KB.EXCHANGE).setNamespace("tosca", KB.TOSCA);
+		
+		templateBuilder = new ModelBuilder();
+		templateBuilder.setNamespace("soda", KB.SODA).setNamespace("dul", KB.DUL).setNamespace("dcterms", KB.DCTERMS)
 				.setNamespace("exchange", KB.EXCHANGE).setNamespace("tosca", KB.TOSCA);
 
 		//System.out.println(aadmTTL);
@@ -97,72 +120,137 @@ public class DSLMappingService {
 	//	context = kb.factory.createIRI("http://" + submissionId);
 		//ws += MyUtils.randomString() + "/";
 		this.complete = complete;
+		
+		if (!"".equals(namespace))
+			this.namespace = factory.createIRI(ws + namespace + "/");
+		else
+			this.namespace = factory.createIRI(ws + "global/");
+		
+		this.aadmDSL = aadmDSL;
+		this.name = name;
 	}
 
+	public void retrieveLocalTemplates() throws MappingException {
+		for (Resource _template : aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Template"))
+				.subjects()) {
+			IRI template = (IRI) _template;
+
+			Optional<Literal> templateName = Models
+					.objectLiteral(aadmModel.filter(template, factory.createIRI(KB.EXCHANGE + "name"), null));
+			
+			if (templateName.isPresent()) {
+				templateNames.add(templateName.get().getLabel());
+			}
+		}
+	}
+	
 	public IRI start() throws MappingException, ValidationException  {
 
 		// AADM
 		aadmKB = null;
 
 		for (Resource _aadm : aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "AADM")).subjects()) {
-			String userId = Models
-					.objectLiteral(aadmModel.filter(_aadm, factory.createIRI(KB.EXCHANGE + "userId"), null))
-					.orElseThrow(
-							() -> new MappingException("No 'userId' defined for AADM: " + ((IRI) _aadm).getLocalName()))
-					.stringValue();
+			Optional<Literal> _userId = Models
+					.objectLiteral(aadmModel.filter(_aadm, factory.createIRI(KB.EXCHANGE + "userId"), null));
 			
-			
+			String userId = null;
+			if (!_userId.isPresent())
+				mappingModels.add(new MappingValidationModel("AADM", "", "No 'userId' defined for AADM"));
+			else
+				userId = _userId.get().getLabel();
+					
 			ws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
 			System.out.println("namespace = " + ws);
-			builder.setNamespace("ws", ws);
+			aadmBuilder.setNamespace("ws", ws);
 
 			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(ws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
-			context = aadmKB;
-			System.out.println("context =" + context );
-			builder.add(aadmKB, RDF.TYPE, "soda:AbstractApplicationDeployment");
+			//context = aadmKB;
+			aadmBuilder.add(aadmKB, RDF.TYPE, "soda:AbstractApplicationDeployment");
 
-			IRI user = factory.createIRI(ws + userId);
-			builder.add(user, RDF.TYPE, "soda:User");
-
-			builder.add(aadmKB, factory.createIRI(KB.SODA + "createdBy"), user);
-			builder.add(aadmKB, factory.createIRI(KB.SODA + "createdAt"), DateTime.now());
+			if (userId != null) {
+				IRI user = factory.createIRI(ws + userId);
+				aadmBuilder.add(user, RDF.TYPE, "soda:User");
+				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "createdBy"), user);
+			}
+			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "createdAt"), DateTime.now());
+			
+			if ("".equals(aadmDSL)) {
+				mappingModels.add(new MappingValidationModel("AADM", "aadmDSL", "No 'DSL' defined for the aadm model"));
+			} else {
+				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasDSL"), aadmDSL);
+			}
+			
+			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasName"), name);
+			
 			break;
 		}
 
 		if (aadmKB == null) {
-			throw new MappingException("No AADM container found.");
+			mappingModels.add(new MappingValidationModel("AADM", "", "No AADM container found."));
 		}
 
+		retrieveLocalTemplates();	
+		
 		// TEMPLATES
 		for (Resource _template : aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Template"))
 				.subjects()) {
 			IRI template = (IRI) _template;
 
-			String templateName = Models
-					.objectLiteral(aadmModel.filter(template, factory.createIRI(KB.EXCHANGE + "name"), null))
-					.orElseThrow(
-							() -> new MappingException("No 'name' defined for template: " + template.getLocalName()))
-					.stringValue();
-			String templateType = Models
-					.objectLiteral(aadmModel.filter(template, factory.createIRI(KB.EXCHANGE + "type"), null))
-					.orElseThrow(
-							() -> new MappingException("No 'type' defined for template: " + template.getLocalName()))
-					.stringValue();
-
+			Optional<Literal> _templateName = Models
+					.objectLiteral(aadmModel.filter(template, factory.createIRI(KB.EXCHANGE + "name"), null));
+			String templateName = null;
+			
+			if (!_templateName.isPresent())
+				mappingModels.add(new MappingValidationModel("", template.getLocalName(), "No 'name' defined for template: "));
+			else 
+				templateName = _templateName.get().getLabel();
+			
+			currentTemplate = templateName;
+			
+			Optional<Literal> _templateType = Models
+					.objectLiteral(aadmModel.filter(template, factory.createIRI(KB.EXCHANGE + "type"), null));
+			String templateType = null;
+			
+			//errors like this are syntactic errors - prevented from ide
+			if (!_templateType.isPresent()) {
+				mappingModels.add(new MappingValidationModel("type", currentTemplate, "No 'type' defined for template: "));
+				throw new MappingException(mappingModels);
+			}
+			else
+				templateType = _templateType.get().getLabel();
+			
 			System.out.println(String.format("Name: %s, type: %s", templateName, templateType));
-
+			
+			NamedResource n = GetResources.setNamedResource(namespacews, templateType);
+			//this.namespaceOfType = n.getNamespace();
+			
+			templateType = n.getResource();
+			namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, n.getResourceURI());
+			
+			System.out.println("namespaceOfType=" + this.namespacesOfType + ", templateType=" + templateType);
+			
+			IRI templateDescriptionKB = null;
 			// add template to the aadm container instance
-			IRI templateKB = factory.createIRI(ws + templateName); // this will be always new
-			IRI kbNodeType = getKBNodeType(templateType, "tosca:tosca.entity.Root");
+			if (templateName != null && templateType != null) {
+				IRI templateKB = factory.createIRI(namespace + templateName); // this will be always new
+				templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasName"), templateName);
+				
+				IRI kbNodeType = GetResources.getKBNodeType(n, "tosca:tosca.entity.Root", kb);
 
-			builder.add(templateKB, RDF.TYPE, kbNodeType);
-			builder.add(aadmKB, factory.createIRI(KB.SODA + "includesTemplate"), templateKB);
+				if (kbNodeType == null) {
+					mappingModels.add(new MappingValidationModel(templateName, templateType, "'type' not found "));
+				} else {
+					templateBuilder.add(templateKB, RDF.TYPE, kbNodeType);
+				}
+				
+				if (aadmKB != null) 
+					templateBuilder.add(aadmKB, factory.createIRI(KB.SODA + "includesTemplate"), templateKB);
 
-			// create description
-			IRI templateDescriptionKB = factory.createIRI(ws + "Desc_" + MyUtils.randomString());
-			builder.add(templateDescriptionKB, RDF.TYPE, "soda:SodaliteDescription");
-			builder.add(templateKB, factory.createIRI(KB.SODA + "hasContext"), templateDescriptionKB);
-
+				// create description
+				templateDescriptionKB = factory.createIRI(namespace + "Desc_" + MyUtils.randomString());
+				templateBuilder.add(templateDescriptionKB, RDF.TYPE, "soda:SodaliteDescription");
+				templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasContext"), templateDescriptionKB);
+			}
 			// properties
 			Set<Resource> _properties = Models.getPropertyResources(aadmModel, _template,
 					factory.createIRI(KB.EXCHANGE + "properties"));
@@ -172,7 +260,8 @@ public class DSLMappingService {
 				IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
 
 				// add property classifiers to the template context
-				builder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "properties"), propertyClassifierKB);
+				if (templateDescriptionKB != null)
+					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "properties"), propertyClassifierKB);
 			}
 			// validation
 			RequiredPropertyValidation v = new RequiredPropertyValidation(templateName,
@@ -185,10 +274,8 @@ public class DSLMappingService {
 					factory.createIRI(KB.EXCHANGE + "attributes"))) {
 				IRI attribute = (IRI) _attribute;
 				IRI attributesClassifierKB = createPropertyOrAttributeKBModel(attribute);
-
-				// add attribute classifiers to the template context
-				builder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "attributes"), attributesClassifierKB);
-
+				if (templateDescriptionKB != null)
+					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "attributes"), attributesClassifierKB);
 			}
 
 			// requirements
@@ -198,8 +285,9 @@ public class DSLMappingService {
 				IRI requirementClassifierKB = createRequirementKBModel(requirement);
 
 				// add attribute classifiers to the template context
-				builder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "requirements"),
-						requirementClassifierKB);
+				if (templateDescriptionKB != null)
+					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "requirements"),
+							requirementClassifierKB);
 
 			}
 
@@ -210,8 +298,9 @@ public class DSLMappingService {
 				IRI capabilityClassifierKB = createCapabilityKBModel(capability);
 
 				// add attribute classifiers to the template context
-				builder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "capabilities"),
-						capabilityClassifierKB);
+				if (templateDescriptionKB != null)
+					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "capabilities"),
+							capabilityClassifierKB);
 			
 			}
 			
@@ -219,9 +308,11 @@ public class DSLMappingService {
 			Optional<String> _optimizations = Models.getPropertyString(aadmModel, _template,
 					factory.createIRI(KB.EXCHANGE + "optimization"));
 
-			if (_optimizations.isPresent())
-				builder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "optimization"),
-					_optimizations.get());
+			if (_optimizations.isPresent()) {
+				if (templateDescriptionKB != null)
+					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "optimization"),
+							_optimizations.get());
+			}
 			// misc
 
 		}
@@ -229,35 +320,43 @@ public class DSLMappingService {
 		// Inputs
 		Set<Resource> inputs = aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Input")).subjects();
 		if (inputs.size() > 0) {
-			IRI inputKB = factory.createIRI(ws + "topology_template_inputs");
-			builder.add(inputKB, RDF.TYPE, factory.createIRI(KB.TOSCA + "Input"));
-			builder.add(aadmKB, factory.createIRI(KB.SODA + "includesInput"), inputKB);
+			IRI inputKB = factory.createIRI(namespace + "topology_template_inputs_" + MyUtils.randomString());
+			templateBuilder.add(inputKB, RDF.TYPE, factory.createIRI(KB.TOSCA + "Input"));
+			if (aadmKB!=null)
+				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "includesInput"), inputKB);
 
 			// create description
-			IRI inputDescriptionKB = factory.createIRI(ws + "Desc_" + MyUtils.randomString());
-			builder.add(inputDescriptionKB, RDF.TYPE, "soda:SodaliteDescription");
-			builder.add(inputKB, factory.createIRI(KB.SODA + "hasContext"), inputDescriptionKB);
-
+			IRI inputDescriptionKB = factory.createIRI(namespace + "Desc_" + MyUtils.randomString());
+			templateBuilder.add(inputDescriptionKB, RDF.TYPE, "soda:SodaliteDescription");
+			templateBuilder.add(inputKB, factory.createIRI(KB.SODA + "hasContext"), inputDescriptionKB);
+			templateBuilder.add(inputKB, factory.createIRI(KB.SODA + "hasName"), "topology_template_inputs");
+			
 			for (Resource _input : inputs) {
 				IRI input = (IRI) _input;
-				String inputName = Models
-						.objectLiteral(aadmModel.filter(input, factory.createIRI(KB.EXCHANGE + "name"), null))
-						.orElseThrow(() -> new MappingException("No 'name' defined for input: " + input.getLocalName()))
-						.stringValue();
-
-				System.out.println(String.format("Input name: %s", inputName));
+				Optional<Literal> _inputName = Models
+						.objectLiteral(aadmModel.filter(input, factory.createIRI(KB.EXCHANGE + "name"), null));
+				
+				String inputName = null;
+				if (!_inputName.isPresent())
+					mappingModels.add(new MappingValidationModel(currentTemplate, input.getLocalName(), "No 'name' defined for input"));
+				else {
+					inputName = _inputName.get().getLabel();
+					System.out.println(String.format("Input name: %s", inputName));
+				}
 
 				// for each tosca input we need to have a Feature
-				IRI inputFeatureKB = factory.createIRI(ws + "Input_" + MyUtils.randomString());
-				builder.add(inputFeatureKB, RDF.TYPE, "tosca:Feature");
+				IRI inputFeatureKB = factory.createIRI(namespace + "Input_" + MyUtils.randomString());
+				templateBuilder.add(inputFeatureKB, RDF.TYPE, "tosca:Feature");
 
-				IRI kbProperty = getKBProperty(inputName);
-				if (kbProperty == null) {
-					kbProperty = factory.createIRI(ws + inputName);
-					builder.add(kbProperty, RDF.TYPE, "rdf:Property");
+				if (inputName != null) {
+					IRI kbProperty = GetResources.getKBProperty(inputName, this.namespacesOfType, kb);
+					if (kbProperty == null) {
+						kbProperty = factory.createIRI(namespace + inputName);
+						templateBuilder.add(kbProperty, RDF.TYPE, "rdf:Property");
+					}
+					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
 				}
-				builder.add(inputFeatureKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
-				builder.add(inputDescriptionKB, factory.createIRI(KB.TOSCA + "input"), inputFeatureKB);
+				templateBuilder.add(inputDescriptionKB, factory.createIRI(KB.TOSCA + "input"), inputFeatureKB);
 
 				Set<Resource> _parameters = Models.getPropertyResources(aadmModel, _input,
 						factory.createIRI(KB.EXCHANGE + "hasParameter"));
@@ -267,35 +366,55 @@ public class DSLMappingService {
 					IRI parameter = (IRI) _parameter;
 					IRI propertyClassifierKB = createPropertyOrAttributeKBModel(parameter);
 
-					builder.add(inputFeatureKB, factory.createIRI(KB.DUL + "hasParameter"), propertyClassifierKB);
+					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DUL + "hasParameter"), propertyClassifierKB);
 				}
 
 			}
 		}
 
+		if (!mappingModels.isEmpty()) {
+			throw new MappingException(mappingModels);
+		}
 		if (!validationModels.isEmpty()) {
 			throw new ValidationException(validationModels);
 		}
+		
+		try {
+			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString());
+			if (!aadmURI.isEmpty())
+				VerifySingularity.removeInputs(kb, aadmURI);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		return aadmKB;
 
 	}
 
 	private IRI createRequirementKBModel(IRI requirement) throws MappingException {
-		String requirementName = Models
-				.objectLiteral(aadmModel.filter(requirement, factory.createIRI(KB.EXCHANGE + "name"), null))
-				.orElseThrow(
-						() -> new MappingException("No 'name' defined for requirement: " + requirement.getLocalName()))
-				.stringValue();
+		Optional<Literal> _requirementName = Models
+				.objectLiteral(aadmModel.filter(requirement, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		String requirementName = null;
+		if (!_requirementName.isPresent())
+			mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "No 'name' defined for requirement"));
+		else
+			requirementName = _requirementName.get().getLabel();
 
 		// create classifier
-		IRI requirementClassifierKB = factory.createIRI(ws + "ReqClassifier_" + MyUtils.randomString());
-		builder.add(requirementClassifierKB, RDF.TYPE, "tosca:Requirement");
+		IRI requirementClassifierKB = factory.createIRI(namespace + "ReqClassifier_" + MyUtils.randomString());
+		templateBuilder.add(requirementClassifierKB, RDF.TYPE, "tosca:Requirement");
 
-		IRI requirementProperty = getKBProperty(requirementName);
-		if (requirementProperty == null) {
-			throw new MappingException("Cannot find requirement property: " + requirementName);
+		IRI requirementProperty = null;
+		if (requirementName != null) {
+			requirementProperty = GetResources.getKBProperty(requirementName, this.namespacesOfType, kb);
+			if (requirementProperty == null) {
+				mappingModels.add(new MappingValidationModel(currentTemplate, requirementName, "Cannot find requirement property"));
+			}
 		}
-		builder.add(requirementClassifierKB, factory.createIRI(KB.DUL + "classifies"), requirementProperty);
+		
+		if (requirementProperty != null)
+			templateBuilder.add(requirementClassifierKB, factory.createIRI(KB.DUL + "classifies"), requirementProperty);
 
 		// check for direct values of parameters
 		Literal value = Models
@@ -303,16 +422,21 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			IRI kbTemplate = getKBTemplate(value.getLabel());
+			NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());			
+			IRI kbTemplate = getKBTemplate(n);
 			if (kbTemplate == null) {
-				// throw new Exception("Cannot find node: " + value);
-				kbTemplate = factory.createIRI(ws + value.getLabel());
+				if (templateNames.contains(n.getResource()))
+					kbTemplate = factory.createIRI(namespace + n.getResource());
+				else
+					mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
 			}
-			builder.add(requirementClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+			if (kbTemplate != null)
+				templateBuilder.add(requirementClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
 		} else {
 
 			IRI root = createParameterKBModel(requirement);
-			builder.add(requirementClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
+			if (root != null)
+				templateBuilder.add(requirementClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
 		}
 
 		return requirementClassifierKB;
@@ -320,56 +444,73 @@ public class DSLMappingService {
 	}
 
 	private IRI createParameterKBModel(IRI requirement) throws MappingException {
+		IRI parameterClassifierKB = null;
+		
 		Optional<Resource> _parameter = Models.getPropertyResource(aadmModel, requirement,
 				factory.createIRI(KB.EXCHANGE + "hasParameter"));
+		IRI parameter = null;
 		if (!_parameter.isPresent()) {
-			throw new MappingException("Cannot find parameter for: " + requirement.getLocalName());
-		}
-		IRI parameter = (IRI) _parameter.get();
-
-		String parameterName = Models
-				.objectLiteral(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "name"), null))
-				.orElseThrow(() -> new MappingException("No 'name' defined for parameter: " + parameter.getLocalName()))
-				.stringValue();
-
-		// create classifier
-		IRI parameterClassifierKB = factory.createIRI(ws + "ParamClassifier_" + MyUtils.randomString());
-		builder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
-
-		IRI paramProperty = getKBProperty(parameterName);
-		if (paramProperty == null) {
-			throw new MappingException("Cannot find requirement parameter: " + parameterName);
-		}
-		builder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "classifies"), paramProperty);
-
-		// check for direct values of parameters
-		Literal value = Models
-				.objectLiteral(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "value"), null))
-				.orElse(null);
-
-		if (value != null) { // this means there is no parameters
-			IRI kbTemplate = getKBTemplate(value.getLabel());
-			if (kbTemplate == null) {
-				// throw new Exception("Cannot find node: " + value);
-				kbTemplate = factory.createIRI(ws + value.getLabel());
-			}
-			builder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+			mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "Cannot find requirement parameter"));
 		} else {
+			parameter = (IRI) _parameter.get();
+		
 
-			IRI root = createParameterKBModel(parameter);
-			builder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
+			String parameterName = null;
+			Optional<Literal> _parameterName = Models
+					.objectLiteral(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "name"), null));
+			if (!_parameter.isPresent()) {
+				mappingModels.add(new MappingValidationModel(currentTemplate, parameter.getLocalName() , "No 'name' defined for requirement parameter"));
+			} else {
+				parameterName = _parameterName.get().getLabel();
+			}
+		
+			// create classifier
+			parameterClassifierKB = factory.createIRI(namespace + "ParamClassifier_" + MyUtils.randomString());
+			templateBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+			if (parameterName != null) {
+				IRI paramProperty = GetResources.getKBProperty(parameterName, this.namespacesOfType, kb);
+				if (paramProperty == null) 
+					mappingModels.add(new MappingValidationModel(currentTemplate, parameterName , "Cannot find requirement parameter"));
+				else 
+					templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "classifies"), paramProperty);
+			}
+			
+			// check for direct values of parameters
+			Literal value = Models
+					.objectLiteral(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "value"), null))
+					.orElse(null);
 
+			if (value != null) { // this means there is no parameters
+				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				IRI kbTemplate = getKBTemplate(n);
+				if (kbTemplate == null) {
+					if (templateNames.contains(n.getResource()))
+						kbTemplate = factory.createIRI(namespace + n.getResource());
+					else
+						mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
+				}
+				if (kbTemplate != null)
+					templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+			} else {
+
+				IRI root = createParameterKBModel(parameter);
+				templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
+
+			}
 		}
 		return parameterClassifierKB;
 	}
 
 	private IRI createPropertyOrAttributeKBModel(IRI exchangeParameter) throws MappingException {
-		String propertyName = Models
-				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "name"), null))
-				.orElseThrow(() -> new MappingException(
-						"No 'name' defined for property: " + exchangeParameter.getLocalName()))
-				.stringValue();
+		Optional<Literal> _propertyName = Models
+				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "name"), null));
 
+		String propertyName = null;
+		if (!_propertyName.isPresent())
+			mappingModels.add(new MappingValidationModel(currentTemplate, exchangeParameter.getLocalName(), "No 'name' defined for property"));
+		else {
+			propertyName = _propertyName.get().getLabel();
+		}
 //		Optional<Literal> _value = Models
 //				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "value"), null));
 
@@ -387,8 +528,8 @@ public class DSLMappingService {
 		}
 
 //		String value = _value.isPresent() ? _value.get().stringValue() : null;
-
-		definedPropertiesForValidation.add(propertyName);
+		if (propertyName != null)
+			definedPropertiesForValidation.add(propertyName);
 
 		System.out.println(String.format("Property name: %s, value: %s", propertyName, _values));
 		
@@ -400,29 +541,32 @@ public class DSLMappingService {
 		IRI propertyClassifierKB = null;
 		switch (parameterType) {
 			case "Attribute":
-				propertyClassifierKB = factory.createIRI(ws + "AttrClassifer_" + MyUtils.randomString());
-				builder.add(propertyClassifierKB, RDF.TYPE, "tosca:Attribute");
+				propertyClassifierKB = factory.createIRI(namespace + "AttrClassifer_" + MyUtils.randomString());
+				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Attribute");
 				break;
 			case "Parameter":
-				propertyClassifierKB = factory.createIRI(ws + "ParamClassifer_" + MyUtils.randomString());
-				builder.add(propertyClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				propertyClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			case "Property" :
-				propertyClassifierKB = factory.createIRI(ws + "PropClassifer_" + MyUtils.randomString());
-				builder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
+				propertyClassifierKB = factory.createIRI(namespace + "PropClassifer_" + MyUtils.randomString());
+				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
 				break;
 			default:
 				System.err.println("parameterType = " + parameterType + " does not exist");
 		}
 
 		// create rdf:property
-		IRI kbProperty = getKBProperty(propertyName);
-		if (kbProperty == null) {
-			kbProperty = factory.createIRI(ws + propertyName);
-			builder.add(kbProperty, RDF.TYPE, "rdf:Property");
+		if (propertyName != null) {
+			//maybe local namespace should be passed in type
+			IRI kbProperty = GetResources.getKBProperty(propertyName, this.namespacesOfType, kb);
+			if (kbProperty == null) {
+				kbProperty = factory.createIRI(namespace + propertyName);
+				templateBuilder.add(kbProperty, RDF.TYPE, "rdf:Property");
+			}
+			templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
 		}
-		builder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
-
+		
 		// handle values
 		if (!_values.isEmpty()) {
 
@@ -430,38 +574,38 @@ public class DSLMappingService {
 				Object i = null;
 				String value = _values.iterator().next();
 				if ((i = Ints.tryParse(value)) != null) {
-					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+					templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 				} else if ((i = BooleanUtils.toBooleanObject(value)) != null) {
-					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
+					templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
 				} else
-					builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+					templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
 			} else {
-				IRI list = factory.createIRI(ws + "List_" + MyUtils.randomString());
+				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 				for (String string : _values) {
 					Object i = null;
 					if ((i = Ints.tryParse(string)) != null) {
-						builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+						templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 					} else if ((i = BooleanUtils.toBooleanObject(string)) != null) {
-						builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
+						templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
 					} else
-						builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
+						templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
 				}
-				builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 			}
 
 		} else if (!listValues.isEmpty()) {
 			System.err.println("*****************************} else if (!listValues.isEmpty()) {");
-			IRI list = factory.createIRI(ws + "List_" + MyUtils.randomString());
+			IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 			for (String string : listValues) {
 				Object i = null;
 				if ((i = Ints.tryParse(string)) != null) {
-					builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+					templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 				} else if ((i = BooleanUtils.toBooleanObject(string)) != null) {
-					builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
+					templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
 				} else
-					builder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
+					templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
 			}
-			builder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+			templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, exchangeParameter,
 					factory.createIRI(KB.EXCHANGE + "hasParameter"));
@@ -470,7 +614,7 @@ public class DSLMappingService {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createPropertyOrAttributeKBModel(parameter);
 
-				builder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
 			}
 
 //			IRI root = createPropertyOrAttributeKBModel(exchangeParameter);
@@ -489,14 +633,14 @@ public class DSLMappingService {
 				.stringValue();
 
 		// create classifier
-		IRI capabilityClassifierKB = factory.createIRI(ws + "CapClassifier_" + MyUtils.randomString());
-		builder.add(capabilityClassifierKB, RDF.TYPE, "tosca:Capability");
+		IRI capabilityClassifierKB = factory.createIRI(namespace + "CapClassifier_" + MyUtils.randomString());
+		templateBuilder.add(capabilityClassifierKB, RDF.TYPE, "tosca:Capability");
 
-		IRI capabilityProperty = getKBProperty(capabilityName);
+		IRI capabilityProperty = GetResources.getKBProperty(capabilityName, this.namespacesOfType, kb);
 		if (capabilityProperty == null) {
 			throw new MappingException("Cannot find capability property: " + capabilityName);
 		}
-		builder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "classifies"), capabilityProperty);
+		templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "classifies"), capabilityProperty);
 
 		// check for direct values of parameters
 		Literal value = Models
@@ -504,27 +648,30 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			IRI kbTemplate = getKBTemplate(value.getLabel());
+			NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+			IRI kbTemplate = getKBTemplate(n);
 			if (kbTemplate == null) {
-				// throw new Exception("Cannot find node: " + value);
-				kbTemplate = factory.createIRI(ws + value.getLabel());
+				if (templateNames.contains(n.getResource()))
+					kbTemplate = factory.createIRI(namespace + n.getResource());
+				else
+					mappingModels.add(new MappingValidationModel(currentTemplate, capability.getLocalName(), "Cannot find Template: " + value.getLabel()));
 			}
-			builder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+			if (kbTemplate != null)
+				templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
 		} else {
-
 			Set<Resource> _properties = Models.getPropertyResources(aadmModel, capability,
 			factory.createIRI(KB.EXCHANGE + "properties"));
 			//definedPropertiesForValidation.clear();
 			if (_properties.isEmpty()) {
 				IRI root = createParameterKBModel(capability);
-				builder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
+				templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
 			} else {
 				for (Resource _property : _properties) {
 					IRI property = (IRI) _property;
 					IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
 
 					// add property classifiers to the template context
-					builder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "properties"), propertyClassifierKB);
+					templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "properties"), propertyClassifierKB);
 				}
 			}
 		}
@@ -543,57 +690,74 @@ public class DSLMappingService {
 			return value;
 	}
 
-	private IRI getKBNodeType(String label, String type) {
-		String sparql = "select ?x { ?x rdfs:subClassOf " + type + " . FILTER (strends(str(?x), \"/" + label
-				+ "\")). }";
+
+	private IRI getKBTemplate(NamedResource n) {
+		System.out.println("getKBTemplate label = " + n.getResource() + ", namespace = " + n.getNamespace());
+		String namespace = n.getNamespace();
+		String resource = n.getResource();
+		String sparql = "select distinct ?x { \r\n" + 
+						"   ?m DUL:isSettingFor ?x .\r\n" + 
+						"	{        \r\n" + 
+						"		?x rdf:type ?type .\r\n" + 
+						"         FILTER NOT EXISTS\r\n" + 
+						"         { \r\n" + 
+						"           GRAPH ?g { ?x ?p ?o } \r\n" + 
+						"         }\r\n" + 
+						"	} ";
+		if (namespace != null && !namespace.contains("global"))
+			sparql +=	"     UNION {\r\n" + 
+						"        GRAPH " + "<"+ namespace + ">\r\n" +
+						"         {\r\n" +
+						"			?x soda:hasName ?name .\r\n" + 
+						"		   }\r\n" + 
+						"     }\r\n";
+		
+		sparql += 	" FILTER (strends(str(?x), \"" + resource + "\")). " +
+					"}";
+		
+		
 		System.out.println(sparql);
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
 
-		IRI x = null;
+		Set<IRI> xSet = new HashSet<IRI>();
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
-			x = (IRI) bindingSet.getBinding("x").getValue();
+			xSet.add((IRI) bindingSet.getBinding("x").getValue());
 		}
 		result.close();
-		return x;
-	}
-
-	private IRI getKBProperty(String label) {
-		String sparql = "select ?x { ?x a rdf:Property . FILTER (strends(str(?x), \"/" + label + "\")). }";
-		System.out.println(sparql);
-		String query = KB.PREFIXES + sparql;
-
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
-
+		
 		IRI x = null;
-		while (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			x = (IRI) bindingSet.getBinding("x").getValue();
+		if (!xSet.isEmpty()) 
+			x = xSet.iterator().next();
+		
+		if(xSet.size() > 1) {
+			for (IRI t: xSet) {
+				//property of a named namespace overrides
+				if (!t.toString().contains("global"))
+					x = t;
+			}
 		}
-		result.close();
-		return x;
-	}
-
-	private IRI getKBTemplate(String label) {
-		String sparql = "select ?x { ?x a owl:Thing . FILTER (strends(str(?x), \"" + label + "\")). }";
-		System.out.println(sparql);
-		String query = KB.PREFIXES + sparql;
-
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
-
-		IRI x = null;
-		while (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			x = (IRI) bindingSet.getBinding("x").getValue();
-		}
-		result.close();
+			
 		return x;
 	}
 	
-	public IRI getContext() {
-		return this.context;
+	public IRI getNamespace() {
+		return this.namespace;
+	}
+	
+	public Set<String> getTemplateNames() {
+		return this.templateNames;
+	}
+	
+	public Set<IRI> getTemplatesIRIs(IRI namespace, String resourceName) {
+		Set<IRI> templatesIRIs = new HashSet<>();
+		for (String t: this.templateNames) {
+			templatesIRIs.add(kb.factory.createIRI(namespace + t));
+		}
+		
+		return templatesIRIs;
 	}
 	
 	public List<ValidationModel> getModifiedModels() {
@@ -612,52 +776,22 @@ public class DSLMappingService {
 	}
 
 	public void save() throws ValidationException, IOException {
-		Model model = builder.build();
-
-		for (Statement string : model) {
-			System.err.println(String.format("%-50s %-20s %-40s", MyUtils.getStringValue(string.getSubject()),
-					MyUtils.getStringValue(string.getPredicate()), MyUtils.getStringValue(string.getObject())));
-		}
-
-		Set<Resource> templates = Models
-				.objectResources(aadmModel.filter(aadmKB, factory.createIRI(KB.SODA + "includesTemplate"), null));
-		String sparql = "select ?x ?t " + "{ ?x a soda:AbstractApplicationDeployment; "
-				+ " 	soda:includesTemplate ?t ." + "}";
-		String query = KB.PREFIXES + sparql;
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
-		while (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			IRI t = (IRI) bindingSet.getBinding("t").getValue();
-			if (templates.contains(t)) {
-
-			}
-		}
-		result.close();
-
-		if (this.currentContextExists()) {
-			System.out.println(String.format("Context %s exists.", context));
-			kb.connection.clear(context);
-		} else {
-			System.out.println(String.format("New context %s.", context));
-		}
-
-		// Rio.write(model, System.out, RDFFormat.TURTLE);
-		kb.connection.add(model, context);
-		
+		Model amodel = aadmBuilder.build();
+		Model tmodel = templateBuilder.build();
 		String aadmId = MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*");
 		//Requirement first check about existence, and (complete = true) update models if matching nodes found
-		RequirementExistenceValidation r = new RequirementExistenceValidation(aadmId, complete, kb, ws, context);
+		IRI context = namespace.toString().contains("global") ? null : namespace;
+		RequirementExistenceValidation r = new RequirementExistenceValidation(aadmId, complete, kb, namespace.toString(), context);
 		//Check for required omitted requirements
 		validationModels.addAll(r.validate());
 		if (!validationModels.isEmpty()) {
-			kb.connection.clear(context);
+			Set<IRI> templatesIRIs = MyUtils.getResourceIRIs(this.kb, this.namespace, this.templateNames);
+			new ModifyKB(kb).deleteNodes(templatesIRIs);
 			throw new ValidationException(validationModels);
 		}
 		
 		suggestedModels.addAll(r.getSuggestions());
 		modifiedModels.addAll(r.getModifiedModels());
-		
-		
 		
 		//Sommelier validations
 		//ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
@@ -666,10 +800,12 @@ public class DSLMappingService {
 			kb.connection.clear(context);
 			throw new ValidationException(validationModels);
 		}*/
-	}
-
-	private boolean currentContextExists() {
-		return Iterations.asList(kb.connection.getContextIDs()).contains(context);
+		
+		kb.connection.add(amodel);
+		if (namespace.toString().contains("global"))
+			kb.connection.add(tmodel);
+		else
+			kb.connection.add(tmodel,namespace);
 	}
 
 	public static void main(String[] args)
@@ -677,7 +813,7 @@ public class DSLMappingService {
 		String aadmTTL = MyUtils.fileToString("dsl/ide_snow_v3.ttl");
 
 		KB kb = new KB("TOSCA_automated");
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL,"test", false);
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL,"test", false, "", "", "");
 		m.start();
 		m.save();
 		m.shutDown();

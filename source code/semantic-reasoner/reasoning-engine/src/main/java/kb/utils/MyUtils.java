@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,8 +16,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
 
 import com.google.common.collect.MapDifference;
@@ -25,6 +28,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+
+import kb.repository.KB;
 
 public class MyUtils {
 
@@ -113,10 +118,70 @@ public class MyUtils {
 		return diff.areEqual();
     }
 	
+	public static Set<IRI> getResourceIRIs(KB kb, IRI namespace, Set<String> resourceNames) {
+		Set<IRI> resourceIRIs = new HashSet<>();
+		for (String r: resourceNames) {
+			resourceIRIs.add(kb.factory.createIRI(namespace + r));
+		}
+		
+		return resourceIRIs;
+	}
+	
 	//Extract the namespace from a sodalite iri
 	public static String getNamespaceFromIRI(String iri) {
 		return getStringPattern(iri, "(.*\\/)[a-zA-Z0-9_]+");
 		
+	}
+	
+	public static String getFullNamespaceIRI(KB kb, String namespace) {
+		String uri = null;
+		
+		List<Resource> list = Iterations.asList(kb.connection.getContextIDs());
+		
+		for (Resource l : list) {
+			if (l.toString().contains(namespace)) {
+				uri = l.toString();
+			}
+		}
+		return uri;
+	}
+	
+	/*
+	 *  namespace/resourcename
+	 * e.g. docker/sodalite.nodes.DockerHost, docker is returned
+	 */
+	public static String getNamespaceFromReference(String resource) {
+		String[] split = resource.split("\\/");
+		if (split.length > 1)
+			return split[0];
+		return null;
+	}
+	
+	/*
+	 *  namespace/resourcename
+	 * e.g. docker/sodalite.nodes.DockerHost, sodalite.nodes.DockerHost is returned
+	 */
+	public static String getReferenceFromNamespace(String resource) {
+		String[] split = resource.split("\\/");
+		if (split.length > 1)
+			return split[1];
+		return null;
+	}
+	
+	/* resource: docker/sodalite.nodes.Dockerhost */
+	public static String getFullResourceIRI(String resource, KB kb) {
+		String resourceIRI;
+		
+		String namespace = getNamespaceFromReference(resource);
+		String name = getReferenceFromNamespace(resource);
+		
+		if (namespace != null)
+			resourceIRI = getFullNamespaceIRI(kb, namespace) + name;
+		else
+			resourceIRI = KB.TOSCA + resource;
+		
+		
+		return resourceIRI;
 	}
 
 }

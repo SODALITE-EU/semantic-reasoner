@@ -25,6 +25,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
+import kb.clean.ModifyKB;
 import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
 
@@ -70,12 +71,15 @@ public class OptimizationService extends AbstractService {
 			value = "Returns the optimizations of a specific aadm")
 	public Response getOptimizations(@ApiParam(value = "The TTL of AADM", required = true) @FormParam("aadmTTL") String aadmTTL,
 			@ApiParam(value = "An id to uniquely identify a submission", required = false) @FormParam("aadmURI") String aadmURI,
-			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete)
+			@ApiParam(value = "The aadm in DSL", required = false) @FormParam("aadmDSL") String aadmDSL,
+			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
+			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
+			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name)
 					throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException  {
 		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete);
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name);
 		IRI aadmUri = null;
 
 		//Contains the final response
@@ -84,7 +88,10 @@ public class OptimizationService extends AbstractService {
 			aadmUri = m.start();
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			HttpClientRequest.getWarnings(response, aadmid);
+			if(!HttpClientRequest.getWarnings(response, aadmid)) {
+				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getTemplateNames()));
+				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
+			}
 			getOptimizations(response, aadmid);
 		} catch (MappingException e) {
 			e.printStackTrace();

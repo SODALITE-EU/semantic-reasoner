@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -20,8 +21,10 @@ import org.json.simple.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import kb.clean.ModifyKB;
 import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;
+import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
 import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
@@ -58,12 +61,15 @@ public class SubmitRMService extends AbstractService  {
 	@Consumes("application/x-www-form-urlencoded")
 	@ApiOperation(value = "Stores submitted node types in the KB")
 	public Response saveRM(@ApiParam(value = "The TTL of RM", required = true) @FormParam("rmTTL") String rmTTL,
-			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("rmURI") String rmURI)
+			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("rmURI") String rmURI,
+			@ApiParam(value = "The rm in DSL", required = true) @FormParam("rmDSL") String rmDSL,
+			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
+			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException {
 		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
-		DSLRMMappingService m = new DSLRMMappingService(kb, rmTTL, rmURI);
+		DSLRMMappingService m = new DSLRMMappingService(kb, rmTTL, rmURI, namespace, rmDSL, name);
 		IRI rmUri = null;
 		
 		//Contains the final response
@@ -73,11 +79,20 @@ public class SubmitRMService extends AbstractService  {
 				String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(RM_.*).*");
 				m.save();
 				if(!HttpClientRequest.getWarnings(response, rmid)) {
-					kb.connection.clear(m.getContext());
+					new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getNodeNames()));
 					return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
 				}
 			} catch (MappingException e) {
 				e.printStackTrace();
+				List<DslValidationModel> validationModels = e.mappingValidationModels;
+				JSONArray array = new JSONArray();
+				for (DslValidationModel validationModel : validationModels) {
+					array.add(validationModel.toJson());
+				}
+				
+				JSONObject errors = new JSONObject();
+				errors.put("errors", array);
+				return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 			} catch (ValidationException e) {	
 				List<ValidationModel> validationModels = e.validationModels;
 				JSONArray array = new JSONArray();

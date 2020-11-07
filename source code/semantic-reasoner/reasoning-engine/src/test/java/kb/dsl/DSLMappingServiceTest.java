@@ -86,7 +86,7 @@ class DSLMappingServiceTest {
 		IRI aadmIRI = null;
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL,"", false);
+			DSLMappingService m  = new DSLMappingService(kb, aadmTTL,"", false,"","","");
 			try {
 				aadmIRI = m.start();
 				m.save();
@@ -117,7 +117,7 @@ class DSLMappingServiceTest {
 		loadRepository();
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3_required_property_missing.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "", false);
+			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "", false, "", "", "");
 			try {
 				m.start();
 				m.save();
@@ -147,7 +147,7 @@ class DSLMappingServiceTest {
 		loadRepository();
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3_mapping_exception.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "", false);
+			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "", false, "", "", "");
 			try {
 				m.start();
 				m.save();

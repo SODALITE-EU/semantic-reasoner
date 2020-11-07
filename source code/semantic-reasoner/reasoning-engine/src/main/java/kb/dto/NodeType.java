@@ -6,9 +6,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class NodeType extends Resource {
-
+	IRI namespace;
+	
 	public NodeType(IRI iri) {
 		super(iri);
+	}
+	
+	public IRI getNamespace() {
+		return namespace;
+	}
+	
+	public void setNamespace(IRI namespace) {
+		this.namespace = namespace;
 	}
 
 	@Override
@@ -20,6 +29,9 @@ public class NodeType extends Resource {
 		data.addProperty("label", label);
 		if (description != null)
 			data.addProperty("description", description);
+		
+		if (namespace != null)
+			data.addProperty("namespace", namespace.toString());
 		
 		nodeType.add(uri, data);
 		return nodeType;

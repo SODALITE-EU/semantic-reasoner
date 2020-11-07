@@ -1,0 +1,14 @@
+select ?node ?description ?superclass
+where {
+	?node rdfs:subClassOf ?root_type .
+    FILTER (?root_type IN (tosca:tosca.datatypes.Root, tosca:DataType))
+	?node sesame:directSubClassOf ?superclass .
+	OPTIONAL {?node dcterms:description ?description .}
+	FILTER (?node != owl:Nothing) .
+	FILTER NOT EXISTS
+	{ 
+		GRAPH ?g { ?node ?p ?o }
+	}
+    FILTER (?node != tosca:DataType)
+    FILTER (?superclass != soda:SodaliteSituation)
+}

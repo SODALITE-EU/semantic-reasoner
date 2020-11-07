@@ -10,6 +10,7 @@ import kb.utils.MyUtils;
 public class Node extends Resource {
 
 	IRI type;
+	IRI namespace;
 //	List<String> superTypes;
 
 	public Node(IRI iri) {
@@ -24,6 +25,14 @@ public class Node extends Resource {
 		this.type = type;
 	}
 
+	public IRI getNamespace() {
+		return namespace;
+	}
+	
+	public void setNamespace(IRI namespace) {
+		this.namespace = namespace;
+	}
+	
 	@Override
 	public JsonElement serialise() {
 
@@ -34,6 +43,8 @@ public class Node extends Resource {
 		if (description != null)
 			data.addProperty("description", description);
 		data.add("type", MyUtils.getLabelIRIPair(this.type));
+		if (namespace != null)
+			data.addProperty("namespace", namespace.toString());
 		node.add(uri, data);
 
 		return node;

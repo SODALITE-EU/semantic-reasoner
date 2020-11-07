@@ -1,0 +1,7 @@
+SELECT ?m ?time ?user ?dsl ?name {
+		?m a soda:ResourceModel .
+		?m soda:createdAt ?time .
+		?m soda:createdBy ?user .
+		?m soda:hasDSL ?dsl .
+		?m soda:hasName ?name .
+}

@@ -1,7 +1,11 @@
 select ?node ?description ?superclass
 where {
-	?node rdfs:subClassOf tosca:tosca.nodes.Root .
+	?node rdfs:subClassOf ?root_type .
 	?node sesame:directSubClassOf ?superclass .
 	OPTIONAL {?node dcterms:description ?description .}
 	FILTER (?node != owl:Nothing) .
+	FILTER NOT EXISTS
+	{ 
+		GRAPH ?g { ?node ?p ?o }
+	}
 }

@@ -39,6 +39,9 @@ public class KB {
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \r\n" +
             "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \r\n";
 
+    public static String SODA_DUL_PREFIXES = "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/> \r\n" +
+			"PREFIX DUL: <http://www.loa-cnr.it/ontologies/DUL.owl#> \r\n";
+    
     public static String DCTERMS = "http://purl.org/dc/terms/";
     public static String DUL = "http://www.loa-cnr.it/ontologies/DUL.owl#";
     public static String TOSCA = "https://www.sodalite.eu/ontologies/tosca/";
