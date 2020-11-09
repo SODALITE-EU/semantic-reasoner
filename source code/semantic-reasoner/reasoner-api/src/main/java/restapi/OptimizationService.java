@@ -57,6 +57,10 @@ public class OptimizationService extends AbstractService {
 	 * and returning applicable optimizations according to the capabilities
 	 * @param aadmTTL The AADM in turtle format
 	 * @param aadmURI A unique id
+	 * @param aadmDSL The original aadm DSL
+	 * @param complete
+	 * @param namespace The namespace of the model e.g. docker
+	 * @param name The file name of the model
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid

@@ -32,7 +32,8 @@ import restapi.AbstractService;
 public class GetModels extends AbstractService {
 	/**
 	  * Getting all the AADMs or RMs in KB 
-	  * @param type = AADM or RM
+	  * @param type  The type of the model e.g. AADM or RM
+	  * @param namespace The namespace to be searched
 	  * @throws IOException If your input format is invalid
 	  * @return All the he models (AADM|RM) 
 	 */

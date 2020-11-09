@@ -54,6 +54,10 @@ public class SubmitService extends AbstractService {
 	 * Storing the submitted AADM in the KB and assigning a unique id.
 	 * @param aadmTTL The AADM in turtle format
 	 * @param aadmURI A unique id
+	 * @param aadmDSL The original DSL of the aadm
+	 * @param complete flag for auto-completion of entities
+	 * @param namespace The namespace of the model
+	 * @param name The file name of the model
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid

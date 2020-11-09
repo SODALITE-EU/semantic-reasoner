@@ -29,7 +29,7 @@ public class DeleteModel extends AbstractService {
 	/**
 	  * Delete a model in KB
 	  * Internal Note: Check for changing the operation from GET to DELETE
-	  * @param The uri of the model
+	  * @param uri The uri of the model
 	  * @throws IOException If your input format is invalid
 	  * @return Success or not
 	 */

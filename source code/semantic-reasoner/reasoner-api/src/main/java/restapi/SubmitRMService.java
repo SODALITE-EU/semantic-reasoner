@@ -49,6 +49,9 @@ public class SubmitRMService extends AbstractService  {
 	 * Storing the submitted RM in the KB and assigning a unique id.
 	 * @param  rmTTL The RM in turtle format
 	 * @param  rmURI A unique id
+	 * @param  rmDSL The original DSL of the resource model
+	 * @param  namespace The namespace of the resource model e.g. docker
+	 * @param  name The filename of the model
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid

@@ -32,6 +32,8 @@ import kb.dto.Node;
 public class TypeService extends AbstractService {
 	/**
 	  * Getting all the known TOSCA nodes in the KB
+	  * @param imports The namespaces to be searched e.g. docker, snow
+	  * @param type Represents the kinf of the type: capability, data, node, relationship, interface
 	  * @throws IOException if your input format is invalid
 	  * @return All the TOSCA nodes in JSON format
 	 */
