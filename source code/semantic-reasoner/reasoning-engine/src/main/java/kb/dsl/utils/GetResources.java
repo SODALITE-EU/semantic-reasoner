@@ -8,10 +8,11 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
-import kb.dsl.DSLMappingService;
+
 import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
+/* All the utility functions used by DSL Mapping services.*/
 
 public class GetResources {
 
@@ -111,7 +112,13 @@ public class GetResources {
 		return n;
 	}
 	
-	
+	/* If there are more than one level of custom node types, then all the inherited namespaces
+	 * should be searched. For example, prometheus-container is of vehicleiot/sodalite.nodes.PrometheusDockerizedComponent type
+	 * which is in turn is of docker/sodalite.nodes.DockerizedComponent type. Both vehicleiot and docker namespaces
+	 * should be searched in Dsl Mapping for property names.
+	 * type: contains the direct type of the template. e.g. vehicleiot/sodalite.nodes.PrometheusDockerizedComponent
+	 * the List of all the inherited namespaces is returned e.g. [docker, vehicleiot]
+	 */
 	public static List<String> getInheritedNamespacesFromType(KB kb, String type) {
 		System.out.println("getInheritedNamespacesFromType type =" + type);
 		List<String> namespacesOfType = new ArrayList<String>();

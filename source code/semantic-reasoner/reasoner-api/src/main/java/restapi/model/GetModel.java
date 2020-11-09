@@ -32,11 +32,11 @@ import restapi.AbstractService;
 public class GetModel extends AbstractService {
 	/**
 	  * Getting all the AADMs or RMs in KB 
-	  * @param resource  (e.g. node type name or template name) is provided
+	  * @param resource  (e.g. node type name or template name) could be provided
 	  * @param namespace If empty global namespace is searched, otherwise the provided one
-	  * @param uri If uri is provided
+	  * @param uri The uri of the model is provided
 	  * @throws IOException If your input format is invalid
-	  * @return The related model
+	  * @return The model metadata
 	 */
 	@GET
 	@Produces("application/json")

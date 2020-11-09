@@ -1,26 +1,23 @@
 package restapi.model;
 
 import java.io.IOException;
-import java.util.Set;
 
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
-import kb.dto.SodaliteAbstractModel;
+
 import restapi.AbstractService;
 
-/** A service that returns 
+/** A service that deletes a model 
  * @author George Meditskos
  * @author Zoe Vasileiou
  * @version 1.0
@@ -30,8 +27,9 @@ import restapi.AbstractService;
 @Api()
 public class DeleteModel extends AbstractService {
 	/**
-	  * Delete a model in KB 
-	  * @param uri 
+	  * Delete a model in KB
+	  * Internal Note: Check for changing the operation from GET to DELETE
+	  * @param The uri of the model
 	  * @throws IOException If your input format is invalid
 	  * @return Success or not
 	 */

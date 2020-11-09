@@ -21,7 +21,7 @@ import kb.KBApi;
 import kb.dto.SodaliteAbstractModel;
 import restapi.AbstractService;
 
-/** A service that returns 
+/** A service that returns all the AADM|RM in KB
  * @author George Meditskos
  * @author Zoe Vasileiou
  * @version 1.0
@@ -32,9 +32,9 @@ import restapi.AbstractService;
 public class GetModels extends AbstractService {
 	/**
 	  * Getting all the AADMs or RMs in KB 
-	  * @param type The resource name
+	  * @param type = AADM or RM
 	  * @throws IOException If your input format is invalid
-	  * @return The models (AADM|RM) in JSON format
+	  * @return All the he models (AADM|RM) 
 	 */
 	@GET
 	@Produces("application/json")

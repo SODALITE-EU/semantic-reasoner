@@ -133,6 +133,8 @@ public class MyUtils {
 		
 	}
 	
+	/*namespace: docker
+	 * https://www.sodalite.eu/ontologies/workspace/1/docker/ is returned*/
 	public static String getFullNamespaceIRI(KB kb, String namespace) {
 		String uri = null;
 		
@@ -158,8 +160,8 @@ public class MyUtils {
 	}
 	
 	/*
-	 *  namespace/resourcename
-	 * e.g. docker/sodalite.nodes.DockerHost, sodalite.nodes.DockerHost is returned
+	 *  namespace/resourcename= e.g. docker/sodalite.nodes.DockerHost,
+	 *  sodalite.nodes.DockerHost is returned
 	 */
 	public static String getReferenceFromNamespace(String resource) {
 		String[] split = resource.split("\\/");
@@ -168,7 +170,9 @@ public class MyUtils {
 		return null;
 	}
 	
-	/* resource: docker/sodalite.nodes.Dockerhost */
+	/* resource: docker/sodalite.nodes.Dockerhost
+	 * https://www.sodalite.eu/ontologies/workspace/1/docker/ is returned
+	 * */
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;
 		
@@ -179,7 +183,7 @@ public class MyUtils {
 			resourceIRI = getFullNamespaceIRI(kb, namespace) + name;
 		else
 			resourceIRI = KB.TOSCA + resource;
-		
+
 		
 		return resourceIRI;
 	}
