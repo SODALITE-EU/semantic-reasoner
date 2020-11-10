@@ -16,6 +16,9 @@ pipeline {
        docker_registry_cert_organization_name = "XLAB"
        docker_public_registry_url = "registry.hub.docker.com"
        docker_registry_cert_email_address = "dragan.radolovic@xlab.si"
+       //KB DEPLOYMENT SETTINGS
+       KB_USERNAME = credentials('kb-username')
+       KB_PASSWORD = credentials('kb-password')
        // OPENSTACK DEPLOYMENT FALLBACK SETTINGS
        OS_PROJECT_DOMAIN_NAME = "Default"
        OS_USER_DOMAIN_NAME = "Default"
@@ -117,28 +120,14 @@ pipeline {
             when { branch "master" }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'xOpera_ssh_key', keyFileVariable: 'xOpera_ssh_key_file', usernameVariable: 'xOpera_ssh_username')]) {
-                    // BUILD THE INPUTS FILE
-                    sh """\
-                    echo "# OPENSTACK SETTINGS
-                    ssh-key-name: ${ssh_key_name}
-                    image-name: ${image_name}
-                    openstack-network-name: ${network_name}
-                    security-groups: ${security_groups}
-                    flavor-name: ${flavor_name}
-                    identity_file: ${xOpera_ssh_key_file}                    
-                    # DOCKER SETTINGS
-                    docker-network: ${docker_network}
-                    dockerhub-user: ${dockerhub_user}
-                    dockerhub-pass: ${dockerhub_pass}
-                    docker-public-registry-url: ${docker_public_registry_url}
-                    docker-registry-cert-country-name: ${docker_registry_cert_country_name}
-                    docker-registry-cert-organization-name: ${docker_registry_cert_organization_name}
-                    docker-registry-cert-email-address: ${docker_registry_cert_email_address}" >> openstack-blueprint/input.yaml
-                    """.stripIndent()
-                    // PRINT THE INPUT YAML FILE
-                    sh 'cat openstack-blueprint/input.yaml'
-                    // DEPLOY XOPERA REST API
-                    sh ". venv/bin/activate; cd openstack-blueprint; rm -r -f .opera; opera deploy service.yaml -i input.yaml"
+                    sh """#!/bin/bash
+                        # create input.yaml file from template
+                        envsubst < openstack-blueprint/input.yaml.tmpl > openstack-blueprint/input.yaml
+                        . venv-deploy/bin/activate
+                        cd openstack-blueprint
+                        rm -r -f .opera
+                        opera deploy service.yaml -i input.yaml
+                       """                  
                 }
             }
     }
