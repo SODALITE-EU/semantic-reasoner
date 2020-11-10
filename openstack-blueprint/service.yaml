@@ -16,6 +16,8 @@ topology_template:
       type: string 
     image-name:  
       type: string 
+    vm-name:  
+      type: string 
     openstack-network-name:  
       type: string 
     security-groups:  
@@ -96,7 +98,7 @@ topology_template:
     sodalite-vm:  
       type: sodalite.nodes.OpenStack.VM 
       properties:  
-        name:  semantic-web
+        name: { get_input: vm-name }
         key_name:         { get_input: ssh-key-name } 
         image:            { get_input: image-name }
         network:          { get_input: openstack-network-name } 
