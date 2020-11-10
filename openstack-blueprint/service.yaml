@@ -16,6 +16,8 @@ topology_template:
       type: string 
     image-name:  
       type: string 
+    vm-name:  
+      type: string 
     openstack-network-name:  
       type: string 
     security-groups:  
@@ -46,7 +48,11 @@ topology_template:
       type: string
       default: ""
     identity_file:
-      type: string      
+      type: string    
+    reasoner_env:
+      type: map        
+    toscasmells_env:
+      type: map        
 
   node_templates: 
 
@@ -92,7 +98,7 @@ topology_template:
     sodalite-vm:  
       type: sodalite.nodes.OpenStack.VM 
       properties:  
-        name:  semantic-web
+        name: { get_input: vm-name }
         key_name:         { get_input: ssh-key-name } 
         image:            { get_input: image-name }
         network:          { get_input: openstack-network-name } 
@@ -151,13 +157,14 @@ topology_template:
         docker_network_name:  { get_property: [ SELF, network, name ] }
         image_name: sodaliteh2020/semantic_web
         restart_policy: always
-        env:
-          WAIT_HOSTS: graph-db:7200
-          environment: docker
-          graphdb:  http://graph-db:7200
-          bugPredictorServer:  http://tosca-smells:8080/  
-          ansiblePath: /usr/local/tomcat/webapps/Ansibles/
-          reasonerServer: "http://{{ public_address }}:8080/"
+#        env:
+#          WAIT_HOSTS: graph-db:7200
+#          environment: docker
+#          graphdb:  http://graph-db:7200
+#          bugPredictorServer:  http://tosca-smells:8080/  
+#          ansiblePath: /usr/local/tomcat/webapps/Ansibles/
+#          reasonerServer: "http://{{ public_address }}:8080/"
+        env: { get_input: reasoner_env }
         ports:  ['8080:8080']
         volumes:
           - "/tmp/tomcat/webapps/Ansibles:/usr/local/tomcat/webapps/Ansibles"   
@@ -178,10 +185,7 @@ topology_template:
         docker_network_name:  { get_property: [ SELF, network, name ] }
         image_name: sodaliteh2020/toscasmells
         restart_policy: always
-        env:
-          environment: docker
-          WAIT_HOSTS: graph-db:7200
-          graphdb: http://graph-db:7200
+        env: { get_input: toscasmells_env }
         ports:  ['8082:8080']
         exposed_ports:  ['8080']
       requirements:

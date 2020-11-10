@@ -1,0 +1,31 @@
+# OPENSTACK SETTINGS
+ssh-key-name: ${ssh_key_name}
+image-name: ${image_name}
+vm-name: ${vm_name}
+openstack-network-name: ${network_name}
+security-groups: ${security_groups}
+flavor-name: ${flavor_name}
+identity_file: ${xOpera_ssh_key_file}                    
+# DOCKER SETTINGS
+docker-network: ${docker_network}
+dockerhub-user: ${dockerhub_user}
+dockerhub-pass: ${dockerhub_pass}
+docker-public-registry-url: ${docker_public_registry_url}
+docker-registry-cert-country-name: ${docker_registry_cert_country_name}
+docker-registry-cert-organization-name: ${docker_registry_cert_organization_name}
+docker-registry-cert-email-address: ${docker_registry_cert_email_address}" >> openstack-blueprint/input.yaml
+reasoner_env:
+  WAIT_HOSTS: graph-db:7200
+  environment: docker
+  graphdb:  http://graph-db:7200
+  bugPredictorServer:  http://tosca-smells:8080/  
+  ansiblePath: /usr/local/tomcat/webapps/Ansibles/
+  reasonerServer: \"http://{{ public_address }}:8080/\"
+  kbUsername: \"${KB_USERNAME}\"
+  kbPassword: \"${KB_PASSWORD}\"
+toscasmells_env:
+  WAIT_HOSTS: graph-db:7200
+  environment: docker
+  graphdb:  http://graph-db:7200
+  kbUsername: \"${KB_USERNAME}\"
+  kbPassword: \"${KB_PASSWORD}\"
