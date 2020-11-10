@@ -111,10 +111,14 @@ pipeline {
    stage('Install dependencies') {
             when { branch "master" }
             steps {
-                sh "virtualenv venv"
-                sh ". venv/bin/activate; python -m pip install -U 'opera[openstack]==0.5.7'"
-                sh ". venv/bin/activate; python -m pip install docker"
-                sh ". venv/bin/activate; ansible-galaxy install -r openstack-blueprint/requirements.yml"
+                sh """#!/bin/bash
+                    rm -rf venv
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    python3 -m pip install --upgrade pip
+                    python3 -m pip install 'opera[openstack]==0.5.7' docker
+                    ansible-galaxy install -r openstack-blueprint/requirements.yml
+                   """
             }
    }
    stage('Deploy to openstack') {
