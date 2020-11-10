@@ -5,6 +5,7 @@ pipeline {
        // OPENSTACK SETTINGS
        ssh_key_name = "jenkins-opera"
        image_name = "centos7"
+       vm_name = "semantic-web"
        network_name = "orchestrator-network"
        security_groups = "default,sodalite-remote-access,sodalite-uc,sodalite-graphdb"
        flavor_name = "m1.xlarge"
