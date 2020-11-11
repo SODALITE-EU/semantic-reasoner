@@ -128,9 +128,9 @@ pipeline {
                     sh """#!/bin/bash
                         # create input.yaml file from template
                         envsubst < openstack-blueprint/input.yaml.tmpl > openstack-blueprint/input.yaml
-                        . venv-deploy/bin/activate
+                        . venv/bin/activate
                         cd openstack-blueprint
-                        rm -r -f .opera
+                        rm -rf .opera
                         opera deploy service.yaml -i input.yaml
                        """                  
                 }
