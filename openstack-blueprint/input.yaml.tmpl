@@ -21,11 +21,11 @@ reasoner_env:
   bugPredictorServer:  http://tosca-smells:8080/  
   ansiblePath: /usr/local/tomcat/webapps/Ansibles/
   reasonerServer: "http://{{ public_address }}:8080/"
-  kbUsername: ${KB_USERNAME}
-  kbPassword: ${KB_PASSWORD}
+  kbUsername: "${KB_USERNAME}"
+  kbPassword: "${KB_PASSWORD}"
 toscasmells_env:
   WAIT_HOSTS: graph-db:7200
   environment: docker
   graphdb:  http://graph-db:7200
-  kbUsername: ${KB_USERNAME}
-  kbPassword: ${KB_PASSWORD}
+  kbUsername: "${KB_USERNAME}"
+  kbPassword: "${KB_PASSWORD}"
