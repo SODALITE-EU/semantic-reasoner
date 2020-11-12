@@ -11,6 +11,7 @@ public class Node extends Resource {
 
 	IRI type;
 	IRI namespace;
+	IRI namespaceOfType;
 //	List<String> superTypes;
 
 	public Node(IRI iri) {
@@ -33,6 +34,14 @@ public class Node extends Resource {
 		this.namespace = namespace;
 	}
 	
+	public IRI getNamespaceOfType() {
+		return namespaceOfType;
+	}
+	
+	public void setNamespaceOfType(IRI namespaceOfType) {
+		this.namespaceOfType = namespaceOfType;
+	}
+	
 	@Override
 	public JsonElement serialise() {
 
@@ -42,7 +51,12 @@ public class Node extends Resource {
 		data.addProperty("label", label);
 		if (description != null)
 			data.addProperty("description", description);
-		data.add("type", MyUtils.getLabelIRIPair(this.type));
+		
+		if (namespaceOfType != null)
+			data.add("type", MyUtils.getLabelIRINamespace(this.type, this.namespaceOfType));
+		else
+			data.add("type", MyUtils.getLabelIRIPair(this.type));
+
 		if (namespace != null)
 			data.addProperty("namespace", namespace.toString());
 		node.add(uri, data);

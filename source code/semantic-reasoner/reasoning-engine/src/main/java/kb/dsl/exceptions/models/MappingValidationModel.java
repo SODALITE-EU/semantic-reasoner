@@ -28,4 +28,7 @@ public class MappingValidationModel extends DslValidationModel {
 		return json;
 
 	}
+	public String toString() {
+		return "resourceName = " + resourceName + " ,element = " + element + ", typeOfElement =" + typeOfElement + "\ndescription=" + description;
+	}
 }

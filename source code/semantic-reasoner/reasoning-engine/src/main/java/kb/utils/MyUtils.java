@@ -72,6 +72,18 @@ public class MyUtils {
 		result.add(value.toString(), d);
 		return result;
 	}
+	
+	public static JsonObject getLabelIRINamespace(IRI value, IRI namespace) {
+		System.out.println("getLabelIRINamespace");
+		JsonObject result = new JsonObject();
+
+		JsonObject d = new JsonObject();
+		d.addProperty("label", value.getLocalName());
+		d.addProperty("namespace", namespace.toString());
+		result.add(value.toString(), d);
+		return result;
+	}
+
 
 	public static String randomString() {
 		return new BigInteger(130, new SecureRandom()).toString(32);

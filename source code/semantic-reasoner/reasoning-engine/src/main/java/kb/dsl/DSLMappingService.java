@@ -81,7 +81,7 @@ public class DSLMappingService {
 	boolean complete;
 	
 	String currentTemplate;
-	List<String> namespacesOfType;
+	List<String> namespacesOfType = new ArrayList<String>();;
 	
 
 	// Validation
@@ -225,7 +225,9 @@ public class DSLMappingService {
 			//this.namespaceOfType = n.getNamespace();
 			
 			templateType = n.getResource();
-			namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, n.getResourceURI());
+			String resourceIRI = n.getResourceURI() ;
+			if (resourceIRI != null)
+				namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, resourceIRI);
 			
 			System.out.println("namespaceOfType=" + this.namespacesOfType + ", templateType=" + templateType);
 			

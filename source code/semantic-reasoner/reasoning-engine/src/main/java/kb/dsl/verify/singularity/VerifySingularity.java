@@ -61,8 +61,7 @@ public class VerifySingularity {
 			long startTime = Instant.now().toEpochMilli();
 			System.out.println("VerifySingularity model = " + model + ", nodes = " + nodes);
 			for (String n: nsplit) {
-				//IRI context = n.contains("global") ? null: kb.factory.createIRI(namespace);
-				//kb.connection.add(kb.factory.createIRI(n), kb.factory.createIRI(KB.SODA + "isActive"), BooleanLiteral.FALSE, context);
+
 				new ModifyKB(kb).deleteNode(kb.factory.createIRI(n));
 			}
 			long endTime = Instant.now().toEpochMilli();

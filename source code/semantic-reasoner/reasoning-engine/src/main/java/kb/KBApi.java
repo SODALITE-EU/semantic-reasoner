@@ -458,11 +458,25 @@ public class KBApi {
 							: null;
 			IRI superclass = (IRI) bindingSet.getBinding("superclass").getValue();
 			IRI _namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
+			
+			String sparql = MyUtils.fileToString("sparql/getNamespaceFromType.sparql");
+			String query2 = KB.PREFIXES + sparql;
+
+			TupleQueryResult result2 = QueryUtil.evaluateSelectQuery(kb.getConnection(), query2,
+					new SimpleBinding("n", superclass));
 
 			Node n = new Node(_node);
 			n.setDescription(description);
 			n.setType(superclass);
 			n.setNamespace(_namespace);
+			
+			if (result2.hasNext()) {
+				BindingSet bindingSet2 = result2.next();
+				IRI namespace = bindingSet2.hasBinding("g") ? (IRI) bindingSet2.getBinding("g").getValue() : null;
+				n.setNamespaceOfType(namespace);
+				System.out.println("NamespaceOfType=" + namespace);
+			}
+			result2.close();
 
 			nodes.add(n);
 

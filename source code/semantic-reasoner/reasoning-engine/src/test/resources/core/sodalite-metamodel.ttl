@@ -16,7 +16,7 @@
   owl:imports <http://www.loa-cnr.it/ontologies/DUL.owl> ;
   owl:imports <http://www.w3.org/2006/time> ;
   owl:versionInfo "Created with TopBraid Composer" ;
-  dc:date "2020-03-18" ;
+  dc:date "2020-06-09" ;
   dc:creator "George Meditskos" ;
   dc:creator "Zoe Vasileiou" ;
   dc:title "SODALITE METAMODEL Ontology".
@@ -28,6 +28,28 @@
       rdf:type owl:Restriction ;
       owl:allValuesFrom :SodaliteSituation ;
       owl:onProperty :includesTemplate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:onProperty DUL:includesAgent ;
+      owl:someValuesFrom :User ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:onProperty owl:versionInfo ;
+      owl:someValuesFrom xsd:string ;
+    ] ;
+.
+:ResourceModel
+  rdf:type owl:Class ;
+  rdfs:subClassOf DUL:Situation ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom :SodaliteSituation ;
+      owl:onProperty :includesNodeType ;
+      owl:onProperty :includesCapabilityType;
+      owl:onProperty :includesDataType;
+      owl:onProperty :includesRelationshipType;
     ] ;
   rdfs:subClassOf [
       rdf:type owl:Restriction ;
@@ -78,12 +100,22 @@
 .
 :createdAt
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain :AbstractApplicationDeployment ;
+  rdfs:domain [ rdf:type owl:Class ;
+                          owl:unionOf ( 
+                                        :AbstractApplicationDeployment
+                                        :ResourceModel
+                                      )
+				] ;
   rdfs:subPropertyOf time:inXSDDateTime ;
 .
 :createdBy
   rdf:type owl:ObjectProperty ;
-  rdfs:domain :AbstractApplicationDeployment ;
+  rdfs:domain [ rdf:type owl:Class ;
+                          owl:unionOf ( 
+                                        :AbstractApplicationDeployment
+                                        :ResourceModel
+                                      )
+				] ;
   rdfs:range :User ;
   rdfs:subPropertyOf DUL:includesAgent ;
 .
@@ -113,9 +145,49 @@
   rdfs:range :SodaliteSituation ;
   rdfs:subPropertyOf DUL:isSettingFor ;
 .
+:includesNodeType
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain :ResourceModel ;
+  rdfs:range :SodaliteSituation ;
+  rdfs:subPropertyOf DUL:isSettingFor ;
+.
+:includesCapabilityType
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain :ResourceModel ;
+  rdfs:range :SodaliteSituation ;
+  rdfs:subPropertyOf DUL:isSettingFor ;
+.
+:includesDataType
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain :ResourceModel ;
+  rdfs:range :SodaliteSituation ;
+  rdfs:subPropertyOf DUL:isSettingFor ;
+.
+:includesRelationshipType
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain :ResourceModel ;
+  rdfs:range :SodaliteSituation ;
+  rdfs:subPropertyOf DUL:isSettingFor ;
+.
 :specification
   rdf:type owl:ObjectProperty ;
   rdfs:domain :SodaliteDescription ;
   rdfs:range :SodaliteConcept ;
   rdfs:subPropertyOf DUL:defines ;
+.
+:hasName
+  rdf:type owl:DatatypeProperty ;
+   rdfs:domain [ rdf:type owl:Class ;
+                          owl:unionOf ( 
+                                        :AbstractApplicationDeployment
+                                        :ResourceModel
+                                        :SodaliteSituation
+                                      )
+        ] ;
+  rdfs:range xsd:string ;
+.
+:hasDSL
+  rdf:type owl:DatatypeProperty ;
+  rdf:domain :SodaliteSituation ;
+  rdfs:range xsd:string ;
 .

@@ -71,7 +71,7 @@ public class DSLRMMappingService {
 	List<DslValidationModel>  mappingModels =  new ArrayList<>();
 	
 	String currentType;
-	List<String> namespacesOfType;
+	List<String> namespacesOfType = new ArrayList<String>();;
 	
 	static final String[] TYPES = {"NodeType", "DataType", "RelationshipType", "CapabilityType"};
 	Set<String> nodeNames = new HashSet<>();
@@ -159,6 +159,11 @@ public class DSLRMMappingService {
 			createTypes(type);
 		}
 		
+		System.out.println("Mapping errors = " + mappingModels.toString());
+		for (DslValidationModel m:mappingModels) {
+			System.err.println(m.toString());
+		}
+		
 		if (!mappingModels.isEmpty())
 			throw new MappingException(mappingModels);
 		
@@ -221,7 +226,9 @@ public class DSLRMMappingService {
 			System.out.println(String.format("Name: %s, type: %s", nodeName, nodeType));
 			
 			NamedResource n = GetResources.setNamedResource(namespacews, nodeType);
-			namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, n.getResourceURI());
+			String resourceIRI = n.getResourceURI() ;
+			if (resourceIRI != null)
+				namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, resourceIRI);
 			nodeType = n.getResource();
 			System.out.println("namespaceOfType=" + this.namespacesOfType + ", nodeType=" + nodeType);
 
@@ -236,8 +243,10 @@ public class DSLRMMappingService {
 				if (kbNodeType == null) {
 					if (nodeNames.contains(nodeType))
 						kbNodeType = factory.createIRI(namespace + nodeType);
-					else
+					else {
+						System.err.println("Cannot find Node type, currentType = " + currentType + ", nodeType = "  +  nodeType);
 						mappingModels.add(new MappingValidationModel(currentType, nodeType, "Cannot find Node type"));
+					}
 				} 
 				
 				nodeBuilder.add(nodeKB, RDF.TYPE, "owl:Class");
@@ -355,8 +364,11 @@ public class DSLRMMappingService {
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
 					kbNode = factory.createIRI(namespace + n.getResource());
-				else
+				else {
+
 					mappingModels.add(new MappingValidationModel(currentType, requirement.getLocalName(), "Cannot find Node: " + value.getLabel() + " for requirement =" + requirement));
+					System.err.println(currentType + ": Cannot find Node: " + value.getLabel() + " for requirement =" + requirement);				
+				}
 			}
 			if(kbNode != null)
 				nodeBuilder.add(requirementClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
@@ -431,8 +443,11 @@ public class DSLRMMappingService {
 							// throw new Exception("Cannot find node: " + value);
 							if (nodeNames.contains(n.getResource()))
 								kbNode = factory.createIRI(namespace + n.getResource());
-							else
+							else {
+
 								mappingModels.add(new MappingValidationModel(currentType, requirement.getLocalName(), "Cannot find Node: " + value.getLabel() + " for requirement parameter =" + parameterName));
+								System.err.println(currentType + ": Cannot find Node: " + value.getLabel() + " for requirement parameter =" + requirement.getLocalName());							
+							}
 						}
 						if(kbNode != null)
 							nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
@@ -483,8 +498,11 @@ public class DSLRMMappingService {
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
 					kbNode = factory.createIRI(namespace + n.getResource());
-				else
+				else {
+
 					mappingModels.add(new MappingValidationModel(currentType, capability.getLocalName(), "Cannot find Node: " + value.getLabel() + " for capability"));
+					System.err.println(currentType + ": Cannot find Node: " + value.getLabel() + " for capability");
+				}
 			}
 			if(kbNode != null)
 				nodeBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
@@ -593,8 +611,10 @@ public class DSLRMMappingService {
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
-					else
+					else {
 						mappingModels.add(new MappingValidationModel(currentType, interface_iri.getLocalName(), "Cannot find Node: " + value.getLabel() + " for interface = " + interfaceName));
+						System.err.println(currentType + ": Cannot find Node: " + value.getLabel() + " for interface " +interfaceName);
+					}
 				}
 				if(kbNode != null)
 					nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
@@ -674,8 +694,10 @@ public class DSLRMMappingService {
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
-					else
+					else {
 						mappingModels.add(new MappingValidationModel(currentType, parameter.getLocalName(), "Cannot find Node: " + value.getLabel() +" for parameter =" + parameterName));
+						System.err.println(currentType+ ": Cannot find Node: " + value.getLabel() +" for parameter =" + parameterName);
+					}
 				}
 				if (kbNode != null)
 					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
@@ -688,8 +710,10 @@ public class DSLRMMappingService {
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
-					else
+					else {
 						mappingModels.add(new MappingValidationModel(currentType, parameter.getLocalName(), "Cannot find Node: " + listValue.getLabel() +" for parameter =" + parameterName));
+						System.err.println(currentType + ": Cannot find Node: " + listValue.getLabel() +" for parameter =" + parameterName);
+					}
 				}
 				if(kbNode != null)
 					nodeBuilder.add(list, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);

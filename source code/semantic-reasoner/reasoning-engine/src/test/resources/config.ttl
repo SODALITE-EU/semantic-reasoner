@@ -32,7 +32,7 @@
             owlim:enable-literal-index "true" ;
 
             owlim:check-for-inconsistencies "false" ;
-            owlim:disable-sameAs  "false" ;
+            owlim:disable-sameAs  "true" ;
             owlim:query-timeout  "0" ;
             owlim:query-limit-results  "0" ;
             owlim:throw-QueryEvaluationException-on-timeout "false" ;

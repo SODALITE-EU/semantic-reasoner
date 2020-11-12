@@ -58,7 +58,8 @@ public class GetResources {
 	public static IRI getKBProperty(String label, List<String> namespaces, KB kb) {
 		
 		String sparql = "select distinct ?x \r\n" +
-						"FROM <http://www.ontotext.com/explicit>\r\n";
+						"FROM <http://www.ontotext.com/explicit>\r\n" +
+						"FROM <http://www.ontotext.com/implicit>\r\n";
 		
 		for (String n: namespaces) {
 			String nIRI = MyUtils.getFullNamespaceIRI(kb, n);
@@ -131,11 +132,12 @@ public class GetResources {
 						"		?superclass soda:hasContext ?c .\r\n" + 
 						"	}\r\n" + 
 						"}";
+		System.out.println(query);
 		
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 									new SimpleBinding("x", kb.getFactory().createIRI(type)));
 		
-		System.out.println(query);
+
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			IRI g = (IRI) bindingSet.getBinding("g").getValue();
