@@ -89,7 +89,7 @@ public class ConfigsLoader {
 		return kbUsername;
 	}
 	
-	public String getkbPassword() {
+	public String getKbPassword() {
 		return kbPassword;
 	}
 	
