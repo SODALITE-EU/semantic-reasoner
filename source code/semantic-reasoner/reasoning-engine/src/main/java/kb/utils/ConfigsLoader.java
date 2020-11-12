@@ -14,7 +14,9 @@ public class ConfigsLoader {
 	String ansiblePath;
 	String reasonerServer;
 	
-	
+	String kbUsername;
+	String kbPassword;
+		
 	private ConfigsLoader(){}
 
     public static ConfigsLoader getInstance(){
@@ -59,9 +61,12 @@ public class ConfigsLoader {
 			bugPredictorServer = System.getenv("bugPredictorServer");
 			ansiblePath = System.getenv("ansiblePath");
 			reasonerServer = System.getenv("reasonerServer");
+			
+			kbUsername = System.getenv("kbUsername");
+			kbPassword = System.getenv("kbPassword");
 		}
 		
-		System.out.println("graphdb = " + graphdb + "\nbugpredictorServer=" + bugPredictorServer + "\nansiblePath = " + ansiblePath + "\nreasonerServer = " + reasonerServer);
+		System.out.println(String.format("graphdb = %s, bugpredictorServer = %s, ansiblePath = %s, reasonerServer = %s, kbUsername = %s, kbPassword = %s", graphdb, bugPredictorServer, ansiblePath, reasonerServer, kbUsername, kbPassword));
 
 	}
 	
@@ -80,6 +85,14 @@ public class ConfigsLoader {
 	public String getAnsiblePath() {
 		return ansiblePath;
 	}
+	public String getKbUsername() {
+		return kbUsername;
+	}
+	
+	public String getkbPassword() {
+		return kbPassword;
+	}
+	
 	public String getReasonerServer() {
 		return reasonerServer;
 	}

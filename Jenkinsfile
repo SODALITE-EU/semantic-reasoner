@@ -5,6 +5,7 @@ pipeline {
        // OPENSTACK SETTINGS
        ssh_key_name = "jenkins-opera"
        image_name = "centos7"
+       vm_name = "semantic-web"
        network_name = "orchestrator-network"
        security_groups = "default,sodalite-remote-access,sodalite-uc,sodalite-graphdb"
        flavor_name = "m1.xlarge"
@@ -16,6 +17,9 @@ pipeline {
        docker_registry_cert_organization_name = "XLAB"
        docker_public_registry_url = "registry.hub.docker.com"
        docker_registry_cert_email_address = "dragan.radolovic@xlab.si"
+       //KB DEPLOYMENT SETTINGS
+       KB_USERNAME = credentials('kb-username')
+       KB_PASSWORD = credentials('kb-password')
        // OPENSTACK DEPLOYMENT FALLBACK SETTINGS
        OS_PROJECT_DOMAIN_NAME = "Default"
        OS_USER_DOMAIN_NAME = "Default"
@@ -107,38 +111,28 @@ pipeline {
    stage('Install dependencies') {
             when { branch "master" }
             steps {
-                sh "virtualenv venv"
-                sh ". venv/bin/activate; python -m pip install -U 'opera[openstack]==0.5.7'"
-                sh ". venv/bin/activate; python -m pip install docker"
-                sh ". venv/bin/activate; ansible-galaxy install -r openstack-blueprint/requirements.yml"
+                sh """#!/bin/bash
+                    rm -rf venv
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    python3 -m pip install --upgrade pip
+                    python3 -m pip install 'opera[openstack]==0.5.7' docker
+                    ansible-galaxy install -r openstack-blueprint/requirements.yml
+                   """
             }
    }
    stage('Deploy to openstack') {
             when { branch "master" }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'xOpera_ssh_key', keyFileVariable: 'xOpera_ssh_key_file', usernameVariable: 'xOpera_ssh_username')]) {
-                    // BUILD THE INPUTS FILE
-                    sh """\
-                    echo "# OPENSTACK SETTINGS
-                    ssh-key-name: ${ssh_key_name}
-                    image-name: ${image_name}
-                    openstack-network-name: ${network_name}
-                    security-groups: ${security_groups}
-                    flavor-name: ${flavor_name}
-                    identity_file: ${xOpera_ssh_key_file}                    
-                    # DOCKER SETTINGS
-                    docker-network: ${docker_network}
-                    dockerhub-user: ${dockerhub_user}
-                    dockerhub-pass: ${dockerhub_pass}
-                    docker-public-registry-url: ${docker_public_registry_url}
-                    docker-registry-cert-country-name: ${docker_registry_cert_country_name}
-                    docker-registry-cert-organization-name: ${docker_registry_cert_organization_name}
-                    docker-registry-cert-email-address: ${docker_registry_cert_email_address}" >> openstack-blueprint/input.yaml
-                    """.stripIndent()
-                    // PRINT THE INPUT YAML FILE
-                    sh 'cat openstack-blueprint/input.yaml'
-                    // DEPLOY XOPERA REST API
-                    sh ". venv/bin/activate; cd openstack-blueprint; rm -r -f .opera; opera deploy service.yaml -i input.yaml"
+                    sh """#!/bin/bash
+                        # create input.yaml file from template
+                        envsubst < openstack-blueprint/input.yaml.tmpl > openstack-blueprint/input.yaml
+                        . venv/bin/activate
+                        cd openstack-blueprint
+                        rm -rf .opera
+                        opera deploy service.yaml -i input.yaml
+                       """                  
                 }
             }
     }
