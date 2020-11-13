@@ -404,7 +404,7 @@ public class KBApi {
 
 		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding[] { new SimpleBinding("ofNode", kb.getFactory().createIRI(ofNode)),
+				new SimpleBinding[] { new SimpleBinding("node", kb.getFactory().createIRI(ofNode)),
 						new SimpleBinding("requirementName", kb.getFactory().createLiteral(requirementName)) });
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
@@ -458,26 +458,17 @@ public class KBApi {
 							: null;
 			IRI superclass = (IRI) bindingSet.getBinding("superclass").getValue();
 			IRI _namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
-			
-			String sparql = MyUtils.fileToString("sparql/getNamespaceFromType.sparql");
-			String query2 = KB.PREFIXES + sparql;
 
-			TupleQueryResult result2 = QueryUtil.evaluateSelectQuery(kb.getConnection(), query2,
-					new SimpleBinding("n", superclass));
 
 			Node n = new Node(_node);
 			n.setDescription(description);
 			n.setType(superclass);
 			n.setNamespace(_namespace);
 			
-			if (result2.hasNext()) {
-				BindingSet bindingSet2 = result2.next();
-				IRI namespace = bindingSet2.hasBinding("g") ? (IRI) bindingSet2.getBinding("g").getValue() : null;
-				n.setNamespaceOfType(namespace);
-				System.out.println("NamespaceOfType=" + namespace);
-			}
-			result2.close();
-
+			
+			IRI namespace = InferencesUtil.getNamespaceFromType(kb, superclass);
+			n.setNamespaceOfType(namespace);
+			
 			nodes.add(n);
 
 		}
@@ -490,46 +481,19 @@ public class KBApi {
 	 * Getting the valid requirement node types, so as the IDE to know which are the compatible node types
 	 * for also proposing local applicable templates of the aadm
 	 */
-	public Set<NodeType> getRequirementValidNodeTypes(String requirement, String nodeType) throws IOException {
+	public Set<NodeType> getRequirementValidNodeType(String requirement, String nodeType) throws IOException {
 		System.out.println("getRequirementValidNodeTypes: " + MyUtils.getFullResourceIRI(nodeType, kb));
 		
 		Set<NodeType> nodeTypes = new HashSet<>();
 		
-		IRI node = getMostSpecificRequirementNode(requirement, MyUtils.getFullResourceIRI(nodeType, kb));
+		IRI node = getMostSpecificRequirementNode(requirement, MyUtils.getFullResourceIRI(nodeType, kb));	
+		IRI namespace = InferencesUtil.getNamespaceFromType(kb, node);
 		
-		String query = KB.PREFIXES +
-				"select distinct ?node ?description ?g {\r\n" +
-				"   ?node rdfs:subClassOf ?var .\r\n" +
-				"    FILTER(?node != owl:Nothing).\r\n" + 
-				"    OPTIONAL {?node dcterms:description ?description .}\r\n" +
-				" 	 OPTIONAL {\r\n" + 
-				"        GRAPH ?g {\r\n" + 
-				"            ?node soda:hasContext ?c\r\n" + 
-				"        }\r\n" + 
-				"    }" +
-				"}";
+		NodeType n = new NodeType(node);
+		n.setNamespace(namespace);
 		
-		TupleQueryResult result = null;
-		if (node != null) {
-			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("var", node));
-		
-			while (result.hasNext()) {
-				BindingSet bindingSet = result.next();
-				IRI p = (IRI) bindingSet.getBinding("node").getValue();
-			
-				String description = bindingSet.hasBinding("description")
-						? bindingSet.getBinding("description").getValue().stringValue()
-								: null;
-				IRI _namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
-				NodeType n = new NodeType(p);
-				n.setDescription(description);
-				n.setNamespace(_namespace);
-				nodeTypes.add(n);
-			}
-			result.close();	
-		}
-		
-		return nodeTypes;
+		nodeTypes.add(n);
+		return nodeTypes;	
 	}
 	
 	public String getDescription(IRI uri) {
@@ -544,6 +508,17 @@ public class KBApi {
 		return null;
 	}
 
+	public Boolean isSubClassOf(String nodeType, String superNodeType) {
+		System.out.println("isSubClassOf: nodeType = " + MyUtils.getFullResourceIRI(nodeType, kb) + ", superNodeType = " + MyUtils.getFullResourceIRI(superNodeType, kb));
+		IRI nodeTypeIRI = kb.factory.createIRI(MyUtils.getFullResourceIRI(nodeType, kb));
+		String _superNodeType = MyUtils.getFullResourceIRI(superNodeType, kb);
+		
+		Set<String> superNodeTypeSet = new HashSet<>();
+		superNodeTypeSet.add(_superNodeType);
+		
+		return InferencesUtil.checkSubclassList(kb, nodeTypeIRI, superNodeTypeSet);
+	}
+	
 	public Set<Parameter> getParameters(IRI classifier) {
 		Set<Parameter> parameters = new HashSet<>();
 

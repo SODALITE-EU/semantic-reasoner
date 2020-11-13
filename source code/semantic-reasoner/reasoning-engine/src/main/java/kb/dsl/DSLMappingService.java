@@ -374,6 +374,13 @@ public class DSLMappingService {
 			}
 		}
 
+		
+		System.err.println("Mapping error models:");
+
+		for (DslValidationModel m:mappingModels) {
+			System.err.println(m.toString());
+		}
+		
 		if (!mappingModels.isEmpty()) {
 			throw new MappingException(mappingModels);
 		}

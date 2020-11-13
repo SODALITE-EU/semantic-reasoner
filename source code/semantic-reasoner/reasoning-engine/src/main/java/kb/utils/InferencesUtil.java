@@ -1,8 +1,12 @@
 package kb.utils;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
 import kb.repository.KB;
@@ -53,6 +57,26 @@ public class InferencesUtil {
 				return true;
 		}
 		return false;
+	}
+	
+	
+	public static IRI getNamespaceFromType(KB kb, IRI node) throws IOException {
+		IRI namespace = null;
+		
+		String sparql = MyUtils.fileToString("sparql/getNamespaceFromType.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("n", node));
+		
+		
+		if (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
+		}
+		result.close();
+		
+		return namespace;
 	}
 
 }

@@ -66,7 +66,7 @@ public class ConfigsLoader {
 			kbPassword = System.getenv("kbPassword");
 		}
 		
-		System.out.println(String.format("graphdb = %s, bugpredictorServer = %s, ansiblePath = %s, reasonerServer = %s, kbUsername = %s, kbPassword = %s", graphdb, bugPredictorServer, ansiblePath, reasonerServer, kbUsername, kbPassword));
+		System.out.println(String.format("graphdb = %s, bugpredictorServer = %s, ansiblePath = %s, reasonerServer = %s", graphdb, bugPredictorServer, ansiblePath, reasonerServer));
 
 	}
 	
@@ -89,7 +89,7 @@ public class ConfigsLoader {
 		return kbUsername;
 	}
 	
-	public String getkbPassword() {
+	public String getKbPassword() {
 		return kbPassword;
 	}
 	
