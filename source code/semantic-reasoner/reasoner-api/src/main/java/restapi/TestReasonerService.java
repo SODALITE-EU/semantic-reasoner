@@ -66,7 +66,7 @@ public class TestReasonerService extends AbstractService {
 				((RemoteRepositoryManager)_manager).setUsernameAndPassword(ConfigsLoader.getInstance().getKbUsername(), ConfigsLoader.getInstance().getKbPassword());
 
 			}
-				_manager.getAllRepositoryInfos();
+			_manager.getAllRepositoryInfos();
 		} catch (Exception exception) {
 			message = "graphdb host is unknown: " + graphdb;
 			return Response.status(Status.BAD_REQUEST).entity(message).build();
