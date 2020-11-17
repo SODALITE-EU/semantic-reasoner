@@ -16,21 +16,32 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.apache.commons.io.IOUtils;
 import java.nio.charset.StandardCharsets;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import kb.dsl.exceptions.MappingException;
+import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
 import kb.repository.SodaliteRepository;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DSLMappingServiceTest {
 	
 	private static SodaliteRepository repositoryManager;
 	private static Repository repository;
 	private static KB kb;
 
-	static void loadRepository() {
+	static DSLRMMappingService rm1;
+	static DSLRMMappingService rm2;
+	static DSLRMMappingService rm3;
+	static DSLRMMappingService rm4; 
+
+	@BeforeAll
+	 static void loadRepository() {
+		System.out.println("loadRepository");
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
 		kb = new KB(repositoryManager, "SEMANTIC_REASONER_TEST");
 
@@ -62,34 +73,34 @@ class DSLMappingServiceTest {
 		}
 
 		try {
-			InputStream input =
-				DSLMappingServiceTest.class.getResourceAsStream("/snow/snow_tier1.ttl");
-			repositoryConnection.add(input, "", RDFFormat.TURTLE);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		repositoryConnection.close();
-	}
-
-	static void removeRepository() {
-		repository.shutDown();
-		repositoryManager.removeRepository("SEMANTIC_REASONER_TEST");
-		repositoryManager.shutDown("TEST");
-	}
-	
-	//Test for a snow aadm. It is mapped without any error
-	@Test
-	void testDSLMappingService() {
-		
-		loadRepository();
-		IRI aadmIRI = null;
-		try {
-			String aadmTTL = fileToString("dsl/ide_snow_v3.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL,"", false);
+			System.out.println("Loading resource models");
+			//InputStream input =
+				//DSLMappingServiceTest.class.getResourceAsStream("/snow/snow_tier1.ttl");
+				//repositoryConnection.add(input, "", RDFFormat.TURTLE, kb.getFactory().createIRI("https://www.sodalite.eu/ontologies/workspace/1/snow/"));
+			//IRI rmIRI1, rmIRI2, rmIRI3, rmIRI4;
+			//String rmTTL1 = fileToString("snow/modules.docker_registry.rm.ttl");
+			//String rmTTL2 = fileToString("snow/modules.docker_component.rm.ttl");
+			String rmTTL3 = fileToString("snow/modules.openstack_security_rule.rm.ttl");
+			//String rmTTL4 = fileToString("snow/modules.openstack_vm.rm.ttl");
+			
+			
+			//rm1  = new DSLRMMappingService(kb, rmTTL1,"", "docker","DSL","");
+			//rm2  = new DSLRMMappingService(kb, rmTTL2,"", "docker","DSL","");
+			rm3  = new DSLRMMappingService(kb, rmTTL3,"", "openstack","DSL","");
+			//rm4  = new DSLRMMappingService(kb, rmTTL4,"", "openstack","DSL","");
+			
 			try {
-				aadmIRI = m.start();
-				m.save();
+				/*rm1.start();
+				rm1.save();
+				
+				rm2.start();
+				rm2.save();*/
+				
+				rm3.start();
+				rm3.save();
+				
+				/*rm4.start();
+				rm4.save();*/
 			} catch (MappingException e) {
 				e.printStackTrace();
 			} catch (ValidationException e) {
@@ -99,12 +110,61 @@ class DSLMappingServiceTest {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		repositoryConnection.close();
+	}
+
+	
+	@AfterAll
+	public static void cleanUp() {
+		//rm1.shutDown();
+		//rm2.shutDown();
+		rm3.shutDown();
+		//rm4.shutDown();
+		removeRepository();
+	}
+	
+	static void removeRepository() {
+		repository.shutDown();
+		repositoryManager.removeRepository("SEMANTIC_REASONER_TEST");
+		repositoryManager.shutDown("TEST");
+	}
+	
+	//Test for a snow aadm. It is mapped without any error
+	@Test
+	void testDSLMappingService() {
+
+		IRI aadmIRI = null;
+		DSLMappingService m = null;
+		try {
+			String aadmTTL = fileToString("dsl/ide_snow_v3.ttl");
+			m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+			try {
+				aadmIRI = m.start();
+				m.save();
+			} catch (MappingException e) {
+				e.printStackTrace();
 				m.shutDown();
-				removeRepository();
+			} catch (ValidationException e) {
+				List<ValidationModel> validationModels = e.validationModels;
+				for (ValidationModel validationModel : validationModels) {
+					System.out.println("validationModel" + validationModel.toJson());
+				}
+				m.shutDown();
+				return;
+			} catch (Exception e) {
+				e.printStackTrace();
+				m.shutDown();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			if (m!=null)
+				m.shutDown();
 		}
 		assertNotNull(aadmIRI);
 		System.out.println("Test Passed: aadm for snow");
@@ -114,46 +174,55 @@ class DSLMappingServiceTest {
 	   The required registry_ip property has been removed from Template_2. */
 	@Test
 	void testMissingRequiredProperty() {
-		loadRepository();
+		System.out.println("testMissingRequiredProperty");
+		DSLMappingService m = null;
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3_required_property_missing.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "", false);
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
-				m.save();
-			} catch (MappingException e) {
-				e.printStackTrace();
+
+
 			} catch (ValidationException e) {	
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
 					System.out.println("validationModel" + validationModel.toJson());
 				}
 				assertEquals(validationModels.size(),1);
-				System.out.println("Test Passed: registry_ip required property is missing");
-			} finally {
-				m.shutDown();
-				removeRepository();
+				System.out.println("Test Passed: group_description required property is missing");
+				return;
+			} catch (Exception e) {
+				if (m!=null)
+					m.shutDown();
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	
+		m.shutDown();
+		assertTrue(false);
 	}
 	
 	/* Test for a Mapping Exception.
 	   The  name of Template_3 has been removed. */
 	@Test
 	void testMappingException() {
-		loadRepository();
+		DSLMappingService m = null;
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3_mapping_exception.ttl");
-			DSLMappingService m  = new DSLMappingService(kb, aadmTTL, "", false);
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
 				m.save();
 			} catch (MappingException e) {
 				System.out.println("Test Passed for MappingException: " + e.getMessage());
-				assertEquals(e.getMessage(),"No 'name' defined for template: Template_3");
+				List<DslValidationModel> validationModels = e.mappingValidationModels;
+				for (DslValidationModel v : validationModels) {
+					System.out.println("validationModel" + v.toJson());
+				}
+				assertEquals(validationModels.size(),1);
+				return;
 			} catch (ValidationException e) {	
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
@@ -162,13 +231,15 @@ class DSLMappingServiceTest {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				m.shutDown();
-				removeRepository();
+				if (m!=null)
+					m.shutDown();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
+		if (m!=null)
+			m.shutDown();
+		assertTrue(false);
 	}
 	
 	public static String fileToString(String file) throws IOException {

@@ -1,0 +1,14 @@
+SELECT ?m ?time ?user ?dsl ?name {
+		?m a soda:AbstractApplicationDeployment .
+		?m soda:createdAt ?time .
+		?m soda:createdBy ?user .
+		?m soda:hasDSL ?dsl .
+		?m soda:hasName ?name .
+        
+ 		?m DUL:isSettingFor ?n
+        
+		GRAPH ?g {
+			?n soda:hasContext ?c
+		}
+	
+} group by ?m ?time ?user ?dsl ?name

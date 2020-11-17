@@ -24,8 +24,10 @@ import org.json.simple.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import kb.clean.ModifyKB;
 import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
+import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
 import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
@@ -52,6 +54,10 @@ public class SubmitService extends AbstractService {
 	 * Storing the submitted AADM in the KB and assigning a unique id.
 	 * @param aadmTTL The AADM in turtle format
 	 * @param aadmURI A unique id
+	 * @param aadmDSL The original DSL of the aadm
+	 * @param complete flag for auto-completion of entities
+	 * @param namespace The namespace of the model
+	 * @param name The file name of the model
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid
@@ -65,12 +71,15 @@ public class SubmitService extends AbstractService {
 	@ApiOperation(value = "Stores submitted node templates in the KB")
 	public Response saveAADM(@ApiParam(value = "The TTL of AADM", required = true) @FormParam("aadmTTL") String aadmTTL,
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("aadmURI") String aadmURI,
-			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete)
+			@ApiParam(value = "The aadm in DSL", required = true) @DefaultValue("") @FormParam("aadmDSL") String aadmDSL,
+			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
+			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
+			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException {
 		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete);
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name);
 		IRI aadmUri = null;
 
 		//Contains the final response
@@ -80,14 +89,23 @@ public class SubmitService extends AbstractService {
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
 			if(!HttpClientRequest.getWarnings(response, aadmid)) {
-				kb.connection.clear(m.getContext());
+				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getTemplateNames()));
 				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
 			}
 			
 			addRequirementModels(m, response);
 		} catch (MappingException e) {
 			e.printStackTrace();
-		} catch (ValidationException e) {	
+			List<DslValidationModel> validationModels = e.mappingValidationModels;
+			JSONArray array = new JSONArray();
+			for (DslValidationModel validationModel : validationModels) {
+				array.add(validationModel.toJson());
+			}
+		
+			JSONObject errors = new JSONObject();
+			errors.put("errors", array);
+			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
+		} catch (ValidationException e) {
 			List<ValidationModel> validationModels = e.validationModels;
 			JSONArray array = new JSONArray();
 			for (ValidationModel validationModel : validationModels) {

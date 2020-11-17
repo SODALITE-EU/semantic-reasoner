@@ -1775,6 +1775,10 @@ DUL:hasParameter
 :host
   rdf:type rdf:Property ;
 .
+:float
+  rdf:type owl:Class ;
+  rdfs:subClassOf :DataType ;
+.
 :implementation
   rdf:type rdf:Property ;
 .
@@ -2088,6 +2092,7 @@ DUL:hasParameter
   rdf:type owl:Class ;
   DUL:hasParameter :SodaliteParameter_53 ;
   rdfs:subClassOf soda:SodaliteSituation ;
+  #rdfs:subClassOf <https://www.sodalite.eu/ontologies/tosca/tosca.datatypes.Root> ;
   rdfs:subClassOf :integer ;
 .
 <https://www.sodalite.eu/ontologies/tosca/tosca.datatypes.network.PortInfo>
@@ -2243,4 +2248,9 @@ DUL:hasParameter
 .
 :volume_id
   rdf:type rdf:Property ;
+.
+:hasName
+  rdf:type owl:DatatypeProperty ;
+  rdf:domain :SodaliteSituation ;
+  rdfs:range xsd:string ;
 .

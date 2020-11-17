@@ -20,6 +20,7 @@ import io.swagger.annotations.Info;
 import io.swagger.annotations.SwaggerDefinition;
 import kb.KBApi;
 import kb.dto.Attribute;
+import kb.utils.MyUtils;
 
 /** A service that returns the attributes of a single TOSCA node
  * @author George Meditskos
@@ -63,7 +64,7 @@ public class AttributeService extends AbstractService {
 			throws IOException {
 
 		KBApi api = new KBApi();
-		Set<Attribute> attributes = api.getAttributes(resource, false);
+		Set<Attribute> attributes = api.getAttributes(api.getResourceIRI(resource), false);
 		api.shutDown();
 
 		JsonObject _attributes = new JsonObject();

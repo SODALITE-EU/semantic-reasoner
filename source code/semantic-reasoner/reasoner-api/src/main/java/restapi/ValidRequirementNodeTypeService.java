@@ -27,7 +27,7 @@ import kb.dto.NodeType;
  * @version 1.0
  * @since 1.0
 */
-@Path("/valid-requirement-nodes-types")
+@Path("/valid-requirement-nodes-type")
 @Api()
 public class ValidRequirementNodeTypeService extends AbstractService {
 	/**
@@ -55,7 +55,7 @@ public class ValidRequirementNodeTypeService extends AbstractService {
 			throws IOException {
 
 		KBApi api = new KBApi();
-		Set<NodeType> nodeTypes = api.getRequirementValidNodeTypes(requirement, nodeType);
+		Set<NodeType> nodeTypes = api.getRequirementValidNodeType(requirement, nodeType);
 		api.shutDown();
 
 		JsonObject _nodesTypes = new JsonObject();

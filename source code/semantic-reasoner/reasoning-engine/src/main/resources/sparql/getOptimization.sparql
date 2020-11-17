@@ -1,6 +1,6 @@
 select distinct ?opt_json
 where {
 	?resource soda:hasContext ?context .
-	FILTER (strends(str(?resource), ?var)).
+	#FILTER (strends(str(?resource), ?var)).
 	?context tosca:optimization ?opt_json .
 }

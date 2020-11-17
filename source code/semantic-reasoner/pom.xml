@@ -36,7 +36,8 @@
 		<dependency>
 			<groupId>org.eclipse.rdf4j</groupId>
 			<artifactId>rdf4j-runtime</artifactId>
-			<version>3.0.0</version>
+			<version>3.4.3</version>
+			 <type>pom</type>
 		</dependency>
 		<!-- <dependency> -->
 		<!-- <groupId>org.eclipse.rdf4j</groupId> -->
@@ -46,7 +47,7 @@
 		<dependency>
 			<groupId>com.ontotext.graphdb</groupId>
 			<artifactId>graphdb-free-runtime</artifactId>
-			<version>9.0.0</version>
+			<version>9.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

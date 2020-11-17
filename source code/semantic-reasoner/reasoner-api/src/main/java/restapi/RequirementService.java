@@ -48,7 +48,7 @@ public class RequirementService extends AbstractService {
 			throws IOException {
 
 		KBApi api = new KBApi();
-		Set<Requirement> requirements = api.getRequirements(resource, false);
+		Set<Requirement> requirements = api.getRequirements(api.getResourceIRI(resource), false);
 		api.shutDown();
 
 		JsonObject _requirements = new JsonObject();

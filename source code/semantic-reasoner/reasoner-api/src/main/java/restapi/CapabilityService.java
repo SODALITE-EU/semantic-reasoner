@@ -47,7 +47,7 @@ public class CapabilityService extends AbstractService {
 			throws IOException {
 
 		KBApi api = new KBApi();
-		Set<Capability> capabilities = api.getCapabilities(resource, false);
+		Set<Capability> capabilities = api.getCapabilities(api.getResourceIRI(resource), false);
 		api.shutDown();
 		JsonObject _capabilities = new JsonObject();
 		JsonArray array = new JsonArray();

@@ -1,5 +1,8 @@
 package kb.utils;
 
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.rdf4j.query.Binding;
 import org.eclipse.rdf4j.query.BooleanQuery;
 import org.eclipse.rdf4j.query.GraphQuery;
@@ -12,6 +15,8 @@ import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
+
+import kb.repository.KB;
 
 /**
  * Utility class for evaluating SPARQL queries.
@@ -107,4 +112,28 @@ public class QueryUtil {
 		// Sending the query to GraphDB and evaluating it
 		return booleanQuery.evaluate();
 	}
+	
+	public static String convertToSPARQLList(Set<String> list) {
+	    StringBuffer sb = new StringBuffer();
+	    for(String item: list) {
+	    	 sb.append("\"");
+	         sb.append(item);
+	         sb.append("\" ");
+	    }
+	    sb.setLength(sb.length() - 1); // remove last whitespace
+	    return sb.toString();
+	 }
+	
+	public static String namedGraphsForQuery(KB kb, List<String> imports) {
+		String sparql = "";
+		for (String im: imports) {
+			System.out.println("im=" + im);
+			String imIRI = MyUtils.getFullNamespaceIRI(kb,im);
+			if(imIRI != null)
+				sparql += "FROM NAMED <" + imIRI + ">\r\n";
+		}
+		
+		return sparql;
+	}
+
 }
