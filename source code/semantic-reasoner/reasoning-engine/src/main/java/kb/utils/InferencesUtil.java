@@ -80,6 +80,6 @@ public class InferencesUtil {
 		result.close();
 		
 		return namespace;
-	}
+	}*/
 
 }
