@@ -33,7 +33,7 @@ class DSLMappingServiceTest {
 	private static SodaliteRepository repositoryManager;
 	private static Repository repository;
 	private static KB kb;
-	static DSLMappingService m;
+
 	static DSLRMMappingService rm1;
 	static DSLRMMappingService rm2;
 	static DSLRMMappingService rm3;
@@ -163,7 +163,8 @@ class DSLMappingServiceTest {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			m.shutDown();
+			if (m!=null)
+				m.shutDown();
 		}
 		assertNotNull(aadmIRI);
 		System.out.println("Test Passed: aadm for snow");
@@ -191,7 +192,8 @@ class DSLMappingServiceTest {
 				System.out.println("Test Passed: group_description required property is missing");
 				return;
 			} catch (Exception e) {
-				m.shutDown();
+				if (m!=null)
+					m.shutDown();
 				e.printStackTrace();
 			}
 		} catch (Exception e) {
@@ -206,10 +208,10 @@ class DSLMappingServiceTest {
 	   The  name of Template_3 has been removed. */
 	@Test
 	void testMappingException() {
-
+		DSLMappingService m = null;
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3_mapping_exception.ttl");
-			DSLMappingService m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
 				m.save();
@@ -229,14 +231,14 @@ class DSLMappingServiceTest {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				m.shutDown();
-
+				if (m!=null)
+					m.shutDown();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		m.shutDown();
+		if (m!=null)
+			m.shutDown();
 		assertTrue(false);
 	}
 	

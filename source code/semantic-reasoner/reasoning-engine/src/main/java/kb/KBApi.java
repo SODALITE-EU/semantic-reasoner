@@ -519,13 +519,16 @@ public class KBApi {
 		Set<NodeType> nodeTypes = new HashSet<>();
 		
 		IRI node = getMostSpecificRequirementNode(requirement, MyUtils.getFullResourceIRI(nodeType, kb));
+		if (node != null) {
+			NodeType n = new NodeType(node);
+			String _namespace = MyUtils.getNamespaceFromIRI(node.toString());
+			if (MyUtils.validNamespace(kb, _namespace))
+				n.setNamespace(kb.factory.createIRI(_namespace));
 		
-		NodeType n = new NodeType(node);
-		String _namespace = MyUtils.getNamespaceFromIRI(node.toString());
-		if (MyUtils.validNamespace(kb, _namespace))
-			n.setNamespace(kb.factory.createIRI(_namespace));
-		
-		nodeTypes.add(n);
+			nodeTypes.add(n);
+		}
+
+
 		return nodeTypes;	
 	}
 	
