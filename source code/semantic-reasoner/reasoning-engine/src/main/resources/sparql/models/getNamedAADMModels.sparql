@@ -1,4 +1,4 @@
-SELECT ?m ?time ?user ?dsl {
+SELECT ?m ?time ?user ?dsl ?name {
 		?m a soda:AbstractApplicationDeployment .
 		?m soda:createdAt ?time .
 		?m soda:createdBy ?user .

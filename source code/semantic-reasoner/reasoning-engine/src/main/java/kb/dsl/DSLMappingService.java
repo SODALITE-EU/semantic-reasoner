@@ -246,7 +246,7 @@ public class DSLMappingService {
 				}
 				
 				if (aadmKB != null) 
-					templateBuilder.add(aadmKB, factory.createIRI(KB.SODA + "includesTemplate"), templateKB);
+					aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "includesTemplate"), templateKB);
 
 				// create description
 				templateDescriptionKB = factory.createIRI(namespace + "Desc_" + MyUtils.randomString());

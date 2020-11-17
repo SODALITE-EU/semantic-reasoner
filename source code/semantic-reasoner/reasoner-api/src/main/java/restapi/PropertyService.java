@@ -53,7 +53,7 @@ public class PropertyService extends AbstractService {
 		// a node or template.
 		// For now this is always false, since we are asking only for nodes (not
 		// templates)
-		Set<Property> properties = api.getProperties(resource, false);
+		Set<Property> properties = api.getProperties(api.getResourceIRI(resource), false);
 		api.shutDown();
 		JsonObject _properties = new JsonObject();
 		JsonArray array = new JsonArray();

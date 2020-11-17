@@ -112,8 +112,7 @@ public class KB {
     }
 
     private boolean checkIfRepoExists(String serverUrl, String repoName) {
-
-    	manager = new SodaliteRepository(serverUrl, ConfigsLoader.getInstance().getKbUsername(), ConfigsLoader.getInstance().getkbPassword());
+    	manager = new SodaliteRepository(serverUrl, ConfigsLoader.getInstance().getKbUsername(), ConfigsLoader.getInstance().getKbPassword());
 	
     	if (manager.getRepository(repoName) != null) {
             connection = getRepositoryConnection(repoName);

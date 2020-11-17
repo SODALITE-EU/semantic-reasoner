@@ -1,9 +1,11 @@
 package restapi;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -31,6 +33,7 @@ public class ValidRequirementNodesService extends AbstractService {
 	 * Getting the nodes that satisfy a certain requirement of a node template of type nodeType
 	 * @param requirement The name of a requirement
 	 * @param nodeType The name of the node type
+	 * @param imports The namespaces to be searched
 	 * @throws IOException If your input format is invalid
 	 * @return The nodes in JSON format
 	*/
@@ -44,15 +47,19 @@ public class ValidRequirementNodesService extends AbstractService {
 			@ApiParam(
 					value = "the name of the requirement, e.g. host",
 					required = true,
-					defaultValue = "host") @QueryParam("requirement") String requirement,
+					defaultValue = "host") @MatrixParam("requirement") String requirement,
 			@ApiParam(
 					value = "the node type for which the requirement is relevant, e.g. tosca.nodes.SoftwareComponent",
 					required = true,
-					defaultValue = "tosca.nodes.SoftwareComponent") @QueryParam("nodeType") String nodeType)
+					defaultValue = "tosca.nodes.SoftwareComponent") @MatrixParam("nodeType") String nodeType,
+			@ApiParam(
+					value = "the node type for which the requirement is relevant, e.g. tosca.nodes.SoftwareComponent",
+					required = true,
+					defaultValue = "tosca.nodes.SoftwareComponent") @MatrixParam("imports") List<String> imports)
 			throws IOException {
 
 		KBApi api = new KBApi();
-		Set<Node> nodes = api.getRequirementValidNodes(requirement, nodeType);
+		Set<Node> nodes = api.getRequirementValidNodes(requirement, nodeType, imports);
 		api.shutDown();
 
 		JsonObject _nodes = new JsonObject();

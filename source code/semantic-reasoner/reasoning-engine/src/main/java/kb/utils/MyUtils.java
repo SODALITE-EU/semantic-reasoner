@@ -74,7 +74,7 @@ public class MyUtils {
 	}
 	
 	public static JsonObject getLabelIRINamespace(IRI value, IRI namespace) {
-		System.out.println("getLabelIRINamespace");
+
 		JsonObject result = new JsonObject();
 
 		JsonObject d = new JsonObject();
@@ -184,7 +184,8 @@ public class MyUtils {
 	
 	/* resource: docker/sodalite.nodes.Dockerhost
 	 * https://www.sodalite.eu/ontologies/workspace/1/docker/ is returned
-	 * */
+	 * 
+	*/
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;
 		
@@ -195,9 +196,16 @@ public class MyUtils {
 			resourceIRI = getFullNamespaceIRI(kb, namespace) + name;
 		else
 			resourceIRI = KB.TOSCA + resource;
-
 		
 		return resourceIRI;
+	}
+	
+	public static boolean validNamespace(KB kb, String namespace) {
+		List<Resource> list = Iterations.asList(kb.connection.getContextIDs());
+		
+		if (list.contains(kb.factory.createIRI(namespace))) 
+			return true;
+		return false;
 	}
 
 }

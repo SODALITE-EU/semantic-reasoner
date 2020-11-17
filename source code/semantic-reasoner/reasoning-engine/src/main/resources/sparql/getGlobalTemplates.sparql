@@ -1,0 +1,12 @@
+SELECT ?node ?description ?superclass ?g 
+WHERE {
+	?node a tosca:tosca.nodes.Root .
+	?node sesame:directType ?superclass .
+	?superclass rdfs:subClassOf tosca:tosca.nodes.Root . 
+	OPTIONAL {?node dcterms:description ?description .} 
+        
+	FILTER NOT EXISTS
+	{
+		GRAPH ?g { ?node soda:hasContext ?c . } 
+	}
+}

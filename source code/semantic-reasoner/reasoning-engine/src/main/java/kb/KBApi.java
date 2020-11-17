@@ -70,8 +70,12 @@ public class KBApi {
 		kb.shutDown();
 	}
 	
+	public String getResourceIRI(String resource) {
+		return MyUtils.getFullResourceIRI(resource, kb);
+	}
+	
 	public Set<Attribute> getAttributes(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getAttributes: " + MyUtils.getFullResourceIRI(resource, kb));
+		System.out.println("getAttributes: " + resource);
 		
 		Set<Attribute> attributes = new HashSet<>();
 		String sparql = MyUtils
@@ -81,7 +85,7 @@ public class KBApi {
 
 		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("resource", kb.getFactory().createIRI(MyUtils.getFullResourceIRI(resource, kb))));
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
 
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
@@ -105,7 +109,7 @@ public class KBApi {
 	}
 
 	public Set<Property> getProperties(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getProperties: " +  MyUtils.getFullResourceIRI(resource, kb));
+		System.out.println("getProperties: " +  resource);
 		
 		Set<Property> properties = new HashSet<>();
 		String sparql = MyUtils
@@ -113,7 +117,7 @@ public class KBApi {
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("resource",  kb.getFactory().createIRI(MyUtils.getFullResourceIRI(resource, kb))));
+				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
@@ -137,14 +141,14 @@ public class KBApi {
 	}
 
 	public Set<Property> getInputs(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getInputs: " + MyUtils.getFullResourceIRI(resource, kb));
+		System.out.println("getInputs: " + resource);
 		
 		Set<Property> inputs = new HashSet<>();
 		String sparql = MyUtils.fileToString("sparql/getInputs.sparql");
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("resource",  kb.getFactory().createIRI(MyUtils.getFullResourceIRI(resource, kb))));
+				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
 		while (result.hasNext()) {
 			System.err.println("in");
@@ -169,7 +173,7 @@ public class KBApi {
 	}
 
 	public Set<Capability> getCapabilities(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getCapabilities: " + MyUtils.getFullResourceIRI(resource, kb));
+		System.out.println("getCapabilities: " + resource);
 		
 		Set<Capability> capabilities = new HashSet<>();
 
@@ -179,7 +183,7 @@ public class KBApi {
 
 		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("resource",  kb.getFactory().createIRI(MyUtils.getFullResourceIRI(resource, kb))));
+				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
@@ -201,7 +205,7 @@ public class KBApi {
 	}
 
 	public Set<Requirement> getRequirements(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getRequirements: " + MyUtils.getFullResourceIRI(resource, kb));
+		System.out.println("getRequirements: " + resource);
 		
 		Set<Requirement> requirements = new HashSet<>();
 
@@ -211,7 +215,7 @@ public class KBApi {
 
 		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("resource",  kb.getFactory().createIRI(MyUtils.getFullResourceIRI(resource, kb))));
+				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
@@ -251,19 +255,14 @@ public class KBApi {
 		else
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
 		
-		_setNodes(result, nodes);
+		_setNodeTypes(result, nodes);
 		if (!imports.isEmpty()) {
 			//get nodes from named namespaces
 			String sparql2 = "select ?node ?description ?superclass ?g\r\n" +
 								"FROM <http://www.ontotext.com/implicit>\r\n" + 
 								"FROM <http://www.ontotext.com/explicit>\r\n";
 		
-			for (String im: imports) {
-				System.out.println("im=" + im);
-				String imIRI = MyUtils.getFullNamespaceIRI(kb,im);
-				if(imIRI != null)
-					sparql2 += "FROM NAMED <" + imIRI + ">\r\n";
-			}
+			sparql2 += QueryUtil.namedGraphsForQuery(kb, imports);
 
 			sparql2 += "where {\r\n" +
 						"	GRAPH ?g {\r\n" +
@@ -284,13 +283,13 @@ public class KBApi {
 		
 			System.out.println(query2);
 			TupleQueryResult result2 = QueryUtil.evaluateSelectQuery(kb.getConnection(), query2, new SimpleBinding("root_type", kb.getFactory().createIRI(KB.TOSCA + root_type)));
-			_setNodes(result2, nodes);
+			_setNodeTypes(result2, nodes);
 		}
 		
 		return nodes;
 	}
 	
-	private void _setNodes(TupleQueryResult result, Set<Node> nodes) {
+	private void _setNodeTypes(TupleQueryResult result, Set<Node> nodes) {
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			IRI node = (IRI) bindingSet.getBinding("node").getValue();
@@ -348,7 +347,7 @@ public class KBApi {
 	}
 
 	public Set<Interface> getInterfaces(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getInterfaces: " + MyUtils.getFullResourceIRI(resource, kb));
+		System.out.println("getInterfaces: " + resource);
 		Set<Interface> interfaces = new HashSet<>();
 		
 		Set<IRI> nodes =  new HashSet<>();
@@ -361,7 +360,7 @@ public class KBApi {
 		
 		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("resource",  kb.getFactory().createIRI(MyUtils.getFullResourceIRI(resource, kb))));
+				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
@@ -422,7 +421,7 @@ public class KBApi {
 		return nodeType;
 	}
 
-	public Set<Node> getRequirementValidNodes(String requirement, String nodeType) throws IOException {
+	public Set<Node> getRequirementValidNodes(String requirement, String nodeType, List<String> imports) throws IOException {
 		System.out.println("getRequirementValidNodes: " + MyUtils.getFullResourceIRI(nodeType, kb));
 		
 		Set<Node> nodes = new HashSet<>();
@@ -432,49 +431,82 @@ public class KBApi {
 			return nodes;
 		}
 		System.out.println("getMostSpecificRequirementNode: " + node);
-		String query = KB.PREFIXES + "SELECT ?node ?description ?superclass ?g" +
-					" WHERE {\r\n" +
-					"	?node a tosca:tosca.nodes.Root .\r\n" + 
-					"   ?node a ?var .   \r\n" +
-					"	?node sesame:directType ?superclass . \r\n " +
-					"   ?superclass rdfs:subClassOf tosca:tosca.nodes.Root . \r\n" +
-					"   OPTIONAL {?node dcterms:description ?description .} \r\n" + 
-					" 	OPTIONAL {\r\n" + 
-					"        GRAPH ?g {\r\n" + 
-					"            ?node soda:hasContext ?c\r\n" + 
-					"        }\r\n" + 
-					"   }" +
-					"}";
 		
-		System.out.println(query);
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-					new SimpleBinding("var", node));
+		
+		String sparqlg = MyUtils.fileToString("sparql/getGlobalRequirementValidNodes.sparql");
+		String queryg = KB.PREFIXES + sparqlg;
+		
+		System.out.println(queryg);
 
+		TupleQueryResult resultg = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryg, new SimpleBinding("var", node));
+		_setNodes(resultg, nodes);
+		
+		if(!imports.isEmpty()) {
+			String query = _getQueryTemplates(true, imports);
+			if (!query.isEmpty()) {		
+				System.out.println(query);
+				TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+											new SimpleBinding("var", node));
+				_setNodes(result, nodes);
+			}
+		}
+		
+		return nodes;
+	}
+
+	private String _getQueryTemplates(boolean ofType, List<String> imports) {
+		String query = "";
+		String dataset = QueryUtil.namedGraphsForQuery(kb, imports);
+		if (!dataset.isEmpty()) {
+			query = KB.PREFIXES + "SELECT ?node ?description ?superclass ?g\r\n" +
+								"FROM <http://www.ontotext.com/implicit>\r\n" + 
+								"FROM <http://www.ontotext.com/explicit>\r\n";
+	
+			query += dataset;
+	
+			query += " WHERE {\r\n" +
+					"	?node a tosca:tosca.nodes.Root .\r\n";
+			if (ofType)		
+					query += "	?node a ?var .   \r\n";
+			query += "	?node sesame:directType ?superclass . \r\n " +
+					"   ?superclass rdfs:subClassOf tosca:tosca.nodes.Root . \r\n" +
+					"	OPTIONAL {?node dcterms:description ?description .} \r\n";
+			query += "        GRAPH ?g {\r\n" + 
+					"            ?node soda:hasContext ?c\r\n" + 
+					"        }\r\n";
+				
+			query += "}";	
+		}
+		
+		return query;
+	}
+	
+	private void _setNodes(TupleQueryResult result, Set<Node> nodes) throws IOException {
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
-			IRI _node = (IRI) bindingSet.getBinding("node").getValue();
+			IRI node = (IRI) bindingSet.getBinding("node").getValue();
 			String description = bindingSet.hasBinding("description")
 					? bindingSet.getBinding("description").getValue().stringValue()
-							: null;
+					: null;
 			IRI superclass = (IRI) bindingSet.getBinding("superclass").getValue();
 			IRI _namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
 
-
-			Node n = new Node(_node);
+			Node n = new Node(node);
 			n.setDescription(description);
 			n.setType(superclass);
 			n.setNamespace(_namespace);
 			
 			
-			IRI namespace = InferencesUtil.getNamespaceFromType(kb, superclass);
-			n.setNamespaceOfType(namespace);
-			
-			nodes.add(n);
+			/*IRI namespace = InferencesUtil.getNamespaceFromType(kb, superclass);*/
+			String _superNamespace = MyUtils.getNamespaceFromIRI(superclass.toString());
+			if (MyUtils.validNamespace(kb, _superNamespace))
+				n.setNamespaceOfType(kb.factory.createIRI(_superNamespace));
 
+			nodes.add(n);
 		}
-		
+
 		result.close();
-		return nodes;
+
 	}
 
 	/*
@@ -486,14 +518,38 @@ public class KBApi {
 		
 		Set<NodeType> nodeTypes = new HashSet<>();
 		
-		IRI node = getMostSpecificRequirementNode(requirement, MyUtils.getFullResourceIRI(nodeType, kb));	
-		IRI namespace = InferencesUtil.getNamespaceFromType(kb, node);
+		IRI node = getMostSpecificRequirementNode(requirement, MyUtils.getFullResourceIRI(nodeType, kb));
 		
 		NodeType n = new NodeType(node);
-		n.setNamespace(namespace);
+		String _namespace = MyUtils.getNamespaceFromIRI(node.toString());
+		if (MyUtils.validNamespace(kb, _namespace))
+			n.setNamespace(kb.factory.createIRI(_namespace));
 		
 		nodeTypes.add(n);
 		return nodeTypes;	
+	}
+	
+	public Set<Node> getTemplates(List<String> imports) throws IOException {
+		Set<Node> nodes = new HashSet<>();
+		
+		String sparqlg = MyUtils.fileToString("sparql/getGlobalTemplates.sparql");
+		String queryg = KB.PREFIXES + sparqlg;
+		
+		System.out.println(queryg);
+
+		TupleQueryResult resultg = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryg);
+		_setNodes(resultg, nodes);
+		
+		if(!imports.isEmpty()) {
+			String query = _getQueryTemplates(false, imports);
+			if (!query.isEmpty()) {		
+				System.out.println(query);
+				TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
+				_setNodes(result, nodes);
+			}
+		}
+		
+		return nodes;		
 	}
 	
 	public String getDescription(IRI uri) {
@@ -508,15 +564,23 @@ public class KBApi {
 		return null;
 	}
 
-	public Boolean isSubClassOf(String nodeType, String superNodeType) {
-		System.out.println("isSubClassOf: nodeType = " + MyUtils.getFullResourceIRI(nodeType, kb) + ", superNodeType = " + MyUtils.getFullResourceIRI(superNodeType, kb));
-		IRI nodeTypeIRI = kb.factory.createIRI(MyUtils.getFullResourceIRI(nodeType, kb));
-		String _superNodeType = MyUtils.getFullResourceIRI(superNodeType, kb);
+	public Set<String> isSubClassOf(List<String> nodeTypes, String superNodeType) {
+		System.out.println("isSubClassOf: nodeType = " + nodeTypes.toString() + ", superNodeType = " + MyUtils.getFullResourceIRI(superNodeType, kb));
+		Set<String> _nodeTypes = new HashSet<>();
 		
-		Set<String> superNodeTypeSet = new HashSet<>();
-		superNodeTypeSet.add(_superNodeType);
+		for(String n: nodeTypes) {
+			IRI nodeTypeIRI = kb.factory.createIRI(MyUtils.getFullResourceIRI(n, kb));
 		
-		return InferencesUtil.checkSubclassList(kb, nodeTypeIRI, superNodeTypeSet);
+			String _superNodeType = MyUtils.getFullResourceIRI(superNodeType, kb);
+		
+			Set<String> superNodeTypeSet = new HashSet<>();
+			superNodeTypeSet.add(_superNodeType);
+			
+			if (InferencesUtil.checkSubclassList(kb, nodeTypeIRI, superNodeTypeSet))
+				_nodeTypes.add(n);
+		}
+		
+		return _nodeTypes;
 	}
 	
 	public Set<Parameter> getParameters(IRI classifier) {
@@ -627,7 +691,7 @@ public class KBApi {
 	}
 
 	public Set<IRI> getValidTargetTypes(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getValidTargetTypes: " + MyUtils.getFullResourceIRI(resource, kb));
+		System.out.println("getValidTargetTypes: " + resource);
 		
 		Set<IRI> results = new HashSet<>();
 		String sparql = MyUtils.fileToString(
@@ -635,7 +699,7 @@ public class KBApi {
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("resource", kb.getFactory().createIRI(MyUtils.getFullResourceIRI(resource, kb))));
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			IRI value = (IRI) bindingSet.getBinding("value").getValue();
@@ -646,7 +710,7 @@ public class KBApi {
 	}
 
 	public Set<Operation> getOperations(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getOperations: " + MyUtils.getFullResourceIRI(resource, kb));
+		System.out.println("getOperations: " + resource);
 		Set<Operation> operations = new HashSet<>();
 		String sparql = MyUtils
 				.fileToString(!isTemplate ? "sparql/getOperations.sparql" : "sparql/getOperationsTemplate.sparql");
@@ -654,7 +718,7 @@ public class KBApi {
 
 		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("resource", kb.getFactory().createIRI(MyUtils.getFullResourceIRI(resource, kb))));
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
 
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();

@@ -59,12 +59,15 @@ public class InferencesUtil {
 		return false;
 	}
 	
-	
-	public static IRI getNamespaceFromType(KB kb, IRI node) throws IOException {
+	//NOT USED
+	/*public static IRI getNamespaceFromType(KB kb, IRI node) throws IOException {
+		System.out.println("getNamespaceFromType node=" + node);
 		IRI namespace = null;
 		
 		String sparql = MyUtils.fileToString("sparql/getNamespaceFromType.sparql");
-		String query = KB.PREFIXES + sparql;
+		String query = KB.SODA_DUL_PREFIXES + sparql;
+		
+		System.out.println(query);
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("n", node));

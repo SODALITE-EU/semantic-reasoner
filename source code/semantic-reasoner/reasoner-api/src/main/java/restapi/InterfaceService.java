@@ -47,7 +47,7 @@ public class InterfaceService extends AbstractService {
 			throws IOException {
 
 		KBApi api = new KBApi();
-		Set<Interface> interfaces = api.getInterfaces(resource, false);
+		Set<Interface> interfaces = api.getInterfaces(api.getResourceIRI(resource), false);
 		api.shutDown();
 
 		JsonObject _interfaces = new JsonObject();
