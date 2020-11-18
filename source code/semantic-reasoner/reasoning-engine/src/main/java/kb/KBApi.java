@@ -496,8 +496,7 @@ public class KBApi {
 			n.setType(superclass);
 			n.setNamespace(_namespace);
 			
-			
-			/*IRI namespace = InferencesUtil.getNamespaceFromType(kb, superclass);*/
+
 			String _superNamespace = MyUtils.getNamespaceFromIRI(superclass.toString());
 			if (MyUtils.validNamespace(kb, _superNamespace))
 				n.setNamespaceOfType(kb.factory.createIRI(_superNamespace));
@@ -1111,30 +1110,11 @@ public class KBApi {
 		return a;
 	}
 	
-	public void deleteModel (String uri) {
+	public boolean deleteModel (String uri) {
 		System.out.println(String.format("deleteModel, uri = %s ",  uri));
-		
-		String query = "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/> \r\n" +
-				"PREFIX DUL: <http://www.loa-cnr.it/ontologies/DUL.owl#> \r\n";
-		
-		query += "select ?x\r\n" +
-						"{\r\n" + 
-						"	{\r\n" + 
-						"		?m a soda:ResourceModel .\r\n" + 
-						"	} UNION {\r\n" + 
-						"			?m a soda:AbstractApplicationDeployment .\r\n" + 
-						"	}	\r\n" + 
-						"	?m soda:includesNodeType|soda:includesRelationshipType|soda:includesDataType|soda:includesCapabilityType|soda:includesTemplate|soda:includesInput ?x .\r\n" + 
-						"}";
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("m", kb.getFactory().createIRI(uri)));
-		while (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			IRI node = (IRI) bindingSet.getBinding("x").getValue();
-			
-			new ModifyKB(kb).deleteNode(node);
-		}
-		
-		result.close();		
+
+		boolean res = new ModifyKB(kb).deleteModel(uri);
+		return res;
 	}
 		
 //	public Set<Constraint> getConstraints(IRI concept) throws IOException {

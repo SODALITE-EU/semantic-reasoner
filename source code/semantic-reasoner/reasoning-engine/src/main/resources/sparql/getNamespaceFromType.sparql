@@ -1,7 +1,0 @@
-SELECT  ?g
-WHERE {
-		 GRAPH ?g { 
-			?n a owl:Class .
-  			?n soda:hasContext ?c
-	 	 } 
-}

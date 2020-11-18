@@ -1,6 +1,7 @@
 package kb.clean;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -12,8 +13,10 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
+import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
 import kb.repository.KB;
@@ -50,10 +53,14 @@ public class ModifyKB {
 		System.err.println("deleteNode = " + node);
 		GraphQueryResult gresultM = QueryUtil.evaluateConstructQuery(kb.getConnection(), queryModel,
 				new SimpleBinding("s", node));
-			
-		addModel(QueryResults.asModel(gresultM));
-		Set<IRI> models = Models.subjectIRIs(model);
-				
+		
+		Model mresult = QueryResults.asModel(gresultM);
+		displayModel(mresult);
+		
+		Set<IRI> models = Models.subjectIRIs(mresult);
+		
+		addModel(mresult);
+						
 		gresultM.close();
 			
 		GraphQueryResult gresult = QueryUtil.evaluateConstructQuery(kb.getConnection(), query,
@@ -61,7 +68,7 @@ public class ModifyKB {
 
 		if (gresult.hasNext()) {
 			Model result = QueryResults.asModel(gresult);
-			System.err.println(result);
+			//System.err.println(result);
 			gresult.close();
 			addModel(result);
 
@@ -74,7 +81,7 @@ public class ModifyKB {
 											new SimpleBinding("s", context));
 				
 			Model result2 = QueryResults.asModel(gresult2);
-			System.err.println(result2);
+			//System.err.println(result2);
 			addModel(result2);
 			
 			gresult2.close();
@@ -169,18 +176,7 @@ public class ModifyKB {
 				kb.connection.remove(result);
 				
 				gresult.close();
-			} else {
-				/*Model result = QueryResults.asModel(gresultM);
-								
-				Optional<Resource> _input = Models.getPropertyResource(result, m ,kb.factory.createIRI(KB.SODA + "includesInput"));
-				
-				IRI input = null;
-				if (_input.isPresent() && _properties.isEmpty() && _attributes.isEmpty() && _requirements.isEmpty() && _interfaces.isEmpty()) {
-					input = (IRI) _input.get();
-					deleteNode(input);
-				}*/
-			}
-			
+			} 			
 			gresultM.close();
 		}
 	}
@@ -196,6 +192,40 @@ public class ModifyKB {
 		for (IRI n: nodes) {
 			deleteNode(n);
 		}
+	}
+	
+	public boolean deleteModel(String modelUri) {
+		String query = KB.SODA_DUL_PREFIXES;
+		
+		query += "select ?x\r\n" +
+						"{\r\n" + 
+						"	{\r\n" + 
+						"		?m a soda:ResourceModel .\r\n" + 
+						"	} UNION {\r\n" + 
+						"		?m a soda:AbstractApplicationDeployment .\r\n" + 
+						"	}	\r\n" + 
+						"	?m soda:includesNodeType|soda:includesRelationshipType|soda:includesDataType|soda:includesCapabilityType|soda:includesTemplate|soda:includesInput ?x .\r\n" + 
+						"}";
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("m", kb.getFactory().createIRI(modelUri)));
+		
+		System.out.println(query);
+		
+		Set<IRI> nodes = new HashSet<>();
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI node = (IRI) bindingSet.getBinding("x").getValue();			
+			nodes.add(node);
+		}
+		
+		if (nodes.isEmpty()) {
+			result.close();
+			return false;
+		}
+		
+		deleteNodes(nodes);
+		
+		result.close();
+		return true;
 	}
 		
 	public static void main(String[] args) {

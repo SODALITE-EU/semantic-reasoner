@@ -2,13 +2,13 @@ package restapi.model;
 
 import java.io.IOException;
 
-import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-
+import com.google.gson.JsonObject;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +33,7 @@ public class DeleteModel extends AbstractService {
 	  * @throws IOException If your input format is invalid
 	  * @return Success or not
 	 */
-	@GET
+	@DELETE
 	@Produces("application/json")
 	@ApiOperation(
 			value = "Delete a model in Knowledge Base")
@@ -42,9 +42,21 @@ public class DeleteModel extends AbstractService {
 			throws IOException {
 
 		KBApi api = new KBApi();
-		api.deleteModel(uri);
+		boolean res = api.deleteModel(uri);
 		api.shutDown();
 
-		return Response.ok("ok").build();
+		JsonObject _result = new JsonObject();
+		JsonObject _text = new JsonObject();
+		
+		if(!res) {
+			_text.addProperty("text", "The model does not exist");
+			_result.add("failure", _text);
+			return Response.status(404).entity(_result.toString()).build();
+		}
+		
+		_text.addProperty("text", "Successfully deleted the model");
+		_result.add("success", _text);
+		
+		return Response.ok(_result.toString()).build();
 	}
 }

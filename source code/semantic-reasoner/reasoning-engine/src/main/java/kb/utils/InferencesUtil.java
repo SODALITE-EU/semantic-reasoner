@@ -58,28 +58,5 @@ public class InferencesUtil {
 		}
 		return false;
 	}
-	
-	//NOT USED
-	/*public static IRI getNamespaceFromType(KB kb, IRI node) throws IOException {
-		System.out.println("getNamespaceFromType node=" + node);
-		IRI namespace = null;
-		
-		String sparql = MyUtils.fileToString("sparql/getNamespaceFromType.sparql");
-		String query = KB.SODA_DUL_PREFIXES + sparql;
-		
-		System.out.println(query);
-
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("n", node));
-		
-		
-		if (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
-		}
-		result.close();
-		
-		return namespace;
-	}*/
 
 }
