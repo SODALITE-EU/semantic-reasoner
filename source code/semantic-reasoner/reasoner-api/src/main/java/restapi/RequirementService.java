@@ -31,6 +31,7 @@ public class RequirementService extends AbstractService {
 	/**
 	 * Getting the requirements of a single TOSCA resource.
 	 * @param resource The resource name
+	 * @param template Flag that represents if it is template or type
 	 * @throws IOException If your input format is invalid
 	 * @return The requirements in JSON format
 	*/
@@ -44,11 +45,15 @@ public class RequirementService extends AbstractService {
 			@ApiParam(
 					value = "A TOSCA resource, e.g. a node",
 					required = true,
-					defaultValue = "my.nodes.SkylineExtractor") @QueryParam("resource") String resource)
+					defaultValue = "my.nodes.SkylineExtractor") @QueryParam("resource") String resource,
+			@ApiParam(
+					value = "For template, it is true. For type, it is false",
+					required = true,
+					defaultValue = "false") @QueryParam("template") boolean template)
 			throws IOException {
 
 		KBApi api = new KBApi();
-		Set<Requirement> requirements = api.getRequirements(api.getResourceIRI(resource), false);
+		Set<Requirement> requirements = api.getRequirements(api.getResourceIRI(resource), template);
 		api.shutDown();
 
 		JsonObject _requirements = new JsonObject();

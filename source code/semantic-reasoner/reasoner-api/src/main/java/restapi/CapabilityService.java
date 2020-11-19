@@ -30,6 +30,7 @@ public class CapabilityService extends AbstractService {
 	/**
 	  * Getting the capabilities of a single TOSCA resource.
 	  * @param resource The resource name
+	  * @param template Flag that represents if it is template or type
 	  * @throws IOException If your input format is invalid
 	  * @return The capabilities in JSON format
 	 */
@@ -43,11 +44,15 @@ public class CapabilityService extends AbstractService {
 			@ApiParam(
 					value = "A TOSCA resource, e.g. a node",
 					required = true,
-					defaultValue = "my.nodes.SkylineExtractor") @QueryParam("resource") String resource)
+					defaultValue = "my.nodes.SkylineExtractor") @QueryParam("resource") String resource,
+			@ApiParam(
+					value = "For template, it is true. For type, it is false",
+					required = true,
+					defaultValue = "false") @QueryParam("template") boolean template)
 			throws IOException {
 
 		KBApi api = new KBApi();
-		Set<Capability> capabilities = api.getCapabilities(api.getResourceIRI(resource), false);
+		Set<Capability> capabilities = api.getCapabilities(api.getResourceIRI(resource), template);
 		api.shutDown();
 		JsonObject _capabilities = new JsonObject();
 		JsonArray array = new JsonArray();

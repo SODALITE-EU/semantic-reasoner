@@ -31,6 +31,7 @@ public class PropertyService extends AbstractService {
 	/**
 	 * Getting the properties of a single TOSCA resource.
 	 * @param resource The resource name
+	 * @param template Flag that represents if it is template or type
 	 * @throws IOException If your input format is invalid
 	 * @return The requirements in JSON format
 	*/
@@ -44,8 +45,12 @@ public class PropertyService extends AbstractService {
 			@ApiParam(
 					value = "A TOSCA resource, e.g. a node",
 					required = true,
-					defaultValue = "my.nodes.SkylineExtractor") @QueryParam("resource") String resource)
-			throws IOException {
+					defaultValue = "my.nodes.SkylineExtractor") @QueryParam("resource") String resource,
+			@ApiParam(
+					value = "For template, it is true. For type, it is false",
+					required = true,
+					defaultValue = "false") @QueryParam("template") boolean template)
+		throws IOException {
 
 		KBApi api = new KBApi();
 
@@ -53,7 +58,7 @@ public class PropertyService extends AbstractService {
 		// a node or template.
 		// For now this is always false, since we are asking only for nodes (not
 		// templates)
-		Set<Property> properties = api.getProperties(api.getResourceIRI(resource), false);
+		Set<Property> properties = api.getProperties(api.getResourceIRI(resource), template);
 		api.shutDown();
 		JsonObject _properties = new JsonObject();
 		JsonArray array = new JsonArray();
@@ -67,7 +72,7 @@ public class PropertyService extends AbstractService {
 
 	public static void main(String[] args) throws IOException {
 		PropertyService s = new PropertyService();
-		Response property = s.getProperty("tosca.capabilities.Compute");
+		Response property = s.getProperty("tosca.capabilities.Compute", true);
 		System.out.println(property);
 	}
 }
