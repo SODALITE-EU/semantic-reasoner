@@ -1,15 +1,24 @@
 package filter;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import java.io.IOException;
 
-import com.sun.jersey.spi.container.ContainerRequest;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+
+/*import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;*/
+
+/*import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
+import com.sun.jersey.spi.container.ContainerResponseFilter;*/
 
 public class CORSFilter implements ContainerResponseFilter {
 
-	public ContainerResponse filter(ContainerRequest req, ContainerResponse crunchifyContainerResponse) {
+	/*public ContainerResponse filter(ContainerRequestContext req, ContainerResponseContext crunchifyContainerResponse) {
 
 		ResponseBuilder crunchifyResponseBuilder = Response.fromResponse(crunchifyContainerResponse.getResponse());
 
@@ -35,5 +44,12 @@ public class CORSFilter implements ContainerResponseFilter {
 
 		crunchifyContainerResponse.setResponse(crunchifyResponseBuilder.build());
 		return crunchifyContainerResponse;
+	}*/
+
+	@Override
+	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 }
