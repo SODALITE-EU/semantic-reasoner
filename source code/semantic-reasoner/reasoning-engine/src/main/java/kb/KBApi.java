@@ -139,6 +139,31 @@ public class KBApi {
 
 		return properties;
 	}
+	
+	public Set<String> getPropAttrNames(String resource, String elem) throws IOException {
+		System.out.println("getPropAttrNames: " +  resource);
+		
+		Set<String> names = new HashSet<>();
+		boolean is_property = elem.equals("prop");
+		
+		String sparql = is_property ? MyUtils.fileToString("sparql/getPropertiesTemplate.sparql") : MyUtils.fileToString("sparql/getAttributesTemplate.sparql");
+
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+									new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
+		
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			
+			IRI p1 = is_property ? (IRI) bindingSet.getBinding("property").getValue() : (IRI) bindingSet.getBinding("attribute").getValue() ;
+
+			names.add(p1.toString());
+		}
+		result.close();
+
+		return names;
+	}
 
 	public Set<Property> getInputs(String resource, boolean isTemplate) throws IOException {
 		System.out.println("getInputs: " + resource);
