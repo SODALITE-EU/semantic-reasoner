@@ -43,7 +43,7 @@ pipeline {
       steps {
         sh  """ #!/bin/bash
                 cd "source code/semantic-reasoner"
-                mvn install
+                mvn clean install
             """
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
