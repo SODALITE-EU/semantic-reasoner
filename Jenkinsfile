@@ -32,12 +32,40 @@ pipeline {
        OS_IDENTITY_API_VERSION = "3"
        OS_REGION_NAME = "RegionOne"
        OS_AUTH_PLUGIN = "password"
-   }  
+
+       // CI-CD vars
+       // When triggered from git tag, $BRANCH_NAME is actually tag_name
+       TAG_SEM_VER_COMPLIANT = """${sh(
+                returnStdout: true,
+                script: './validate_tag.sh SemVar $BRANCH_NAME'
+             )}"""
+
+       TAG_MAJOR_RELEASE = """${sh(
+              returnStdout: true,
+              script: './validate_tag.sh MajRel $BRANCH_NAME'
+             )}"""
+
+      TAG_PRODUCTION = """${sh(
+              returnStdout: true,
+              script: './validate_tag.sh production $BRANCH_NAME'
+             )}"""
+   }
   stages {
     stage ('Pull repo code from github') {
       steps {
         checkout scm
       }
+    }
+    stage('Inspect GIT TAG'){
+            steps {
+                sh """ #!/bin/bash
+                echo 'TAG: $BRANCH_NAME'
+                echo 'Tag is compliant with SemVar 2.0.0: $TAG_SEM_VER_COMPLIANT'
+                echo 'Tag is Major release: $TAG_MAJOR_RELEASE'
+                echo 'Tag is production: $TAG_PRODUCTION'
+                """
+            }
+
     }
     stage ('Build the code with Maven') {
       steps {
@@ -72,15 +100,27 @@ pipeline {
       }
     }
    stage('Build docker images') {
-            when { branch "master" }
+            when {  // Only on production tags
+                allOf {
+                    expression{tag "*"}
+                    expression{
+                        TAG_PRODUCTION == 'true'
+                    }
+                } 
+            }
             steps {
                 sh "cd source\\ code/semantic-reasoner; docker build -t semantic_web -f  ./docker/web/Dockerfile ."
                 sh "cd source\\ code/semantic-reasoner; docker build -t graph_db -f  ./docker/graph-db/Dockerfile ."
             }
    }
    stage('Push Reasoner to DockerHub') {
-            when {
-               branch "master"
+           when {  // Only on production tags
+                allOf {
+                    expression{tag "*"}
+                    expression{
+                        TAG_PRODUCTION == 'true'
+                    }
+                } 
             }
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
@@ -95,7 +135,7 @@ pipeline {
    }
    stage('Push graphdb to DockerHub') {
             when {
-               branch "graphdb-*"
+               tag "graphdb-*"
             }
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
@@ -109,7 +149,14 @@ pipeline {
             }
    }
    stage('Install dependencies') {
-            when { branch "master" }
+             when {  // Only on production tags
+                allOf {
+                    expression{tag "*"}
+                    expression{
+                        TAG_PRODUCTION == 'true'
+                    }
+                } 
+            }
             steps {
                 sh """#!/bin/bash
                     rm -rf venv
@@ -122,7 +169,14 @@ pipeline {
             }
    }
    stage('Deploy to openstack') {
-            when { branch "master" }
+            when {  // Only on production tags
+                allOf {
+                    expression{tag "*"}
+                    expression{
+                        TAG_PRODUCTION == 'true'
+                    }
+                } 
+            }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'xOpera_ssh_key', keyFileVariable: 'xOpera_ssh_key_file', usernameVariable: 'xOpera_ssh_username')]) {
                     sh """#!/bin/bash
