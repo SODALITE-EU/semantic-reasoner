@@ -63,7 +63,6 @@ pipeline {
                 echo 'Tag is compliant with SemVar 2.0.0: $TAG_SEM_VER_COMPLIANT'
                 echo 'Tag is Major release: $TAG_MAJOR_RELEASE'
                 echo 'Tag is production: $TAG_PRODUCTION'
-                echo 'Tag is staging: $TAG_STAGING'
                 """
             }
 
