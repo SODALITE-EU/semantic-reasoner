@@ -32,8 +32,7 @@ public class VerifySingularity {
 						"		  }\r\n" + 
 						"       } \r\n";
 		} else {
-			if (!namespace.contains("global"))
-				sparql +=	"     {\r\n" + 
+			sparql +=	"     {\r\n" + 
 							"        GRAPH " + "<"+ namespace.toString() + ">\r\n" +
 							"         {\r\n" +
 							"			?x soda:hasName ?name .\r\n" + 

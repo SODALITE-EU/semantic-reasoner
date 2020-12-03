@@ -71,9 +71,9 @@ public class DSLRMMappingService {
 	List<DslValidationModel>  mappingModels =  new ArrayList<>();
 	
 	String currentType;
-	List<String> namespacesOfType = new ArrayList<String>();;
+	List<String> namespacesOfType = new ArrayList<String>();
 	
-	static final String[] TYPES = {"NodeType", "DataType", "RelationshipType", "CapabilityType"};
+	static final String[] TYPES = {"NodeType", "DataType", "RelationshipType", "CapabilityType", "InterfaceType", "PolicyType"};
 	Set<String> nodeNames = new HashSet<>();
 
 
@@ -155,6 +155,7 @@ public class DSLRMMappingService {
 		
 		retrieveLocalNodeNames();
 
+		//PROBABLY THIS CATEGORIZATION WITH RELATIONSHIP, INTRERFACE E.T.C. NOT NEEDED
 		for (String type : TYPES) {
 			createTypes(type);
 		}
@@ -253,7 +254,7 @@ public class DSLRMMappingService {
 				if (kbNodeType != null)
 					nodeBuilder.add(nodeKB, RDFS.SUBCLASSOF, kbNodeType);
 				if (rmKB != null)
-					resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "includes" + type), nodeKB);
+					resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "includesType"), nodeKB);
 			
 			
 				// create description
@@ -266,7 +267,6 @@ public class DSLRMMappingService {
 			// properties
 			Set<Resource> _properties = Models.getPropertyResources(rmModel, _node,
 					factory.createIRI(KB.EXCHANGE + "properties"));
-			//definedPropertiesForValidation.clear();
 			for (Resource _property : _properties) {
 				IRI property = (IRI) _property;
 				IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
@@ -316,13 +316,35 @@ public class DSLRMMappingService {
 			for (Resource _interface : Models.getPropertyResources(rmModel, _node,
 					factory.createIRI(KB.EXCHANGE + "interfaces"))) {
 				IRI interface_iri = (IRI) _interface;
-				IRI interfaceClassifierKB = createInterfaceKBModel(interface_iri);
+				IRI interfaceClassifierKB = createInterfaceOrTriggerKBModel(interface_iri);
 
 				// add attribute classifiers to the template context
 				if (nodeDescriptionKB != null)	
 					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "interfaces"),
 						interfaceClassifierKB);
 			}
+			
+			// triggers
+			for (Resource _trigger : Models.getPropertyResources(rmModel, _node,
+					factory.createIRI(KB.EXCHANGE + "triggers"))) {
+				IRI trigger = (IRI) _trigger;
+				IRI triggerClassifierKB = createInterfaceOrTriggerKBModel(trigger);
+				// add property classifiers to the template context
+				if (nodeDescriptionKB != null)
+					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "triggers"), triggerClassifierKB);
+			}
+		
+			// targets
+			Optional<Resource> _targets = Models.getPropertyResource(rmModel, _node,
+					factory.createIRI(KB.EXCHANGE + "targets"));
+			
+			if (!_targets.isEmpty()) {
+				IRI targetClassifierKB = createTargetKBModel((IRI)_targets.get());
+				if (nodeDescriptionKB != null)	
+					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "targets"),
+							targetClassifierKB);
+			}
+			
 			
 		}
 		
@@ -515,51 +537,7 @@ public class DSLRMMappingService {
 		return capabilityClassifierKB;
 	}	
 	
-	/*private IRI createInterfaceKBModel(IRI interface_iri) throws MappingException {
-		String interfaceName = Models
-				.objectLiteral(rmModel.filter(interface_iri, factory.createIRI(KB.EXCHANGE + "name"), null))
-				.orElseThrow(
-						() -> new MappingException("No 'name' defined for interface: " + interface_iri.getLocalName()))
-				.stringValue();
-
-		// create classifier
-		IRI interfaceClassifierKB = factory.createIRI(ws + "InterfaceClassifier_" + MyUtils.randomString());
-		builder.add(interfaceClassifierKB, RDF.TYPE, "tosca:Interface");
-
-		IRI interfaceProperty = getKBProperty(interfaceName);
-		if (interfaceProperty == null) {
-			//throw new MappingException("Cannot find interface property: " + interfaceName);
-			interfaceProperty = factory.createIRI(ws + interfaceName);
-			builder.add(interfaceProperty, RDF.TYPE, "rdf:Property");
-		}
-		builder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + "classifies"), interfaceProperty);
-
-		// check for direct values of parameters
-		Literal value = Models
-				.objectLiteral(rmModel.filter(interface_iri, factory.createIRI(KB.EXCHANGE + "value"), null))
-				.orElse(null);
-
-		if (value != null) { // this means there is no parameters
-			IRI kbNode = getKBNode(value.getLabel());
-			if (kbNode == null) {
-				// throw new Exception("Cannot find node: " + value);
-				kbNode = factory.createIRI(ws + value.getLabel());
-			}
-			if (interfaceName == "type") {
-				builder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-			} else {
-				builder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
-			}
-		} else {
-			Set<IRI> parameters = createInterfaceParameterKBModel(interface_iri);
-			for (IRI parameter : parameters) {
-				builder.add(interfaceClassifierKB, factory.createIRI("dul:hasParameter"), parameter);
-			}
-		}
-		return interfaceClassifierKB;
-	}*/
-	
-	private IRI createInterfaceKBModel(IRI interface_iri) throws MappingException {
+	private IRI createInterfaceOrTriggerKBModel(IRI interface_iri) throws MappingException {
 		Optional<Literal> _interfaceName = Models
 				.objectLiteral(rmModel.filter(interface_iri, factory.createIRI(KB.EXCHANGE + "name"), null));
 		
@@ -588,6 +566,10 @@ public class DSLRMMappingService {
 				interfaceClassifierKB = factory.createIRI(namespace + "InterfaceClassifer_" + MyUtils.randomString());
 				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "tosca:Interface");
 				break;
+			case "Trigger":
+				interfaceClassifierKB = factory.createIRI(namespace + "TriggerClassifer_" + MyUtils.randomString());
+				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "tosca:Trigger");
+				break;
 			case "Parameter":
 				interfaceClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
 				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
@@ -605,7 +587,7 @@ public class DSLRMMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			if (interfaceName.equals("type")) {
+			if (interfaceName.equals("type") || interfaceName.equals("node")) {
 				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
@@ -619,14 +601,18 @@ public class DSLRMMappingService {
 				if(kbNode != null)
 					nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 			} else {
-				nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+				Object i = null;
+				if ((i = Ints.tryParse(value.toString())) != null)
+					 nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+				else 
+					nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
 			}
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, interface_iri,
 					factory.createIRI(KB.EXCHANGE + "hasParameter"));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
-				IRI _p = createInterfaceKBModel(parameter);
+				IRI _p = createInterfaceOrTriggerKBModel(parameter);
 				nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
 			}
 		}
@@ -727,71 +713,6 @@ public class DSLRMMappingService {
 	
 		return parameterClassifiers;
 	}
-	
-	/*private Set<IRI> createInterfaceParameterKBModel(IRI interfaceParameter) throws MappingException {
-		Set <IRI> parameterClassifiers =  new HashSet<>();
-		
-		Set<Resource> _parameters = Models.getPropertyResources(rmModel, interfaceParameter,
-				factory.createIRI(KB.EXCHANGE + "hasParameter"));
-					
-		Optional<Resource> _parameterType  = Models.getPropertyResource(rmModel, interfaceParameter,
-				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
-		String parameterType = MyUtils.getStringValue(_parameterType.get());
-		System.out.println("parameterType = " + parameterType);
-		
-		//if (_parameters.isEmpty() && _parameterType.equals("Capability")) {
-		//	throw new MappingException("Cannot find parameters for: " + capability.getLocalName());
-	//	}
-		
-		//Interfaces can have more than one parameter
-		for (Resource _parameter : _parameters) {
-			IRI parameter = (IRI) _parameter;
-			
-			String parameterName = Models
-					.objectLiteral(rmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "name"), null))
-					.orElseThrow(() -> new MappingException("No 'name' defined for parameter: " + parameter.getLocalName()))
-					.stringValue();
-
-			// create classifier
-			IRI parameterClassifierKB = factory.createIRI(ws + "ParamClassifier_" + MyUtils.randomString());
-			builder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
-
-			parameterClassifiers.add(parameterClassifierKB);
-		
-			IRI paramProperty = getKBProperty(parameterName);
-			if (paramProperty == null) {
-				//throw new MappingException("Cannot find requirement parameter: " + parameterName);
-				paramProperty = factory.createIRI(ws + parameterName);
-				builder.add(paramProperty, RDF.TYPE, "rdf:Property");
-			}
-			builder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "classifies"), paramProperty);
-
-			// check for direct values of parameters
-			Literal value = Models
-							.objectLiteral(rmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "value"), null))
-							.orElse(null);
-			
-			if (value != null) { // this means there is no parameters
-				if (parameterName.equals("type")) {
-					IRI kbNode = getKBNode(value.getLabel());
-					if (kbNode == null) {
-						// throw new Exception("Cannot find node: " + value);
-						kbNode = factory.createIRI(ws + value.getLabel());
-					}
-					builder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-				} else {
-					builder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
-				}
-			}  else {
-				Set<IRI> parameterList = createInterfaceParameterKBModel(parameter);
-				for (IRI parameter_1 : parameterList) {
-					builder.add(parameterClassifierKB, factory.createIRI("dul:hasParameter"), parameter_1);
-				}
-			}
-		}
-	
-		return parameterClassifiers;
-	}*/
 	
 	private IRI createPropertyOrAttributeKBModel(IRI exchangeParameter) throws MappingException {
 		Optional<Literal> _propertyName = Models
@@ -928,6 +849,38 @@ public class DSLRMMappingService {
 
 		return propertyClassifierKB;
 
+	}
+	
+	private IRI createTargetKBModel(IRI target) throws MappingException {
+		Set<Literal> listValues= Models.objectLiterals(rmModel.filter(target, factory.createIRI(KB.EXCHANGE + "listValue"), null));
+		
+		IRI targetClassifierKB = null;
+		System.err.println("-----ListValue---" + listValues);
+		IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+		
+		for (Literal l:listValues) {
+			targetClassifierKB = factory.createIRI(namespace + "TargetClassifer_" + MyUtils.randomString());
+			nodeBuilder.add(targetClassifierKB, RDF.TYPE, "tosca:Target");
+			nodeBuilder.add(list, RDF.TYPE, "tosca:List");
+			
+			
+			NamedResource n = GetResources.setNamedResource(namespacews, l.getLabel());
+			IRI kbNode = getKBNode(n);
+			if (kbNode == null) {
+				if (nodeNames.contains(n.getResource()))
+					kbNode = factory.createIRI(namespace + n.getResource());
+				else {
+					mappingModels.add(new MappingValidationModel(currentType, "targets", "Cannot find target: " + l.getLabel()));
+					System.err.println(currentType + ": Cannot find Node: " + l.getLabel());
+				}
+			}
+			if(kbNode != null)
+				nodeBuilder.add(list, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+		}
+		if (targetClassifierKB != null)
+			nodeBuilder.add(targetClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+		
+		return targetClassifierKB;		
 	}
 	
 	private IRI getKBNode(NamedResource n) {

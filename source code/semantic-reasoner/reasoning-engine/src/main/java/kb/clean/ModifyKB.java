@@ -33,10 +33,11 @@ public class ModifyKB {
 	}
 		
 	Model model;
-		
-	String queryModel = KB.PREFIXES + " CONSTRUCT { ?r soda:includesNodeType|soda:includesRelationshipType|soda:includesDataType|soda:includesCapabilityType|soda:includesTemplate|soda:includesInput ?s }\r\n" +
+	
+	//modify this query so as specific property to be returned in CONSTRUCT query
+	String queryModel = KB.PREFIXES + " CONSTRUCT { ?r soda:includesType|soda:includesTemplate|soda:includesInput ?s }\r\n" +
 						"WHERE\r\n" +
-						"{?r soda:includesNodeType|soda:includesRelationshipType|soda:includesDataType|soda:includesCapabilityType|soda:includesTemplate|soda:includesInput ?s }";
+						"{?r soda:includesType|soda:includesTemplate|soda:includesInput ?s }";
 	String query = KB.PREFIXES + " CONSTRUCT { ?s ?p ?o }\r\n" +
 					"WHERE\r\n" +
 					"{?s ?p ?o }";
@@ -204,7 +205,7 @@ public class ModifyKB {
 						"	} UNION {\r\n" + 
 						"		?m a soda:AbstractApplicationDeployment .\r\n" + 
 						"	}	\r\n" + 
-						"	?m soda:includesNodeType|soda:includesRelationshipType|soda:includesDataType|soda:includesCapabilityType|soda:includesTemplate|soda:includesInput ?x .\r\n" + 
+						"	?m soda:includesType|soda:includesTemplate|soda:includesInput ?x .\r\n" + 
 						"}";
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("m", kb.getFactory().createIRI(modelUri)));
 		
