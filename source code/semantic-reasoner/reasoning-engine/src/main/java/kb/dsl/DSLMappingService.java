@@ -761,7 +761,7 @@ public class DSLMappingService {
 					if (templateNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
 					else {
-						mappingModels.add(new MappingValidationModel(currentTemplate, trigger_iri.getLocalName(), "Cannot find Template: " + value.getLabel() + " for interface = " + triggerName));
+						mappingModels.add(new MappingValidationModel(currentTemplate, trigger_iri.getLocalName(), "Cannot find Template: " + value.getLabel() + " for trigger = " + triggerName));
 						System.err.println(currentTemplate + ": Cannot find template: " + value.getLabel() + " for trigger " + triggerName);
 					}
 				}
