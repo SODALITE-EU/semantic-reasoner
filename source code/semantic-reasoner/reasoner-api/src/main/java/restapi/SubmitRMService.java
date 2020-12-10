@@ -1,6 +1,7 @@
 package restapi;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -81,10 +82,10 @@ public class SubmitRMService extends AbstractService  {
 				rmUri = m.start();
 				String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(RM_.*).*");
 				m.save();
-				if(!HttpClientRequest.getWarnings(response, rmid)) {
+				/*if(!HttpClientRequest.getWarnings(response, rmid)) {
 					new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getNodeNames()));
 					return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
-				}
+				}*/				
 			} catch (MappingException e) {
 				e.printStackTrace();
 				List<DslValidationModel> validationModels = e.mappingValidationModels;
