@@ -1,0 +1,9 @@
+select ?v
+where {
+	?node soda:hasInferredContext ?ctx .
+	?node rdfs:subClassOf tosca:tosca.entity.Root . 
+	?ctx tosca:requirements ?r .
+	?r DUL:classifies ?p .
+	?r DUL:hasParameter [DUL:classifies tosca:capability; DUL:hasRegion ?v] .
+	FILTER (STRENDS (str(?p), ?requirementName)) .
+}

@@ -516,7 +516,7 @@
 
 
 :NodeType_1
-  rdf:type exchange:NodeType ;
+  rdf:type exchange:Type ;
   exchange:name "sodalite.nodes.OpenStack.SecurityRules" ;
   exchange:derivesFrom 'tosca.nodes.Root' ;  
   exchange:properties :Property_5 ; 
@@ -526,7 +526,7 @@
 .  
 
 :DataType_1
-  rdf:type exchange:DataType ;
+  rdf:type exchange:Type ;
   exchange:name "sodalite.datatypes.OpenStack.SecurityRule" ;
   exchange:derivesFrom 'tosca.datatypes.Root' ;
   exchange:properties :Property_1 ; 

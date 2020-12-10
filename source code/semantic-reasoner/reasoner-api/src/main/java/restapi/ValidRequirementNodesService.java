@@ -53,9 +53,8 @@ public class ValidRequirementNodesService extends AbstractService {
 					required = true,
 					defaultValue = "tosca.nodes.SoftwareComponent") @MatrixParam("nodeType") String nodeType,
 			@ApiParam(
-					value = "the node type for which the requirement is relevant, e.g. tosca.nodes.SoftwareComponent",
-					required = true,
-					defaultValue = "tosca.nodes.SoftwareComponent") @MatrixParam("imports") List<String> imports)
+					value = "e.g. docker, hpc",
+					required = true) @MatrixParam("imports") List<String> imports)
 			throws IOException {
 
 		KBApi api = new KBApi();

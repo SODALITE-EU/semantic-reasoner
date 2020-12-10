@@ -74,9 +74,6 @@ class DSLMappingServiceTest {
 
 		try {
 			System.out.println("Loading resource models");
-			//InputStream input =
-				//DSLMappingServiceTest.class.getResourceAsStream("/snow/snow_tier1.ttl");
-				//repositoryConnection.add(input, "", RDFFormat.TURTLE, kb.getFactory().createIRI("https://www.sodalite.eu/ontologies/workspace/1/snow/"));
 			//IRI rmIRI1, rmIRI2, rmIRI3, rmIRI4;
 			//String rmTTL1 = fileToString("snow/modules.docker_registry.rm.ttl");
 			//String rmTTL2 = fileToString("snow/modules.docker_component.rm.ttl");
@@ -181,8 +178,6 @@ class DSLMappingServiceTest {
 			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
-
-
 			} catch (ValidationException e) {	
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
@@ -200,7 +195,8 @@ class DSLMappingServiceTest {
 			e.printStackTrace();
 		}
 	
-		m.shutDown();
+		if (m != null)
+			m.shutDown();
 		assertTrue(false);
 	}
 	

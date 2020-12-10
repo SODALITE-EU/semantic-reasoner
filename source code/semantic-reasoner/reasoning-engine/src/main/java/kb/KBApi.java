@@ -420,7 +420,6 @@ public class KBApi {
 
 
 	private IRI getMostSpecificRequirementNode(String requirementName, String ofNode) throws IOException {
-		//IRI requirement = null;
 		Set<IRI> nodeTypes = new HashSet<>();
 		
 		String sparql = MyUtils.fileToString("sparql/getMostSpecificRequirementNode.sparql");
@@ -434,7 +433,6 @@ public class KBApi {
 			BindingSet bindingSet = result.next();
 			IRI p1 = (IRI) bindingSet.getBinding("v").getValue();
 			nodeTypes.add(p1);
-			//requirement = p1;
 		}
 		result.close();
 		
@@ -446,39 +444,46 @@ public class KBApi {
 		return nodeType;
 	}
 
+	//Get templates based on requirements/reqname/node requirements/reqname/capability of the template type
 	public Set<Node> getRequirementValidNodes(String requirement, String nodeType, List<String> imports) throws IOException {
 		System.out.println("getRequirementValidNodes: " + MyUtils.getFullResourceIRI(nodeType, kb));
 		
 		Set<Node> nodes = new HashSet<>();
-
-		IRI node = this.getMostSpecificRequirementNode(requirement, MyUtils.getFullResourceIRI(nodeType, kb));
-		if (node == null) {	
+		
+		//types from requirements, and capabilities are retrieved
+		Set<NodeType> types = getRequirementValidNodeType(requirement, nodeType, imports);
+		
+		if (types.isEmpty()) {	
 			return nodes;
 		}
-		System.out.println("getMostSpecificRequirementNode: " + node);
-		
+		System.out.println("getRequirementValidNodeType: " + types);		
 		
 		String sparqlg = MyUtils.fileToString("sparql/getGlobalRequirementValidNodes.sparql");
 		String queryg = KB.PREFIXES + sparqlg;
 		
 		System.out.println(queryg);
 
-		TupleQueryResult resultg = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryg, new SimpleBinding("var", node));
-		_setNodes(resultg, nodes);
+		for(NodeType nt: types) {
+			IRI node = kb.factory.createIRI(nt.getUri());
+			//
+			TupleQueryResult resultg = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryg, new SimpleBinding("var", node));
+			_setNodes(resultg, nodes);
 		
-		if(!imports.isEmpty()) {
-			String query = _getQueryTemplates(true, imports);
-			if (!query.isEmpty()) {		
-				System.out.println(query);
-				TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+			if(!imports.isEmpty()) {
+				String query = _getQueryTemplates(true, imports);
+				if (!query.isEmpty()) {		
+					System.out.println(query);
+					TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 											new SimpleBinding("var", node));
-				_setNodes(result, nodes);
+					_setNodes(result, nodes);
+				}
 			}
-		}
+		}	
 		
 		return nodes;
 	}
 
+	//Get the templates in named graphs
 	private String _getQueryTemplates(boolean ofType, List<String> imports) {
 		String query = "";
 		String dataset = QueryUtil.namedGraphsForQuery(kb, imports);
@@ -537,23 +542,121 @@ public class KBApi {
 	 * Getting the valid requirement node types, so as the IDE to know which are the compatible node types
 	 * for also proposing local applicable templates of the aadm
 	 */
-	public Set<NodeType> getRequirementValidNodeType(String requirement, String nodeType) throws IOException {
+	public Set<NodeType> getRequirementValidNodeType(String requirement, String nodeType, List<String> imports) throws IOException {
 		System.out.println("getRequirementValidNodeTypes: " + MyUtils.getFullResourceIRI(nodeType, kb));
+		String _nodeType = MyUtils.getFullResourceIRI(nodeType, kb);
 		
 		Set<NodeType> nodeTypes = new HashSet<>();
+		Set<IRI> _nodeTypes = new HashSet<>();
 		
-		IRI node = getMostSpecificRequirementNode(requirement, MyUtils.getFullResourceIRI(nodeType, kb));
-		if (node != null) {
-			NodeType n = new NodeType(node);
-			String _namespace = MyUtils.getNamespaceFromIRI(node.toString());
+		IRI node = getMostSpecificRequirementNode(requirement, _nodeType);
+		_nodeTypes.add(node);
+
+		IRI req_cap = getRequirementCapability(requirement, _nodeType);
+		System.out.println("req_cap = " + req_cap);
+		
+		Set<IRI> _capTypes = getValidSourceTypes(requirement, req_cap, kb.factory.createIRI(_nodeType), imports);
+		for (IRI c:_capTypes) {
+			_nodeTypes.add(c);
+		}
+		
+		for(IRI _n:_nodeTypes) {
+			NodeType n = new NodeType(_n);
+			//namespace part is going to be removed
+			String _namespace = MyUtils.getNamespaceFromIRI(_n.toString());
 			if (MyUtils.validNamespace(kb, _namespace))
 				n.setNamespace(kb.factory.createIRI(_namespace));
 		
 			nodeTypes.add(n);
 		}
-
-
+		
 		return nodeTypes;	
+	}	
+	
+	//Get requirements/requirementName/capability
+	public IRI getRequirementCapability(String requirementName, String ofNode) throws IOException {
+		System.out.println("getRequirementCapabilityType: requirementName = " + requirementName + ", ofNode = " + ofNode);
+		IRI nodeType = null;
+		
+		String sparql = MyUtils.fileToString("sparql/getRequirementCapability.sparql");
+		String query = KB.PREFIXES + sparql;
+		System.out.println(query);
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding[] { new SimpleBinding("node", kb.getFactory().createIRI(ofNode)),
+						new SimpleBinding("requirementName", kb.getFactory().createLiteral(requirementName)) });
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI p1 = (IRI) bindingSet.getBinding("v").getValue();
+			nodeType = p1;
+		}
+		result.close();
+		
+		return nodeType;
+	}
+	
+	/*
+	 * Get the types that have capabilities/requirementName/type = capType and the nodeType is equals/subClassOf one of the types
+	 * in capabilities/requirementName/valid_source_types list
+	 * e.g. DockerHost type having host(cap)/type = cap.Compute and valid_source_types=[DockerizedComponent]
+	 * offers the capabilities for hosting a DockerizedComponent
+	 */
+	public Set<IRI> getValidSourceTypes(String requirementName, IRI capType, IRI nodeType, List<String> imports) throws IOException {
+		Set<IRI> nodeTypes = new HashSet<>();
+		//<node, list_of_valid_source_types>, e.g. <DockerHost, [DockerizedComponent]>,<tosca.nodes.SoftwareComponent, tosca.nodes.Compute>
+		HashMap<IRI, Set<IRI>> vsTypes = new HashMap<IRI,Set<IRI>>();
+		System.out.println("getValidSourceTypes: requirementName = " + requirementName + ", cap_type = " + capType + "nodeType = " + nodeType +" imports = " + imports);
+		
+		//Both global space and the named graphs, denoted in imports, are queried
+		String sparql = "select ?node ?v_s_type\r\n"
+				+ "FROM <http://www.ontotext.com/explicit>\r\n";
+
+		sparql += QueryUtil.namedGraphsForQuery(kb, imports);
+		
+		String node_desc_sparql =   "    ?node soda:hasContext ?ctx.\r\n" + 
+								"	?ctx tosca:capabilities ?c .\r\n" + 
+								"	?c DUL:classifies ?p.\r\n" + 
+								"	?c DUL:hasParameter [DUL:classifies tosca:type; tosca:hasObjectValue ?cap_type] .\r\n" + 
+								"	?c DUL:hasParameter [DUL:classifies tosca:valid_source_types; tosca:hasObjectValue/tosca:hasObjectValue ?v_s_type] .\r\n" ; 
+
+		sparql += "where { \r\n" +
+				" {\r\n"+
+				node_desc_sparql +
+				"  } UNION {\r\n" +
+				"    GRAPH ?g {\r\n" +
+				 node_desc_sparql +
+				 "   }\r\n" +
+				 "  }\r\n" +
+				 "  FILTER (STRENDS (str(?p), ?requirementName)) .\r\n" +
+				"}\r\n";
+		
+		String query = KB.PREFIXES + sparql;
+		System.out.println(query);
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+						new SimpleBinding[] { new SimpleBinding("cap_type", capType),
+								new SimpleBinding("requirementName", kb.getFactory().createLiteral(requirementName)) });
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI node = (IRI) bindingSet.getBinding("node").getValue();
+			IRI v_s_type = (IRI) bindingSet.getBinding("v_s_type").getValue();
+			
+			Set <IRI> vList= new HashSet<IRI>();
+			vList.add(v_s_type);
+			if (vsTypes.get(node) != null)
+				vsTypes.get(node).addAll(vList);
+			else
+				vsTypes.put(node, vList);
+		}
+		result.close();
+		
+		for (Map.Entry e : vsTypes.entrySet()) {
+			 IRI node = (IRI) e.getKey();
+			 Set<IRI> vList = (Set<IRI>)e.getValue();
+			 if(InferencesUtil.checkSubclassList(kb, nodeType, vList))
+				 nodeTypes.add(node);
+		}
+		
+		return nodeTypes;
 	}
 	
 	public Set<Node> getTemplates(List<String> imports) throws IOException {
@@ -564,9 +667,11 @@ public class KBApi {
 		
 		System.out.println(queryg);
 
+		//Global space queried
 		TupleQueryResult resultg = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryg);
 		_setNodes(resultg, nodes);
 		
+		//named graphs of imports queried
 		if(!imports.isEmpty()) {
 			String query = _getQueryTemplates(false, imports);
 			if (!query.isEmpty()) {		
@@ -598,9 +703,9 @@ public class KBApi {
 		for(String n: nodeTypes) {
 			IRI nodeTypeIRI = kb.factory.createIRI(MyUtils.getFullResourceIRI(n, kb));
 		
-			String _superNodeType = MyUtils.getFullResourceIRI(superNodeType, kb);
+			IRI _superNodeType = kb.factory.createIRI(MyUtils.getFullResourceIRI(superNodeType, kb));
 		
-			Set<String> superNodeTypeSet = new HashSet<>();
+			Set<IRI> superNodeTypeSet = new HashSet<>();
 			superNodeTypeSet.add(_superNodeType);
 			
 			if (InferencesUtil.checkSubclassList(kb, nodeTypeIRI, superNodeTypeSet))
@@ -840,7 +945,7 @@ public class KBApi {
 			} else {
 				//Check if the derived node type is compatible with the app type in optimization json
 				if(!appTypes.get(app_type).contains(nodeType)) {
-					InferencesUtil.checkSubclassList(kb, nodeType_iri, appTypes.get(app_type));
+					InferencesUtil.checkLooseSubclassList(kb, nodeType_iri, appTypes.get(app_type));
 					errorModels.add(new ApplicationTypeModel(app_type, r, nodeType_iri));
 				}
 			}

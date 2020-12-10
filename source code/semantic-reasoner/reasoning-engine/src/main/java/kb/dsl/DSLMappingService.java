@@ -315,7 +315,27 @@ public class DSLMappingService {
 					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "optimization"),
 							_optimizations.get());
 			}
-			// misc
+			
+			// triggers
+			for (Resource _trigger : Models.getPropertyResources(aadmModel, _template,
+					factory.createIRI(KB.EXCHANGE + "triggers"))) {
+				IRI trigger = (IRI) _trigger;
+				IRI triggerClassifierKB = createTriggerKBModel(trigger);
+				// add property classifiers to the template context
+				if (templateDescriptionKB != null)
+					aadmBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "triggers"), triggerClassifierKB);
+			}
+			
+			// targets
+			Optional<Resource> _targets = Models.getPropertyResource(aadmModel, _template,
+								factory.createIRI(KB.EXCHANGE + "targets"));
+						
+			if (!_targets.isEmpty()) {
+				IRI targetClassifierKB = createTargetKBModel((IRI)_targets.get());
+				if (templateDescriptionKB != null)	
+					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "targets"),
+								targetClassifierKB);
+			}
 
 		}
 
@@ -576,7 +596,6 @@ public class DSLMappingService {
 			templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
 		}
 		
-		// handle values
 		if (!_values.isEmpty()) {
 
 			if (_values.size() == 1) {
@@ -688,6 +707,84 @@ public class DSLMappingService {
 		return capabilityClassifierKB;
 
 	}
+	
+	private IRI createTriggerKBModel(IRI trigger_iri) throws MappingException {
+		Optional<Literal> _triggerName = Models
+				.objectLiteral(aadmModel.filter(trigger_iri, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		String triggerName = null;
+		if (!_triggerName.isPresent())
+			mappingModels.add(new MappingValidationModel(currentTemplate, trigger_iri.getLocalName(), "No 'name' defined for interface"));
+		else 
+			triggerName = _triggerName.get().getLabel();
+		
+		IRI interfaceProperty = null;
+		if (triggerName != null) {
+			interfaceProperty = GetResources.getKBProperty(triggerName, this.namespacesOfType, kb);
+			if (interfaceProperty == null || interfaceProperty.toString().equals(namespace + triggerName)) {
+				interfaceProperty = factory.createIRI(namespace + triggerName);
+				aadmBuilder.add(interfaceProperty, RDF.TYPE, "rdf:Property");
+			}
+		}
+		
+		Optional<Resource> _type  = Models.getPropertyResource(aadmModel, trigger_iri,
+				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+		String type = MyUtils.getStringValue(_type.get());
+		
+		IRI triggerClassifierKB = null;
+		switch (type) {
+			case "Trigger":
+				triggerClassifierKB = factory.createIRI(namespace + "TriggerClassifer_" + MyUtils.randomString());
+				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
+				break;
+			case "Parameter":
+				triggerClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				break;
+			default:
+				System.err.println("type = " + type + " does not exist");
+		}
+		
+		if (interfaceProperty != null)
+			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "classifies"), interfaceProperty);
+
+		// check for direct values of parameters
+		Literal value = Models
+				.objectLiteral(aadmModel.filter(trigger_iri, factory.createIRI(KB.EXCHANGE + "value"), null))
+				.orElse(null);
+
+		if (value != null) { // this means there is no parameters
+			if (triggerName != null && (triggerName.equals("node") || triggerName.equals("requirement") || triggerName.equals("capability"))) {
+				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				IRI kbNode = getKBTemplate(n);
+				if (kbNode == null) {
+					if (templateNames.contains(n.getResource()))
+						kbNode = factory.createIRI(namespace + n.getResource());
+					else {
+						mappingModels.add(new MappingValidationModel(currentTemplate, trigger_iri.getLocalName(), "Cannot find Template: " + value.getLabel() + " for trigger = " + triggerName));
+						System.err.println(currentTemplate + ": Cannot find template: " + value.getLabel() + " for trigger " + triggerName);
+					}
+				}
+				if(kbNode != null)
+					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+			} else {
+				Object i = null;
+				if ((i = Ints.tryParse(value.toString())) != null)
+					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+				else 
+					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+			}
+		} else {
+			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, trigger_iri,
+					factory.createIRI(KB.EXCHANGE + "hasParameter"));
+			for (Resource _parameter : _parameters) {
+				IRI parameter = (IRI) _parameter;
+				IRI _p = createTriggerKBModel(parameter);
+				aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+			}
+		}
+		return triggerClassifierKB;
+	}
 
 	private Object mapValue(String value) {
 		Object i = null;
@@ -699,6 +796,37 @@ public class DSLMappingService {
 			return value;
 	}
 
+	private IRI createTargetKBModel(IRI target) throws MappingException {
+		Set<Literal> listValues= Models.objectLiterals(aadmModel.filter(target, factory.createIRI(KB.EXCHANGE + "listValue"), null));
+		
+		IRI targetClassifierKB = null;
+		System.err.println("-----ListValue---" + listValues);
+		IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+		
+		for (Literal l:listValues) {
+			targetClassifierKB = factory.createIRI(namespace + "TargetClassifer_" + MyUtils.randomString());
+			aadmBuilder.add(targetClassifierKB, RDF.TYPE, "tosca:Target");
+			aadmBuilder.add(list, RDF.TYPE, "tosca:List");
+			
+			
+			NamedResource n = GetResources.setNamedResource(namespacews, l.getLabel());
+			IRI kbNode = getKBTemplate(n);
+			if (kbNode == null) {
+				if (templateNames.contains(n.getResource()))
+					kbNode = factory.createIRI(namespace + n.getResource());
+				else {
+					mappingModels.add(new MappingValidationModel(currentTemplate, "targets", "Cannot find target: " + l.getLabel()));
+					System.err.println(currentTemplate + ": Cannot find Node: " + l.getLabel());
+				}
+			}
+			if(kbNode != null)
+				aadmBuilder.add(list, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+		}
+		if (targetClassifierKB != null)
+			aadmBuilder.add(targetClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+		
+		return targetClassifierKB;		
+	}
 
 	private IRI getKBTemplate(NamedResource n) {
 		System.out.println("getKBTemplate label = " + n.getResource() + ", namespace = " + n.getNamespace());
@@ -751,6 +879,7 @@ public class DSLMappingService {
 			
 		return x;
 	}
+	
 	
 	public IRI getNamespace() {
 		return this.namespace;

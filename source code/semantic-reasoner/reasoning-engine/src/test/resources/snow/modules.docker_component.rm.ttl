@@ -1532,7 +1532,7 @@
 .		
 
 :NodeType_1
-  rdf:type exchange:NodeType ;
+  rdf:type exchange:Type ;
   exchange:name "sodalite.nodes.DockerNetwork" ;
   exchange:derivesFrom 'tosca.nodes.SoftwareComponent' ;  
   exchange:properties :Property_1 ; 
@@ -1540,7 +1540,7 @@
   exchange:interfaces :Interface_1 ; 
 .  
 :NodeType_2
-  rdf:type exchange:NodeType ;
+  rdf:type exchange:Type ;
   exchange:name "sodalite.nodes.DockerHost" ;
   exchange:derivesFrom 'tosca.nodes.SoftwareComponent' ;  
   exchange:attributes :Attribute_1 ; 
@@ -1548,7 +1548,7 @@
   exchange:interfaces :Interface_2 ; 
 .  
 :NodeType_3
-  rdf:type exchange:NodeType ;
+  rdf:type exchange:Type ;
   exchange:name "sodalite.nodes.DockerizedComponent" ;
   exchange:derivesFrom 'tosca.nodes.SoftwareComponent' ;  
   exchange:properties :Property_2 ; 
@@ -1568,7 +1568,7 @@
   exchange:interfaces :Interface_3 ; 
 .  
 :NodeType_4
-  rdf:type exchange:NodeType ;
+  rdf:type exchange:Type ;
   exchange:name "sodalite.nodes.TestComponent" ;
   exchange:derivesFrom 'tosca.nodes.SoftwareComponent' ;  
   exchange:properties :Property_14 ; 
