@@ -754,7 +754,7 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			if (triggerName.equals("node") || triggerName.equals("requirement") || triggerName.equals("capability")) {
+			if (triggerName != null && (triggerName.equals("node") || triggerName.equals("requirement") || triggerName.equals("capability"))) {
 				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
 				IRI kbNode = getKBTemplate(n);
 				if (kbNode == null) {

@@ -580,7 +580,7 @@ public class DSLRMMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			if (interfaceName.equals("type") || interfaceName.equals("node")) {
+			if (interfaceName!=null && (interfaceName.equals("type") || interfaceName.equals("node"))) {
 				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {

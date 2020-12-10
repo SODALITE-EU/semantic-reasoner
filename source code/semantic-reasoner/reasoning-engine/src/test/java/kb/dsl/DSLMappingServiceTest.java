@@ -178,8 +178,6 @@ class DSLMappingServiceTest {
 			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
-
-
 			} catch (ValidationException e) {	
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
@@ -197,7 +195,8 @@ class DSLMappingServiceTest {
 			e.printStackTrace();
 		}
 	
-		m.shutDown();
+		if (m != null)
+			m.shutDown();
 		assertTrue(false);
 	}
 	
