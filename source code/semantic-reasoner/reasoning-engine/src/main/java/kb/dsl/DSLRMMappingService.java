@@ -73,7 +73,6 @@ public class DSLRMMappingService {
 	String currentType;
 	List<String> namespacesOfType = new ArrayList<String>();
 	
-	static final String[] TYPES = {"NodeType", "DataType", "RelationshipType", "CapabilityType", "InterfaceType", "PolicyType"};
 	Set<String> nodeNames = new HashSet<>();
 
 
@@ -155,10 +154,7 @@ public class DSLRMMappingService {
 		
 		retrieveLocalNodeNames();
 
-		//PROBABLY THIS CATEGORIZATION WITH RELATIONSHIP, INTRERFACE E.T.C. NOT NEEDED
-		for (String type : TYPES) {
-			createTypes(type);
-		}
+		createTypes();
 		
 		System.out.println("Mapping errors = " + mappingModels.toString());
 		for (DslValidationModel m:mappingModels) {
@@ -180,8 +176,7 @@ public class DSLRMMappingService {
 	
 	//Retrieve node names of the local resource model, so as to be used as object values in requirements, properties e.t.c
 	private void retrieveLocalNodeNames() throws MappingException {
-		for (String type : TYPES) {
-			for (Resource _node : rmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + type))
+		for (Resource _node : rmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Type"))
 					.subjects()) {
 				IRI node = (IRI) _node;
 				
@@ -190,13 +185,11 @@ public class DSLRMMappingService {
 				
 				if (nodeName.isPresent())
 					nodeNames.add(nodeName.get().getLabel());
-			}
 		}
 	}
 		
-	private void createTypes (String type) throws MappingException {
-		System.out.println("Add type = " + type + " to the Resource Model");
-		for (Resource _node : rmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + type))
+	private void createTypes () throws MappingException {
+		for (Resource _node : rmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Type"))
 				.subjects()) {
 			IRI node = (IRI) _node;
 			

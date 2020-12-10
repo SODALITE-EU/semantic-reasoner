@@ -921,7 +921,7 @@
 .		
 
 :NodeType_1
-  rdf:type exchange:NodeType ;
+  rdf:type exchange:Type ;
   exchange:name "sodalite.nodes.OpenStack.VM" ;
   exchange:derivesFrom 'tosca.nodes.Compute' ;  
   exchange:properties :Property_1 ; 

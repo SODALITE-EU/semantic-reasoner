@@ -45,7 +45,7 @@ public class InferencesUtil {
 	}
 	
 	/* Given a class, and a set of classes, it returns if the class is subclass of any of the classes of the list. */ 
-	public static boolean checkSubclassList(KB kb, IRI subclass, Set<String> classes) {
+	public static boolean checkLooseSubclassList(KB kb, IRI subclass, Set<String> classes) {
 		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
 				"ASK {?var_subclass rdfs:subClassOf ?superclass ." + 
 				"FILTER (strends(str(?superclass), ?var_superclass)) ." + 
@@ -53,6 +53,20 @@ public class InferencesUtil {
 		for  (String superclass : classes) {
 			boolean	result = QueryUtil.evaluateAskQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_subclass", subclass),
 								new SimpleBinding("var_superclass", kb.getFactory().createLiteral(superclass))});
+			if (result)
+				return true;
+		}
+		return false;
+	}
+	
+	/* Given a class, and a set of classes, it returns if the class is subclass of any of the classes of the list. */ 
+	public static boolean checkSubclassList(KB kb, IRI subclass, Set<IRI> classes) {
+		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" +
+				"ASK {?var_subclass rdfs:subClassOf ?var_superclass ." +
+				"}";
+		for  (IRI superclass : classes) {
+			boolean	result = QueryUtil.evaluateAskQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("var_subclass", subclass),
+								new SimpleBinding("var_superclass", superclass)});
 			if (result)
 				return true;
 		}

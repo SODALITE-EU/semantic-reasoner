@@ -35,9 +35,9 @@ public class ModifyKB {
 	Model model;
 	
 	//modify this query so as specific property to be returned in CONSTRUCT query
-	String queryModel = KB.PREFIXES + " CONSTRUCT { ?r soda:includesType|soda:includesTemplate|soda:includesInput ?s }\r\n" +
+	String queryModel = KB.PREFIXES + " CONSTRUCT { ?r soda:includesType|soda:includesTemplate ?s }\r\n" +
 						"WHERE\r\n" +
-						"{?r soda:includesType|soda:includesTemplate|soda:includesInput ?s }";
+						"{?r soda:includesType|soda:includesTemplate ?s }";
 	String query = KB.PREFIXES + " CONSTRUCT { ?s ?p ?o }\r\n" +
 					"WHERE\r\n" +
 					"{?s ?p ?o }";
