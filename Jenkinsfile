@@ -101,7 +101,7 @@ pipeline {
     }
    stage('Build docker images') {
             when {  // Only on production tags
-                branch "master" 
+               // branch "master" 
 			//allOf {
                   //  expression{tag "*"}
                   //  expression{
@@ -122,7 +122,7 @@ pipeline {
                       //  TAG_PRODUCTION == 'true'
                     //}
                 //}
-			branch "master"  
+			//branch "master"  
             }
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
@@ -158,7 +158,7 @@ pipeline {
                     //    TAG_PRODUCTION == 'true'
                     //}
                 //}
-			branch "master" 
+			//branch "master" 
             }
             steps {
                 sh """#!/bin/bash
@@ -179,7 +179,7 @@ pipeline {
                       //  TAG_PRODUCTION == 'true'
                     //}
                 //}
-	          branch "master"  
+	        //  branch "master"  
             }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'xOpera_ssh_key', keyFileVariable: 'xOpera_ssh_key_file', usernameVariable: 'xOpera_ssh_username')]) {

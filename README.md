@@ -11,11 +11,16 @@ The repository contains the Maven modules for the Semantic Reasoner component of
 ## Prerequisites
 This module depends on:
 
-- The SODALITE sub-project “defect-prediction”. Thus, first built it.
+- The SODALITE sub-project defect-prediction. Thus, first built it.
 The information about building defect predictor can be found at
  ` https://github.com/SODALITE-EU/defect-prediction `
 - The graph-db which can be downloaded from [here](http://graphdb.ontotext.com/documentation/free/index.html). 
-After started, you can access it here http://localhost:7200/. 
+After started, you can access it here http://localhost:7200/.
+```
+ - Java 11 or newer
+ - Graph db 9.3.0 or newer
+ - Docker engine 19.03 or newer 
+ ```
  
 ## Installation (Maven)
 
@@ -24,12 +29,10 @@ After started, you can access it here http://localhost:7200/.
 - Deploy the war file in a web container (e.g. Tomcat)
 
 ## Running the reasoner on a local environment
-1) Set an environment variable with name as 'environment'
-and value as dev'.
-2) Download the [defect predictor](https://github.com/SODALITE-EU/defect-prediction), and build it as a maven project.
+1) Download the [defect predictor](https://github.com/SODALITE-EU/defect-prediction), and build it as a maven project.
 Extract the bug-predictor.war to the tomcat webapps folder.
-3) Download graph-db from [here](http://graphdb.ontotext.com/). 
-After graph-db is up and running, create a TOSCA repository with ruleset = owl-2rl.
+2) Download graph-db from [here](http://graphdb.ontotext.com/). 
+After graph-db is up and running, create a TOSCA repository with ruleset = owl-2rl and disable owl-sameas.
 Load the ontologies from [semantic-models](https://github.com/SODALITE-EU/semantic-models/tree/master/ontology%20definitions).
 Specifically, load the ontologies under ontology-definitions folder:
 optimizations.ttl, sodalite-metamodel.ttl, import/DUL.ttl, tosca-builtins.ttl
