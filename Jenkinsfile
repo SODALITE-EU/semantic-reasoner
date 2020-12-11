@@ -101,12 +101,13 @@ pipeline {
     }
    stage('Build docker images') {
             when {  // Only on production tags
-                allOf {
-                    expression{tag "*"}
-                    expression{
-                        TAG_PRODUCTION == 'true'
-                    }
-                } 
+                branch "master" 
+			//allOf {
+                  //  expression{tag "*"}
+                  //  expression{
+                  //      TAG_PRODUCTION == 'true'
+                  //  }
+               // } 
             }
             steps {
                 sh "cd source\\ code/semantic-reasoner; docker build -t semantic_web -f  ./docker/web/Dockerfile ."
@@ -115,12 +116,13 @@ pipeline {
    }
    stage('Push Reasoner to DockerHub') {
            when {  // Only on production tags
-                allOf {
-                    expression{tag "*"}
-                    expression{
-                        TAG_PRODUCTION == 'true'
-                    }
-                } 
+                //allOf {
+                    //expression{tag "*"}
+                    //expression{
+                      //  TAG_PRODUCTION == 'true'
+                    //}
+                //}
+			branch "master"  
             }
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
@@ -150,12 +152,13 @@ pipeline {
    }
    stage('Install dependencies') {
              when {  // Only on production tags
-                allOf {
-                    expression{tag "*"}
-                    expression{
-                        TAG_PRODUCTION == 'true'
-                    }
-                } 
+               // allOf {
+                 //   expression{tag "*"}
+                   // expression{
+                    //    TAG_PRODUCTION == 'true'
+                    //}
+                //}
+			branch "master" 
             }
             steps {
                 sh """#!/bin/bash
@@ -170,12 +173,13 @@ pipeline {
    }
    stage('Deploy to openstack') {
             when {  // Only on production tags
-                allOf {
-                    expression{tag "*"}
-                    expression{
-                        TAG_PRODUCTION == 'true'
-                    }
-                } 
+                //allOf {
+                  //  expression{tag "*"}
+                    //expression{
+                      //  TAG_PRODUCTION == 'true'
+                    //}
+                //}
+	          branch "master"  
             }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'xOpera_ssh_key', keyFileVariable: 'xOpera_ssh_key_file', usernameVariable: 'xOpera_ssh_username')]) {
