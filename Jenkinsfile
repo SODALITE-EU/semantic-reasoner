@@ -102,12 +102,12 @@ pipeline {
    stage('Build docker images') {
             when {  // Only on production tags
                // branch "master" 
-			//allOf {
-                  //  expression{tag "*"}
-                  //  expression{
-                  //      TAG_PRODUCTION == 'true'
-                  //  }
-               // } 
+			         allOf {
+                    expression{tag "*"}
+                    expression{
+                        TAG_PRODUCTION == 'true'
+                    }
+                } 
             }
             steps {
                 sh "cd source\\ code/semantic-reasoner; docker build -t semantic_web -f  ./docker/web/Dockerfile ."
@@ -116,20 +116,20 @@ pipeline {
    }
    stage('Push Reasoner to DockerHub') {
            when {  // Only on production tags
-                //allOf {
-                    //expression{tag "*"}
-                    //expression{
-                      //  TAG_PRODUCTION == 'true'
-                    //}
-                //}
+                allOf {
+                    expression{tag "*"}
+                    expression{
+                        TAG_PRODUCTION == 'true'
+                    }
+                }
 			//branch "master"  
             }
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
                     sh  """#!/bin/bash                       
-                            docker tag semantic_web sodaliteh2020/semantic_web:${BUILD_NUMBER}
+                            docker tag semantic_web sodaliteh2020/semantic_web:${BRANCH_NAME}
                             docker tag semantic_web sodaliteh2020/semantic_web
-                            docker push sodaliteh2020/semantic_web:${BUILD_NUMBER}
+                            docker push sodaliteh2020/semantic_web:${BRANCH_NAME}
                             docker push sodaliteh2020/semantic_web
                         """
                 }
@@ -142,9 +142,9 @@ pipeline {
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
                     sh  """#!/bin/bash                       
-                            docker tag graph_db sodaliteh2020/graph_db:${BUILD_NUMBER}
+                            docker tag graph_db sodaliteh2020/graph_db:${BRANCH_NAME}
                             docker tag graph_db sodaliteh2020/graph_db
-                            docker push sodaliteh2020/graph_db:${BUILD_NUMBER}
+                            docker push sodaliteh2020/graph_db:${BRANCH_NAME}
                             docker push sodaliteh2020/graph_db
                         """
                 }
@@ -152,12 +152,12 @@ pipeline {
    }
    stage('Install dependencies') {
              when {  // Only on production tags
-               // allOf {
-                 //   expression{tag "*"}
-                   // expression{
-                    //    TAG_PRODUCTION == 'true'
-                    //}
-                //}
+                allOf {
+                    expression{tag "*"}
+                    expression{
+                        TAG_PRODUCTION == 'true'
+                    }
+                }
 			//branch "master" 
             }
             steps {
@@ -173,12 +173,12 @@ pipeline {
    }
    stage('Deploy to openstack') {
             when {  // Only on production tags
-                //allOf {
-                  //  expression{tag "*"}
-                    //expression{
-                      //  TAG_PRODUCTION == 'true'
-                    //}
-                //}
+                allOf {
+                    expression{tag "*"}
+                    expression{
+                        TAG_PRODUCTION == 'true'
+                    }
+                }
 	        //  branch "master"  
             }
             steps {
