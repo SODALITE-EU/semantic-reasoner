@@ -14,7 +14,7 @@ import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import kb.utils.ConfigsLoader;
+import kb.configs.ConfigsLoader;
 import restapi.utils.HttpClientRequest;
 
 /** A service that submits the abstract application deployment model to the Knowledge Base.

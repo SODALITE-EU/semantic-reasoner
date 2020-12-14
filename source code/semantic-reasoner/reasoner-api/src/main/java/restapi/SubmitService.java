@@ -21,19 +21,20 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import httpclient.HttpClientRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.clean.ModifyKB;
+import kb.configs.ConfigsLoader;
 import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
-import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
-import restapi.utils.HttpClientRequest;
+
 
 /** A service that submits the abstract application deployment model to the Knowledge Base.
  * @author George Meditskos
@@ -91,7 +92,7 @@ public class SubmitService extends AbstractService {
 			if(!HttpClientRequest.getWarnings(response, aadmid)) {
 				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getTemplateNames()));
 				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
-			}
+			}			
 			
 			addRequirementModels(m, response);
 		} catch (MappingException e) {

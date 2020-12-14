@@ -19,8 +19,8 @@ import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
+import kb.configs.ConfigsLoader;
 import kb.repository.KB;
-import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 

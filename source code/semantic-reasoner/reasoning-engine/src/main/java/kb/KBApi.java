@@ -27,6 +27,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import kb.clean.ModifyKB;
+import kb.configs.ConfigsLoader;
 import kb.dto.AADM;
 import kb.dto.Attribute;
 import kb.dto.Capability;
@@ -42,7 +43,6 @@ import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
 import kb.repository.KB;
 import kb.repository.KBConsts;
-import kb.utils.ConfigsLoader;
 import kb.utils.InferencesUtil;
 import kb.utils.MyFileUtil;
 import kb.utils.MyUtils;

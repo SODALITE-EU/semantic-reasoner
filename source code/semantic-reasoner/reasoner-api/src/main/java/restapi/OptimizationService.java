@@ -26,11 +26,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.clean.ModifyKB;
+import kb.configs.ConfigsLoader;
 import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
 
 import kb.repository.KB;
-import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;

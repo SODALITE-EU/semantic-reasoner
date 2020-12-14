@@ -1,4 +1,4 @@
-package kb.utils;
+package kb.configs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,12 @@ public class ConfigsLoader {
 	
 	String kbUsername;
 	String kbPassword;
-		
+	
+	String keycloak;
+	String keycloakClientId;
+	String keycloakClientSecret;
+	
+	
 	private ConfigsLoader(){}
 
     public static ConfigsLoader getInstance(){
@@ -56,6 +61,12 @@ public class ConfigsLoader {
 			bugPredictorServer = properties.getProperty("bugPredictorServer");
 			ansiblePath = properties.getProperty("ansiblePath");
 			reasonerServer = properties.getProperty("reasonerServer");
+			
+			//omit for developement purposes
+			keycloak = properties.getProperty("keycloak");
+			keycloakClientId = properties.getProperty("keycloakClientId");
+			keycloakClientSecret = properties.getProperty("keycloakClientSecret");	
+			
 		} else if (environment.equals("docker")) {
 			graphdb = System.getenv("graphdb");
 			bugPredictorServer = System.getenv("bugPredictorServer");
@@ -64,8 +75,12 @@ public class ConfigsLoader {
 			
 			kbUsername = System.getenv("kbUsername");
 			kbPassword = System.getenv("kbPassword");
+			
+			keycloak = System.getenv("keycloak");
+			keycloakClientId = System.getenv("keycloakClientId");
+			keycloakClientSecret = System.getenv("keycloakClientSecret");			
 		}
-		System.out.println(String.format("graphdb = %s, bugpredictorServer = %s, ansiblePath = %s, reasonerServer = %s", graphdb, bugPredictorServer, ansiblePath, reasonerServer));
+		System.out.println(String.format("graphdb = %s, bugpredictorServer = %s, ansiblePath = %s, reasonerServer = %s, keycloak = %s, keycloakClientId = %s", graphdb, bugPredictorServer, ansiblePath, reasonerServer, keycloak, keycloakClientId));
 	}
 	
 	public String getEnvironment() {
@@ -93,6 +108,18 @@ public class ConfigsLoader {
 	
 	public String getReasonerServer() {
 		return reasonerServer;
+	}
+	
+	public String getKeycloak() {
+		return keycloak;
+	}
+	
+	public String getKeycloakClientId() {
+		return keycloakClientId;
+	}
+	
+	public String getKeycloakClientSecret() {
+		return keycloakClientSecret;
 	}
 	
 	public static void main(String[] args) throws IOException {

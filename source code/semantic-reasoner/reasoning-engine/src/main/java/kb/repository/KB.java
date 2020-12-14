@@ -1,6 +1,5 @@
 package kb.repository;
 
-import kb.utils.ConfigsLoader;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -15,6 +14,8 @@ import org.eclipse.rdf4j.repository.config.RepositoryConfigSchema;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.rio.*;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
+
+import kb.configs.ConfigsLoader;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -17,8 +17,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import kb.configs.ConfigsLoader;
 import kb.repository.KB;
-import kb.utils.ConfigsLoader;
 
 public final class HttpClientRequest {
 	
@@ -68,7 +68,7 @@ public final class HttpClientRequest {
 		System.out.println("Executing request " + httpPost.getRequestLine());
 		
 		BufferedReader br = null;
-		try {		 
+		try {
 			HttpResponse response = httpclient.execute(httpPost);
 			br = new BufferedReader(
 					new InputStreamReader((response.getEntity().getContent())));
