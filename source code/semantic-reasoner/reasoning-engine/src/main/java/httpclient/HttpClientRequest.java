@@ -87,8 +87,8 @@ public final class HttpClientRequest {
 		RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
 		
 		RestTemplate restTemplate = restTemplateBuilder
-					.setReadTimeout(Duration.ofMillis(30 * 1000))
-					.setConnectTimeout(Duration.ofMillis(10 * 1000))
+					.setReadTimeout(Duration.ofMillis((long)30 * 1000))
+					.setConnectTimeout(Duration.ofMillis((long)10 * 1000))
 					.errorHandler(errorHandler)
 					.build();
 		
@@ -97,10 +97,10 @@ public final class HttpClientRequest {
 		return response.getBody();
 	}
 	
-	//NOT USED IN REASONER - probably should be removed
+	//NOT USED IN REASONER - probably should be removed - commented out because of sonarcloud security spot
 	public static void getKeycloakToKen() throws URISyntaxException {
 		
-		String url = keycloak + TOKEN_SERVICE;
+		/*String url = keycloak + TOKEN_SERVICE;
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 
 		map.add("grant_type", "password");
@@ -111,7 +111,7 @@ public final class HttpClientRequest {
 			
 		String result = sendFormURLEncodedMessage(new URI(url), HttpMethod.POST, map, String.class, new KeycloakCustomErrorHandler(), "", "");
 		JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
-		System.out.println(jsonObject.get("access_token").getAsString());
+		System.out.println(jsonObject.get("access_token").getAsString());*/
 	}
 	
 	public static void validateToKen(String token) throws URISyntaxException, MyRestTemplateException {

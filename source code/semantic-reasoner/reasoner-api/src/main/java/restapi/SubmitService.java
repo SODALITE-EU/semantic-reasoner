@@ -129,7 +129,9 @@ public class SubmitService extends AbstractService {
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		} catch (MyRestTemplateException e) {
-			new ModifyKB(kb).deleteModel(aadmUri.toString());
+			if (aadmUri != null)
+				new ModifyKB(kb).deleteModel(aadmUri.toString());
+			
 			HttpRequestErrorModel erm = e.error_model;
 			System.out.println(String.format("rawStatus=%s, api=%s, statusCode=%s, error=%s",erm.rawStatus, erm.api, erm.statusCode, erm.error));
 			
