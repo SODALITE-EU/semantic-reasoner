@@ -130,7 +130,7 @@ pipeline {
                             docker tag semantic_web sodaliteh2020/semantic_web:${BRANCH_NAME}
                             docker tag semantic_web sodaliteh2020/semantic_web
                             docker push sodaliteh2020/semantic_web:${BRANCH_NAME}
-                            docker push sodaliteh2020/semantic_web
+                            docker push sodaliteh2020/semantic_web:latest
                         """
                 }
             }
@@ -145,7 +145,7 @@ pipeline {
                             docker tag graph_db sodaliteh2020/graph_db:${BRANCH_NAME}
                             docker tag graph_db sodaliteh2020/graph_db
                             docker push sodaliteh2020/graph_db:${BRANCH_NAME}
-                            docker push sodaliteh2020/graph_db
+                            docker push sodaliteh2020/graph_db:latest
                         """
                 }
             }
