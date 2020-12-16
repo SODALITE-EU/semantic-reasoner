@@ -747,6 +747,11 @@ public class DSLMappingService {
 		
 		if (interfaceProperty != null)
 			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "classifies"), interfaceProperty);
+		
+		Optional<String> description = Models.getPropertyString(aadmModel, trigger_iri,
+				factory.createIRI(KB.EXCHANGE + "description"));
+		if (description.isPresent())
+			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
 
 		// check for direct values of parameters
 		Literal value = Models
@@ -796,16 +801,20 @@ public class DSLMappingService {
 			return value;
 	}
 
-	private IRI createTargetKBModel(IRI target) throws MappingException {
-		Set<Literal> listValues= Models.objectLiterals(aadmModel.filter(target, factory.createIRI(KB.EXCHANGE + "listValue"), null));
+	private IRI createTargetKBModel(IRI parameter) throws MappingException {
+		System.out.println("createTargetKBModel:" + parameter);
+		Set<Literal> listValues= Models.objectLiterals(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "listValue"), null));
 		
-		IRI targetClassifierKB = null;
 		System.err.println("-----ListValue---" + listValues);
 		IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 		
+		IRI parameterClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+		
+		aadmBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+		aadmBuilder.add(list, RDF.TYPE, "tosca:List");
+		
 		for (Literal l:listValues) {
-			targetClassifierKB = factory.createIRI(namespace + "TargetClassifer_" + MyUtils.randomString());
-			aadmBuilder.add(targetClassifierKB, RDF.TYPE, "tosca:Target");
+			aadmBuilder.add(parameterClassifierKB, RDF.TYPE, "tosca:Target");
 			aadmBuilder.add(list, RDF.TYPE, "tosca:List");
 			
 			
@@ -822,10 +831,8 @@ public class DSLMappingService {
 			if(kbNode != null)
 				aadmBuilder.add(list, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 		}
-		if (targetClassifierKB != null)
-			aadmBuilder.add(targetClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 		
-		return targetClassifierKB;		
+		return parameterClassifierKB;		
 	}
 
 	private IRI getKBTemplate(NamedResource n) {
