@@ -5,17 +5,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import httpclient.dto.HttpRequestErrorModel;
+import httpclient.dto.HttpRequestErrorModel.DownstreamApi;
 import httpclient.exceptions.MyRestTemplateException;
-import httpclient.exceptions.MyRestTemplateException.DownstreamApi;
 
 public class KeycloakCustomErrorHandler implements ResponseErrorHandler {
 	@Override
 	public boolean hasError(ClientHttpResponse httpResponse) throws IOException {
-		// TODO Auto-generated method stub
 		return (
 		          httpResponse.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR
 		          || httpResponse.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR);
@@ -31,7 +32,8 @@ public class KeycloakCustomErrorHandler implements ResponseErrorHandler {
 		        // Here the whole response will be treated as the error message, you probably don't want that.
 		        String errorMessage = httpBodyResponse;
 
-		        throw new MyRestTemplateException(DownstreamApi.KEYCLOAK_API, httpResponse.getStatusCode(), errorMessage);
+		        HttpRequestErrorModel e = new HttpRequestErrorModel(LocalDateTime.now(), DownstreamApi.KEYCLOAK_API, httpResponse.getStatusCode(), httpResponse.getRawStatusCode(), errorMessage, "Error in keycloak request");
+		        throw new MyRestTemplateException(e);
 		      }
 		    }
 	}

@@ -31,7 +31,7 @@ import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
-import restapi.utils.HttpClientRequest;
+
 /** A service that submits the resource model to the Knowledge Base.
  * @author George Meditskos
  * @author Zoe Vasileiou

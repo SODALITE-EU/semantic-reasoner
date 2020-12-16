@@ -2,6 +2,9 @@ package kb.configs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -20,6 +23,10 @@ public class ConfigsLoader {
 	String keycloak;
 	String keycloakClientId;
 	String keycloakClientSecret;
+	
+	//envs for authentication
+	public static final List AUTHENVS = Collections.unmodifiableList(
+		    Arrays.asList(new String[] {"qa", "docker"}));
 	
 	
 	private ConfigsLoader(){}

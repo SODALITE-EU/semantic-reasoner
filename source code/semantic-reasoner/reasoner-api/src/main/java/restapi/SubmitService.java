@@ -1,7 +1,7 @@
 package restapi;
 
 import java.io.IOException;
-
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -22,6 +22,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import httpclient.HttpClientRequest;
+import httpclient.dto.HttpRequestErrorModel;
+import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -34,6 +36,7 @@ import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
+import restapi.utils.SharedServiceUtil;
 
 
 /** A service that submits the abstract application deployment model to the Knowledge Base.
@@ -59,11 +62,14 @@ public class SubmitService extends AbstractService {
 	 * @param complete flag for auto-completion of entities
 	 * @param namespace The namespace of the model
 	 * @param name The file name of the model
+	 * @param toKen The toKen
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid
 	 * @throws MappingException Unknown entity issue
 	 * @return The AADM URI
+	 * @throws URISyntaxException 
+	 * @throws MyRestTemplateException 
 	*/
 	@POST
 	//@Produces("text/plain")
@@ -75,24 +81,30 @@ public class SubmitService extends AbstractService {
 			@ApiParam(value = "The aadm in DSL", required = true) @DefaultValue("") @FormParam("aadmDSL") String aadmDSL,
 			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
-			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name)
-			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException {
+			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
+			@ApiParam(value = "toKen") @FormParam("toKen") String toKen)
+			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
+		String env = configInstance.getEnvironment();
+		
+		if(ConfigsLoader.AUTHENVS.contains(env)) {	
+			HttpRequestErrorModel erm = SharedServiceUtil.validateToKen(toKen);
+			if (erm != null)
+				return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
+		}
+					
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
 		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name);
 		IRI aadmUri = null;
-
 		//Contains the final response
 		JSONObject response = new JSONObject();
+			
 		try {
 			aadmUri = m.start();
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			if(!HttpClientRequest.getWarnings(response, aadmid)) {
-				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getTemplateNames()));
-				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
-			}			
+			HttpClientRequest.getWarnings(response, aadmid);		
 			
 			addRequirementModels(m, response);
 		} catch (MappingException e) {
@@ -116,6 +128,12 @@ public class SubmitService extends AbstractService {
 			JSONObject errors = new JSONObject();
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
+		} catch (MyRestTemplateException e) {
+			new ModifyKB(kb).deleteModel(aadmUri.toString());
+			HttpRequestErrorModel erm = e.error_model;
+			System.out.println(String.format("rawStatus=%s, api=%s, statusCode=%s, error=%s",erm.rawStatus, erm.api, erm.statusCode, erm.error));
+			
+		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("There was an internal server error").build();

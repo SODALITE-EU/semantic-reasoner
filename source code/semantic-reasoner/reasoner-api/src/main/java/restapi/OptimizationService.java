@@ -34,7 +34,6 @@ import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
-import restapi.utils.HttpClientRequest;
 
 
 /** A service that submits the abstract application deployment model to the Knowledge Base and
@@ -92,10 +91,10 @@ public class OptimizationService extends AbstractService {
 			aadmUri = m.start();
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			if(!HttpClientRequest.getWarnings(response, aadmid)) {
+			/*if(!HttpClientRequest.getWarnings(response, aadmid)) {
 				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getTemplateNames()));
 				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
-			}
+			}*/
 			getOptimizations(response, aadmid);
 		} catch (MappingException e) {
 			e.printStackTrace();

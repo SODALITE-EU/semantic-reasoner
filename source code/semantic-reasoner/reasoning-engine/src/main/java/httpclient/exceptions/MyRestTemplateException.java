@@ -1,24 +1,15 @@
 package httpclient.exceptions;
 
-import org.springframework.http.HttpStatus;
+import httpclient.dto.HttpRequestErrorModel;
 
 public class MyRestTemplateException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;
 
-	public enum DownstreamApi {
-		  BUG_PREDICTOR_API,
-		  KEYCLOAK_API
-		}
-	
-	public HttpStatus statusCode;
-	public String error;
-	public DownstreamApi api;
+	public HttpRequestErrorModel error_model;
 
-	public MyRestTemplateException(DownstreamApi api, HttpStatus statusCode, String error) {
-		super(error);
-		this.api = api;
-		this.statusCode = statusCode;
-		this.error = error;
-	  }
+	public MyRestTemplateException(HttpRequestErrorModel error_model) {
+		super(error_model.error);
+		this.error_model = error_model;
+	}
 }
