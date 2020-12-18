@@ -144,8 +144,55 @@ public class GetResources {
 			namespacesOfType.add(g.toString());
 		}
 		
+		result.close();
 		return namespacesOfType;
 	}
+	
+	
+	/* Triggers in policies contain event filters where requirement and capability
+	 * point within a requirement or capability name of the requirements/node
+	 * target_filter:              
+		node: <node_type>/<node_template> 
+		requirement: <req_name> 
+		capability: <req_name>/<cap_name>
+		
+		if requirement: host, e.g. https://www.sodalite.eu/ontologies/workspace/1/radon/host is returned
+	 */
+	public static IRI getReqCapFromEventFilter(KB kb, String event_filter_req_cap) {
+		System.out.println("getReqCapFromEventFilter:");
+		
+		String req_cap = MyUtils.getStringPattern(event_filter_req_cap, ".*\\.([A-Za-z]*)$");
+		String resource= MyUtils.getStringPattern(event_filter_req_cap, "(.*)\\.[A-Za-z]*$");
+		
+		String resource_iri = MyUtils.getFullResourceIRI(resource, kb);
+		
+		System.out.println("req_cap = " + req_cap + ", resource = " + resource + ", resource_iri = " + resource_iri);
+		
+		String sparql = "select ?requirement \r\n" + 
+				"where {\r\n" + 
+				"	?resource soda:hasContext ?context .\r\n" + 
+				"	?context tosca:requirements|tosca:capabilities ?classifier.\r\n" + 
+				"	?classifier DUL:classifies ?requirement .\r\n" + 
+				"    filter(regex(str(?requirement), \"" + req_cap  + "$\", \"i\")) .\r\n" + 
+				"}";
+		
+		String query = KB.PREFIXES + sparql;
+		System.out.println(query);
+		
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+									new SimpleBinding("resource", kb.getFactory().createIRI(resource_iri)));
+		IRI requirement = null;
+		if (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			requirement = (IRI) bindingSet.getBinding("requirement").getValue();
+		}
+		
+		System.out.println("requirement = " + requirement);
+		
+		result.close();
+		return requirement;		
+	}
+	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

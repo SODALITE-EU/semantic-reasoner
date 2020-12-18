@@ -309,7 +309,7 @@ public class DSLRMMappingService {
 			for (Resource _interface : Models.getPropertyResources(rmModel, _node,
 					factory.createIRI(KB.EXCHANGE + "interfaces"))) {
 				IRI interface_iri = (IRI) _interface;
-				IRI interfaceClassifierKB = createInterfaceOrTriggerKBModel(interface_iri);
+				IRI interfaceClassifierKB = createInterfaceKBModel(interface_iri);
 
 				// add attribute classifiers to the template context
 				if (nodeDescriptionKB != null)	
@@ -321,7 +321,7 @@ public class DSLRMMappingService {
 			for (Resource _trigger : Models.getPropertyResources(rmModel, _node,
 					factory.createIRI(KB.EXCHANGE + "triggers"))) {
 				IRI trigger = (IRI) _trigger;
-				IRI triggerClassifierKB = createInterfaceOrTriggerKBModel(trigger);
+				IRI triggerClassifierKB = createTriggerKBModel(trigger);
 				// add property classifiers to the template context
 				if (nodeDescriptionKB != null)
 					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "triggers"), triggerClassifierKB);
@@ -530,7 +530,7 @@ public class DSLRMMappingService {
 		return capabilityClassifierKB;
 	}	
 	
-	private IRI createInterfaceOrTriggerKBModel(IRI interface_iri) throws MappingException {
+	private IRI createInterfaceKBModel(IRI interface_iri) throws MappingException {
 		Optional<Literal> _interfaceName = Models
 				.objectLiteral(rmModel.filter(interface_iri, factory.createIRI(KB.EXCHANGE + "name"), null));
 		
@@ -586,7 +586,7 @@ public class DSLRMMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			if (interfaceName!=null && (interfaceName.equals("type") || interfaceName.equals("node"))) {
+			if (interfaceName!=null && (interfaceName.equals("type"))) {
 				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
@@ -611,11 +611,105 @@ public class DSLRMMappingService {
 					factory.createIRI(KB.EXCHANGE + "hasParameter"));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
-				IRI _p = createInterfaceOrTriggerKBModel(parameter);
+				IRI _p = createInterfaceKBModel(parameter);
 				nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
 			}
 		}
 		return interfaceClassifierKB;
+	}
+	
+	//if no different handling needed for trigger, emrge it with interfaces
+	private IRI createTriggerKBModel(IRI trigger) throws MappingException {
+		Optional<Literal> _triggerName = Models
+				.objectLiteral(rmModel.filter(trigger, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		String triggerName = null;
+		if (!_triggerName.isPresent())
+			mappingModels.add(new MappingValidationModel(currentType, trigger.getLocalName(), "No 'name' defined for trigger"));
+		else 
+			triggerName = _triggerName.get().getLabel();
+		
+		IRI triggerProperty = null;
+		if (triggerName != null) {
+			triggerProperty = GetResources.getKBProperty(triggerName, this.namespacesOfType, kb);
+			if (triggerProperty == null || triggerProperty.toString().equals(namespace + triggerName)) {
+				triggerProperty = factory.createIRI(namespace + triggerName);
+				nodeBuilder.add(triggerProperty, RDF.TYPE, "rdf:Property");
+			}
+		}
+		
+		Optional<Resource> _type  = Models.getPropertyResource(rmModel, trigger,
+				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+		String type = MyUtils.getStringValue(_type.get());
+		
+		IRI triggerClassifierKB = null;
+		switch (type) {
+			case "Trigger":
+				triggerClassifierKB = factory.createIRI(namespace + "TriggerClassifer_" + MyUtils.randomString());
+				nodeBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
+				break;
+			case "Parameter":
+				triggerClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+				nodeBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				break;
+			default:
+				System.err.println("type = " + type + " does not exist");
+		}
+		
+		if (triggerProperty != null)
+			nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "classifies"), triggerProperty);
+		
+		//description is added for triggers
+		Optional<String> description = Models.getPropertyString(rmModel, trigger,
+				factory.createIRI(KB.EXCHANGE + "description"));
+		if (description.isPresent())
+					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+
+		// check for direct values of parameters
+		Literal value = Models
+				.objectLiteral(rmModel.filter(trigger, factory.createIRI(KB.EXCHANGE + "value"), null))
+				.orElse(null);
+
+		if (value != null) { // this means there is no parameters
+			//probably for capability and requirement different handling needed, check event_fitler_definition in tosca yaml 1.3
+			if (triggerName!=null && triggerName.equals("node")) {
+				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				IRI kbNode = getKBNode(n);
+				if (kbNode == null) {
+					if (nodeNames.contains(n.getResource()))
+						kbNode = factory.createIRI(namespace + n.getResource());
+					else {
+						mappingModels.add(new MappingValidationModel(currentType, trigger.getLocalName(), "Cannot find Node: " + value.getLabel() + " for trigger = " + triggerName));
+						System.err.println(currentType + ": Cannot find Node: " + value.getLabel() + " for interface " + triggerName);
+					}
+				}
+				if(kbNode != null)
+					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+			} else {
+				Object i = null;
+				if ((i = Ints.tryParse(value.toString())) != null)
+					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+				else 
+					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+			}
+		} else if (triggerName!=null && (triggerName.equals("capability") || triggerName.equals("requirement"))) {
+			IRI req_cap = GetResources.getReqCapFromEventFilter(kb, value.getLabel());
+			if (req_cap != null) {
+				nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), req_cap);
+			} else {
+				mappingModels.add(new MappingValidationModel(currentType, trigger.getLocalName(), "Cannot find " + value.getLabel() + " for trigger = " + triggerName));
+				System.err.println(currentType + ": Cannot find : " + value.getLabel() + " for trigger " + triggerName);
+			}		
+		} else {
+			Set<Resource> _parameters = Models.getPropertyResources(rmModel, trigger,
+					factory.createIRI(KB.EXCHANGE + "hasParameter"));
+			for (Resource _parameter : _parameters) {
+				IRI parameter = (IRI) _parameter;
+				IRI _p = createTriggerKBModel(parameter);
+				nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+			}
+		}
+		return triggerClassifierKB;
 	}
 	
 	private Set<IRI> createCapabilityParameterKBModel(IRI capability) throws MappingException {
