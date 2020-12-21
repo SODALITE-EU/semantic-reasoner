@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.model.IRI;
 
@@ -30,6 +31,8 @@ import kb.validation.exceptions.models.ValidationModel;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DSLMappingServiceTest {
 	
+	private static final Logger LOG = Logger.getLogger(DSLMappingServiceTest.class.getName());
+	
 	private static SodaliteRepository repositoryManager;
 	private static Repository repository;
 	private static KB kb;
@@ -41,7 +44,7 @@ class DSLMappingServiceTest {
 
 	@BeforeAll
 	 static void loadRepository() {
-		System.out.println("loadRepository");
+		LOG.info("loadRepository");
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
 		kb = new KB(repositoryManager, "SEMANTIC_REASONER_TEST");
 
@@ -73,7 +76,7 @@ class DSLMappingServiceTest {
 		}
 
 		try {
-			System.out.println("Loading resource models");
+			LOG.info("Loading resource models");
 			//IRI rmIRI1, rmIRI2, rmIRI3, rmIRI4;
 			//String rmTTL1 = fileToString("snow/modules.docker_registry.rm.ttl");
 			//String rmTTL2 = fileToString("snow/modules.docker_component.rm.ttl");
@@ -103,7 +106,7 @@ class DSLMappingServiceTest {
 			} catch (ValidationException e) {
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
-					System.out.println("validationModel" + validationModel.toJson());
+					LOG.info("validationModel" + validationModel.toJson());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -150,7 +153,7 @@ class DSLMappingServiceTest {
 			} catch (ValidationException e) {
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
-					System.out.println("validationModel" + validationModel.toJson());
+					LOG.info("validationModel" + validationModel.toJson());
 				}
 				m.shutDown();
 				return;
@@ -164,14 +167,14 @@ class DSLMappingServiceTest {
 				m.shutDown();
 		}
 		assertNotNull(aadmIRI);
-		System.out.println("Test Passed: aadm for snow");
+		LOG.info("Test Passed: aadm for snow");
 	}
 	
 	/* Test for required properties that are missing
 	   The required registry_ip property has been removed from Template_2. */
 	@Test
 	void testMissingRequiredProperty() {
-		System.out.println("testMissingRequiredProperty");
+		LOG.info("testMissingRequiredProperty");
 		DSLMappingService m = null;
 		try {
 			String aadmTTL = fileToString("dsl/ide_snow_v3_required_property_missing.ttl");
@@ -181,10 +184,10 @@ class DSLMappingServiceTest {
 			} catch (ValidationException e) {	
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
-					System.out.println("validationModel" + validationModel.toJson());
+					LOG.info("validationModel" + validationModel.toJson());
 				}
 				assertEquals(validationModels.size(),1);
-				System.out.println("Test Passed: group_description required property is missing");
+				LOG.info("Test Passed: group_description required property is missing");
 				return;
 			} catch (Exception e) {
 				if (m!=null)
@@ -212,17 +215,17 @@ class DSLMappingServiceTest {
 				m.start();
 				m.save();
 			} catch (MappingException e) {
-				System.out.println("Test Passed for MappingException: " + e.getMessage());
+				LOG.info("Test Passed for MappingException: " + e.getMessage());
 				List<DslValidationModel> validationModels = e.mappingValidationModels;
 				for (DslValidationModel v : validationModels) {
-					System.out.println("validationModel" + v.toJson());
+					LOG.info("validationModel" + v.toJson());
 				}
 				assertEquals(validationModels.size(),1);
 				return;
 			} catch (ValidationException e) {	
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
-					System.out.println("validationModel" + validationModel.toJson());
+					LOG.info("validationModel" + validationModel.toJson());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

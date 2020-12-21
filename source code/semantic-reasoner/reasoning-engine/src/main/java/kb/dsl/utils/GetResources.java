@@ -2,12 +2,12 @@ package kb.dsl.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
-
 
 import kb.repository.KB;
 import kb.utils.MyUtils;
@@ -15,9 +15,11 @@ import kb.utils.QueryUtil;
 /* All the utility functions used by DSL Mapping services.*/
 
 public class GetResources {
+	
+	private static final Logger LOG = Logger.getLogger(GetResources.class.getName());
 
 	public static IRI getKBNodeType(NamedResource n, String type, KB kb) {
-		System.out.println("getKBNodeType label = " + n.getResource() + ", type = " + type);
+		LOG.info("getKBNodeType label = " + n.getResource() + ", type = " + type);
 		String namespace = n.getNamespace();
 		String resource = n.getResource();
 		
@@ -41,7 +43,7 @@ public class GetResources {
 		sparql += 	" ?x rdfs:subClassOf " + type + " .\r\n" +
 					" FILTER (strends(str(?x), \"" + resource + "\")). \r\n" +
 					"}";
-		System.out.println(sparql);
+		LOG.info(sparql);
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
@@ -56,6 +58,7 @@ public class GetResources {
 	}
 	
 	public static IRI getKBProperty(String label, List<String> namespaces, KB kb) {
+		LOG.info("getKBProperty label = " + label + ", namespaces = " + namespaces);
 		
 		String sparql = "select distinct ?x \r\n" +
 						"FROM <http://www.ontotext.com/explicit>\r\n" +
@@ -81,7 +84,7 @@ public class GetResources {
 					    "  }\r\n";
 		sparql += 	"}";
 			
-		System.out.println(sparql);
+		LOG.info(sparql);
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
@@ -121,7 +124,7 @@ public class GetResources {
 	 * the List of all the inherited namespaces is returned e.g. [docker, vehicleiot]
 	 */
 	public static List<String> getInheritedNamespacesFromType(KB kb, String type) {
-		System.out.println("getInheritedNamespacesFromType type =" + type);
+		LOG.info("getInheritedNamespacesFromType type =" + type);
 		List<String> namespacesOfType = new ArrayList<String>();
 		String query = KB.PREFIXES +
 						" select ?g { \r\n" + 
@@ -132,7 +135,7 @@ public class GetResources {
 						"		?superclass soda:hasContext ?c .\r\n" + 
 						"	}\r\n" + 
 						"}";
-		System.out.println(query);
+		LOG.info(query);
 		
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 									new SimpleBinding("x", kb.getFactory().createIRI(type)));
@@ -159,14 +162,14 @@ public class GetResources {
 		if requirement: host, e.g. https://www.sodalite.eu/ontologies/workspace/1/radon/host is returned
 	 */
 	public static IRI getReqCapFromEventFilter(KB kb, String event_filter_req_cap) {
-		System.out.println("getReqCapFromEventFilter:");
+		LOG.info("getReqCapFromEventFilter:");
 		
 		String req_cap = MyUtils.getStringPattern(event_filter_req_cap, ".*\\.([A-Za-z]*)$");
 		String resource= MyUtils.getStringPattern(event_filter_req_cap, "(.*)\\.[A-Za-z]*$");
 		
 		String resource_iri = MyUtils.getFullResourceIRI(resource, kb);
 		
-		System.out.println("req_cap = " + req_cap + ", resource = " + resource + ", resource_iri = " + resource_iri);
+		LOG.info("req_cap = " + req_cap + ", resource = " + resource + ", resource_iri = " + resource_iri);
 		
 		String sparql = "select ?requirement \r\n" + 
 				"where {\r\n" + 
@@ -177,7 +180,7 @@ public class GetResources {
 				"}";
 		
 		String query = KB.PREFIXES + sparql;
-		System.out.println(query);
+		LOG.info(query);
 		
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 									new SimpleBinding("resource", kb.getFactory().createIRI(resource_iri)));
@@ -186,9 +189,7 @@ public class GetResources {
 			BindingSet bindingSet = result.next();
 			requirement = (IRI) bindingSet.getBinding("requirement").getValue();
 		}
-		
-		System.out.println("requirement = " + requirement);
-		
+				
 		result.close();
 		return requirement;		
 	}
