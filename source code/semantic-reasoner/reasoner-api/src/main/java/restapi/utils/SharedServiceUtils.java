@@ -1,6 +1,7 @@
 package restapi.utils;
 
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import httpclient.HttpClientRequest;
@@ -21,7 +22,7 @@ public class SharedServiceUtils {
 			HttpClientRequest.validateToKen(toKen);
 		} catch (MyRestTemplateException e) {
 			erm = e.error_model;
-			LOG.warning(String.format("rawStatus=%s, api=%s, statusCode=%s, error=%s",erm.rawStatus, erm.api, erm.statusCode, erm.error));
+			LOG.log(Level.WARNING, "rawStatus={0}, api={1}, statusCode={2}, error={3}", new Object[] {erm.rawStatus, erm.api, erm.statusCode, erm.error});
 		}
 		
 		return erm;

@@ -45,7 +45,6 @@ public class NamespaceService extends AbstractService {
 			throws IOException {
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		List<Resource> cList = Iterations.asList(kb.connection.getContextIDs());
-		System.out.println("shutting down");
 		if (kb != null) {
 			kb.shutDown();
 		}

@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.JsonArray;
@@ -30,6 +31,7 @@ import kb.dto.Node;
 @Path("/types")
 @Api()
 public class TypeService extends AbstractService {
+	private static final Logger LOG = Logger.getLogger(TypeService.class.getName());
 	/**
 	  * Getting all the known TOSCA nodes in the KB
 	  * @param imports The namespaces to be searched e.g. docker, snow
@@ -48,8 +50,9 @@ public class TypeService extends AbstractService {
 					required = true,
 					defaultValue = "") @MatrixParam("type") String type ) throws IOException {
 		
-		 System.out.println("imports are " + Arrays.toString(imports.toArray()) + ", type is " + type);
-		
+		 LOG.log(Level.INFO, "imports are {0}, type is {1}", new Object[] {Arrays.toString(imports.toArray()), type});
+		 
+		 
 		KBApi api = new KBApi();
 		Set<Node> nodes = api.getNodes(imports, type);
 		api.shutDown();

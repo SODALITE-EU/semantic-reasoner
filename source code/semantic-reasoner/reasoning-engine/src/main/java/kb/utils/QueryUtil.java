@@ -127,7 +127,6 @@ public class QueryUtil {
 	public static String namedGraphsForQuery(KB kb, List<String> imports) {
 		String sparql = "";
 		for (String im: imports) {
-			System.out.println("im=" + im);
 			String imIRI = MyUtils.getFullNamespaceIRI(kb,im);
 			if(imIRI != null)
 				sparql += "FROM NAMED <" + imIRI + ">\r\n";

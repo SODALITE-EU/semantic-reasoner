@@ -27,9 +27,6 @@ public class KeycloakCustomErrorHandler implements ResponseErrorHandler {
 		if (httpResponse.getStatusCode().is4xxClientError() || httpResponse.getStatusCode().is5xxServerError()) {
 		      try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getBody()))) {
 		        String httpBodyResponse = reader.lines().collect(Collectors.joining(""));
-
-		        // TODO deserialize (could be JSON, XML, whatever...) httpBodyResponse to a POJO that matches the error structure for that specific API, then extract the error message.
-		        // Here the whole response will be treated as the error message, you probably don't want that.
 		        String errorMessage = httpBodyResponse;
 
 		        HttpRequestErrorModel e = new HttpRequestErrorModel(LocalDateTime.now(), DownstreamApi.KEYCLOAK_API, httpResponse.getStatusCode(), httpResponse.getRawStatusCode(), errorMessage, "Error in keycloak request");

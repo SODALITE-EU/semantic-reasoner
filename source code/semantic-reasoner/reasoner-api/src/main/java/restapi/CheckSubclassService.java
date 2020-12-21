@@ -3,6 +3,8 @@ package restapi;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -13,6 +15,7 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import httpclient.HttpClientRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,6 +31,7 @@ import kb.KBApi;
 @Path("/is-subclass-of")
 @Api()
 public class CheckSubclassService extends AbstractService {
+	private static final Logger LOG = Logger.getLogger(CheckSubclassService.class.getName());
 	/**
 	  * A service that returns all the node types that are subclasses of a specific node type
 	  * @param nodeTypes A list with the node types to be checked if they are subclasses of superNodeType
@@ -49,8 +53,7 @@ public class CheckSubclassService extends AbstractService {
 					value = "the super node type",
 					required = true) @MatrixParam("superNodeType") String superNodeType)
 			throws IOException {
-		System.out.println("isSubclassOf");
-		System.out.println("nodeTypes= " + nodeTypes + "superNodeType = " + superNodeType);
+		LOG.log(Level.INFO, "nodeTypes = {0}, superNodeType = {1}", new Object[] {nodeTypes, superNodeType});
 		KBApi api = new KBApi();
 		Set<String> nodes  = api.isSubClassOf(nodeTypes, superNodeType);
 		api.shutDown();

@@ -3,6 +3,8 @@ package restapi;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -48,6 +50,7 @@ import restapi.utils.SharedServiceUtils;
 @Path("/saveAADM")
 @Api()
 public class SubmitService extends AbstractService {
+	private static final Logger LOG = Logger.getLogger(SubmitService.class.getName());
 	static ConfigsLoader configInstance;
 	static {
 		configInstance = ConfigsLoader.getInstance();
@@ -133,8 +136,7 @@ public class SubmitService extends AbstractService {
 				new ModifyKB(kb).deleteModel(aadmUri.toString());
 			
 			HttpRequestErrorModel erm = e.error_model;
-			System.out.println(String.format("rawStatus=%s, api=%s, statusCode=%s, error=%s",erm.rawStatus, erm.api, erm.statusCode, erm.error));
-			
+			LOG.log(Level.WARNING, "rawStatus={0}, api={1}, statusCode={2}, error={3}", new Object[] {erm.rawStatus, erm.api, erm.statusCode, erm.error});
 		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -3,25 +3,20 @@ package kb.utils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import kb.configs.ConfigsLoader;
 
-import java.net.HttpURLConnection;
-
 
 public class MyFileUtil {
+	private static final Logger LOG = Logger.getLogger(MyFileUtil.class.getName());
 	
-	public static String ANSIBLE_PATH;
-	public static String REASONER_SERVER;
-	public static String ANSIBLE_FOLDER = "Ansibles/";
+	public final static String ANSIBLE_PATH;
+	public final static String REASONER_SERVER;
+	public final static String ANSIBLE_FOLDER = "Ansibles/";
 	
 	
 	static {
@@ -40,12 +35,12 @@ public class MyFileUtil {
         	
 			fileName = UUID.randomUUID().toString();
 			String path = ANSIBLE_PATH + fileName;
-			System.out.println("path = " + path);
+			LOG.log(Level.INFO, "path = {0}", path);
 			File myObj = new File(path);
 			if (myObj.createNewFile()) {
-				System.out.println("File created: " + myObj.getName());
+				LOG.log(Level.INFO, "File created: {0}", myObj.getName());
 			} else {
-				System.out.println("File already exists.");
+				LOG.log(Level.WARNING, "File already exists.");
 			}
 
 			myWriter = new FileWriter(path);
@@ -53,7 +48,7 @@ public class MyFileUtil {
 			String _content = content.replaceAll("^\"|\"$", "");
 			myWriter.write(_content);
 			myWriter.close();
-			System.out.println("Successfully wrote to the file.");
+			LOG.log(Level.INFO, "Successfully wrote to the file.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

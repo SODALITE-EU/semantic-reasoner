@@ -53,8 +53,8 @@ public final class HttpClientRequest {
 	static String bugPredictor;
 	
 			
-	public static String BUG_PREDICTOR_SERVICE = "bug-predictor-api/v0.1/bugs/tosca/jsonv2";
-	public static String INTROSPECT_SERVICE = "auth/realms/SODALITE/protocol/openid-connect/token/introspect";
+	public static final String BUG_PREDICTOR_SERVICE = "bug-predictor-api/v0.1/bugs/tosca/jsonv2";
+	public static final String INTROSPECT_SERVICE = "auth/realms/SODALITE/protocol/openid-connect/token/introspect";
 	
 
 	public static <T> T sendJSONMessage(URI uri, HttpMethod method, String content, Class<T> returnType, ResponseErrorHandler errorHandler) {
@@ -129,7 +129,7 @@ public final class HttpClientRequest {
 		
 		String result = null;
 		result = sendJSONMessage(new URI(url), HttpMethod.POST, input, String.class, new BugCustomErrorHandler());
-		LOG.info(result.toString());
+		LOG.log(Level.INFO, "result = {0}", result.toString());
 		JSONParser parser = new JSONParser();
 		JSONArray warningsJson = (JSONArray)((JSONObject) parser.parse(result)).get("warnings");
 		if (!warningsJson.isEmpty())

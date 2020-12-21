@@ -22,7 +22,6 @@ import org.json.simple.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import kb.clean.ModifyKB;
 import kb.configs.ConfigsLoader;
 import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;

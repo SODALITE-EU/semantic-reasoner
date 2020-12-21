@@ -1,6 +1,5 @@
 package restapi;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 import javax.ws.rs.GET;
@@ -9,7 +8,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.json.simple.JSONObject;

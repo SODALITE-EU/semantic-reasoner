@@ -17,12 +17,15 @@ import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SodaliteRepository {
-
+	private static final Logger LOG = Logger.getLogger(SodaliteRepository.class.getName());
 	private RepositoryManager _manager;
 
 	public SodaliteRepository(String serverURL, String username, String password) {
@@ -77,7 +80,7 @@ public class SodaliteRepository {
 	}
 
 	public void shutDown(String CONTEXT) {
-		System.out.println("closing GraphDb manager [" + CONTEXT + "]");
+		LOG.log(Level.INFO, "closing GraphDb manager [ {0}]\n", CONTEXT);
 		if (_manager != null) {
 			try {
 				_manager.shutDown();
