@@ -51,7 +51,7 @@ public class PropertyService extends AbstractService {
 					required = true,
 					defaultValue = "false") @QueryParam("template") boolean template)
 		throws IOException {
-
+		
 		KBApi api = new KBApi();
 
 		// need later a parameter here from the IDE to determine if we are talking about

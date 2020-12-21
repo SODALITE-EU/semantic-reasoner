@@ -3,7 +3,7 @@ package httpclient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-
+import java.util.logging.Logger;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +33,8 @@ import kb.repository.KB;
 
 public final class HttpClientRequest {
 	
+	private static final Logger LOG = Logger.getLogger(HttpClientRequest.class.getName());
+	
 	static ConfigsLoader configInstance = ConfigsLoader.getInstance();
 	static {
 		configInstance.loadProperties();
@@ -51,7 +53,6 @@ public final class HttpClientRequest {
 	
 			
 	public static String BUG_PREDICTOR_SERVICE = "bug-predictor-api/v0.1/bugs/tosca/jsonv2";
-	public static String TOKEN_SERVICE = "auth/realms/SODALITE/protocol/openid-connect/token";
 	public static String INTROSPECT_SERVICE = "auth/realms/SODALITE/protocol/openid-connect/token/introspect";
 	
 
@@ -78,7 +79,7 @@ public final class HttpClientRequest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		if (!username.isEmpty() && !password.isEmpty()) {
-			System.out.println("auth basic");
+			LOG.info("auth basic");
 			headers.setBasicAuth(username, password);
 		}
 		
@@ -97,32 +98,15 @@ public final class HttpClientRequest {
 		return response.getBody();
 	}
 	
-	//NOT USED IN REASONER - probably should be removed - commented out because of sonarcloud security spot
-	public static void getKeycloakToKen() throws URISyntaxException {
-		
-		/*String url = keycloak + TOKEN_SERVICE;
-		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-
-		map.add("grant_type", "password");
-		map.add("username", "zoe");
-		map.add("password", "qwerty");
-		map.add("client_id", keycloakClientId);
-		map.add("client_secret", keycloakClientSecret);
-			
-		String result = sendFormURLEncodedMessage(new URI(url), HttpMethod.POST, map, String.class, new KeycloakCustomErrorHandler(), "", "");
-		JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
-		System.out.println(jsonObject.get("access_token").getAsString());*/
-	}
-	
 	public static void validateToKen(String token) throws URISyntaxException, MyRestTemplateException {
-		System.out.println("validateToKen:");
+		LOG.info("validateToKen:");
 		String url = keycloak + INTROSPECT_SERVICE;
 		
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 
 		map.add("token", token);
 		
-		String result = sendFormURLEncodedMessage(new URI(url), HttpMethod.POST, map, String.class,new KeycloakCustomErrorHandler(), keycloakClientId, keycloakClientSecret);
+		String result = sendFormURLEncodedMessage(new URI(url), HttpMethod.POST, map, String.class, new KeycloakCustomErrorHandler(), keycloakClientId, keycloakClientSecret);
 		
 		JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
 		
@@ -130,22 +114,21 @@ public final class HttpClientRequest {
 		
 		if(!active) {
 			HttpRequestErrorModel e = new HttpRequestErrorModel(LocalDateTime.now(), DownstreamApi.KEYCLOAK_API, HttpStatus.UNAUTHORIZED, 401, "", "Access Token not active");
-			 throw new MyRestTemplateException(e);
+			throw new MyRestTemplateException(e);
 		}
-			
 		
 	}
 	
 	public static void getWarnings(JSONObject response, String aadmId) throws URISyntaxException, ParseException, MyRestTemplateException {
-		System.out.println("getWarnings:");
+		LOG.info("getWarnings:");
 		String url = bugPredictor + BUG_PREDICTOR_SERVICE;
 		
 		String input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"aadmid\":\""+ aadmId + "\"}";
-		System.out.println("input = " + input);
+		LOG.info("input = " + input);
 		
 		String result = null;
 		result = sendJSONMessage(new URI(url), HttpMethod.POST, input, String.class, new BugCustomErrorHandler());
-		System.out.println(result.toString());
+		LOG.info(result.toString());
 		JSONParser parser = new JSONParser();
 		JSONArray warningsJson = (JSONArray)((JSONObject) parser.parse(result)).get("warnings");
 		if (!warningsJson.isEmpty())
@@ -153,11 +136,9 @@ public final class HttpClientRequest {
 	}
 	
 	
-	public static void main(String[] args) throws ParseException, MyRestTemplateException, URISyntaxException  {
-		//HttpClientRequest.getKeycloakToKen();
-			
-		//JSONObject response = new JSONObject();
-		//HttpClientRequest.getWarnings(response, "ddd");
+	public static void main(String[] args) throws ParseException, MyRestTemplateException, URISyntaxException  {			
+		JSONObject response = new JSONObject();
+		HttpClientRequest.getWarnings(response, "ddd");
 			
 		HttpClientRequest.validateToKen("eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIwLV82aEVJRFdBajNvTnYtZE5Ud05VblJlcmt3ZmR3UExlUnM1ZTBsVDJrIn0.eyJleHAiOjE2MDgwNTU0NzYsImlhdCI6MTYwODA1NTE3NiwianRpIjoiYzlhNmNhNTEtZTg5NC00NTU5LTljNzEtMjM4NWM1YmNlZWJlIiwiaXNzIjoiaHR0cDovLzE5Mi4xNjguMi4xNzk6ODA4MC9hdXRoL3JlYWxtcy9TT0RBTElURSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJkZGYzODE1My1lNmQ3LTRjYzQtOTcxYi1hY2M2ZThkODE1M2EiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzb2RhbGl0ZS1pZGUiLCJzZXNzaW9uX3N0YXRlIjoiMmJhM2EyYWYtZWZlNy00OGI5LTgxMjAtNmEzMzE4OTBkOTBiIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsic29kYWxpdGUtaWRlIjp7InJvbGVzIjpbImFhZG1fciIsImNsaW5pY2FsX2FhZG1fciIsInNub3dfYWFkbV9yIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlpvZSBWYXNpbGVpb3UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ6b2UiLCJnaXZlbl9uYW1lIjoiWm9lIiwiZmFtaWx5X25hbWUiOiJWYXNpbGVpb3UiLCJlbWFpbCI6InpvZXZhczFAZ21haWwuY29tIn0.p8S89U9rOWdSpexCb4f-3FnptyNyfpfJHnJ3NSxw5J1H_1yr3yR1EJ8Xlp918X9Jq5pqHEdY-Ernw8fwWX90-J6BGuRchFULl_SZ-ofdhpnFAeqRNlD97N8-kuRygit3YrRoWnINJSf99UPaOVsZePzxRtFqd3AyvPc59bY6kPYe9vWYBAbZz79kZu_unjPpgzeNWD_1k46k5Jy2yILwDrEUC8UTeT4g0v2WRYeV0R3IF6qYtfv4F70wzxLCry0lUQIwKIfWEfz8BUeX7L7sC7Zu4sPSnQKlzT8spGfHfs9osCJPUSZKFV45X3Fg1qFJt8SOqufwXWALTi86zlMRHw");
 

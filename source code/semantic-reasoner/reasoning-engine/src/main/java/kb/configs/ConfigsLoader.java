@@ -6,10 +6,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
+import java.util.logging.Logger;
 
 public class ConfigsLoader {
-
+	private static final Logger LOG = Logger.getLogger(ConfigsLoader.class.getName());
+	
 	private static ConfigsLoader configLoader;
 	String environment;
 	String graphdb;
@@ -25,7 +26,7 @@ public class ConfigsLoader {
 	String keycloakClientSecret;
 	
 	//envs for authentication
-	public static final List AUTHENVS = Collections.unmodifiableList(
+	public static final List<String> AUTHENVS = Collections.unmodifiableList(
 		    Arrays.asList(new String[] {"qa", "docker"}));
 	
 	
@@ -47,7 +48,7 @@ public class ConfigsLoader {
 		Properties properties = new Properties();
 	
 		environment =  System.getenv("environment");
-		System.out.println("environment = " + environment);
+		LOG.info("environment = " + environment);
 
 		if (environment == null) {
 			environment = "dev";
@@ -59,7 +60,7 @@ public class ConfigsLoader {
 				properties.load(is);
 			} catch (IOException e) {
 
-				System.out.println("Property file not found");
+				LOG.warning("Property file not found");
 				e.printStackTrace();
 			}
 
@@ -87,7 +88,7 @@ public class ConfigsLoader {
 			keycloakClientId = System.getenv("keycloakClientId");
 			keycloakClientSecret = System.getenv("keycloakClientSecret");			
 		}
-		System.out.println(String.format("graphdb = %s, bugpredictorServer = %s, ansiblePath = %s, reasonerServer = %s, keycloak = %s, keycloakClientId = %s", graphdb, bugPredictorServer, ansiblePath, reasonerServer, keycloak, keycloakClientId));
+		LOG.info(String.format("graphdb = %s, bugpredictorServer = %s, ansiblePath = %s, reasonerServer = %s, keycloak = %s, keycloakClientId = %s", graphdb, bugPredictorServer, ansiblePath, reasonerServer, keycloak, keycloakClientId));
 	}
 	
 	public String getEnvironment() {

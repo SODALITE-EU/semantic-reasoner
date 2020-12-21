@@ -29,7 +29,7 @@ import restapi.AbstractService;
 */
 @Path("/models")
 @Api()
-public class GetModels extends AbstractService {
+public class GetModelsService extends AbstractService {
 	/**
 	  * Getting all the AADMs or RMs in KB 
 	  * @param type  The type of the model e.g. AADM or RM

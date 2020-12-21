@@ -120,11 +120,7 @@ public class ModifyKB {
 			
 			}
 		}
-			
-			
-		//displayModel(model);
-		
-		//remove Node
+					
 		kb.connection.remove(model);
 		
 		deleteEmptyModels(models);

@@ -21,6 +21,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import httpclient.HttpClientRequest;
+import httpclient.dto.HttpRequestErrorModel;
+import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -91,10 +94,9 @@ public class OptimizationService extends AbstractService {
 			aadmUri = m.start();
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			/*if(!HttpClientRequest.getWarnings(response, aadmid)) {
-				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getTemplateNames()));
-				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
-			}*/
+			
+			HttpClientRequest.getWarnings(response, aadmid);
+			
 			getOptimizations(response, aadmid);
 		} catch (MappingException e) {
 			e.printStackTrace();
@@ -108,6 +110,14 @@ public class OptimizationService extends AbstractService {
 			JSONObject errors = new JSONObject();
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
+		} catch (MyRestTemplateException e) {
+			if (aadmUri != null)
+				new ModifyKB(kb).deleteModel(aadmUri.toString());
+			
+			HttpRequestErrorModel erm = e.error_model;
+			System.out.println(String.format("rawStatus=%s, api=%s, statusCode=%s, error=%s",erm.rawStatus, erm.api, erm.statusCode, erm.error));
+			
+		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

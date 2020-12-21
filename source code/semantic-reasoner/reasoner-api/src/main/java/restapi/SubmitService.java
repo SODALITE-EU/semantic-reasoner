@@ -36,7 +36,7 @@ import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
-import restapi.utils.SharedServiceUtil;
+import restapi.utils.SharedServiceUtils;
 
 
 /** A service that submits the abstract application deployment model to the Knowledge Base.
@@ -88,7 +88,7 @@ public class SubmitService extends AbstractService {
 		String env = configInstance.getEnvironment();
 		
 		if(ConfigsLoader.AUTHENVS.contains(env)) {	
-			HttpRequestErrorModel erm = SharedServiceUtil.validateToKen(toKen);
+			HttpRequestErrorModel erm = SharedServiceUtils.validateToKen(toKen);
 			if (erm != null)
 				return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		}

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
@@ -163,7 +164,7 @@ public class DSLMappingService {
 				userId = _userId.get().getLabel();
 					
 			ws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
-			LOG.info("namespace = " +  ws);
+			LOG.log(Level.INFO, "namespace = {0}", ws);
 			aadmBuilder.setNamespace("ws", ws);
 
 			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(ws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
@@ -222,7 +223,7 @@ public class DSLMappingService {
 			else
 				templateType = _templateType.get().getLabel();
 			
-			LOG.info(String.format("Name: %s, type: %s", templateName, templateType));
+			LOG.log(Level.INFO, "Name: {0}, type: {1}",  new Object[] {templateName, templateType});
 			
 			NamedResource n = GetResources.setNamedResource(namespacews, templateType);
 			//this.namespaceOfType = n.getNamespace();
