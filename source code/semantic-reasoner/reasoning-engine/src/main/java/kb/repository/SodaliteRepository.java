@@ -35,8 +35,7 @@ public class SodaliteRepository {
 			((RemoteRepositoryManager)_manager).setUsernameAndPassword(username, password);
 			_manager.init();
 		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, e.getMessage(), e);
 		}
 
 	}
@@ -52,7 +51,7 @@ public class SodaliteRepository {
 			try {
 				rdfParser.parse(config, RepositoryConfigSchema.NAMESPACE);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.log(Level.SEVERE, e.getMessage(), e);
 			}
 			try {
 				config.close();
