@@ -186,7 +186,6 @@ public class DSLMappingService {
 			
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasName"), name);
 			
-			break;
 		}
 
 		if (aadmKB == null) {
@@ -714,19 +713,13 @@ public class DSLMappingService {
 		Optional<Literal> _triggerName = Models
 				.objectLiteral(aadmModel.filter(trigger, factory.createIRI(KB.EXCHANGE + "name"), null));
 		
-		String triggerName = null;
-		if (!_triggerName.isPresent())
-			mappingModels.add(new MappingValidationModel(currentTemplate, trigger.getLocalName(), "No 'name' defined for interface"));
-		else 
-			triggerName = _triggerName.get().getLabel();
+		String triggerName = _triggerName.get().getLabel();
 		
 		IRI triggerProperty = null;
-		if (triggerName != null) {
-			triggerProperty = GetResources.getKBProperty(triggerName, this.namespacesOfType, kb);
-			if (triggerProperty == null || triggerProperty.toString().equals(namespace + triggerName)) {
+		triggerProperty = GetResources.getKBProperty(triggerName, this.namespacesOfType, kb);
+		if (triggerProperty == null || triggerProperty.toString().equals(namespace + triggerName)) {
 				triggerProperty = factory.createIRI(namespace + triggerName);
 				aadmBuilder.add(triggerProperty, RDF.TYPE, "rdf:Property");
-			}
 		}
 		
 		Optional<Resource> _type  = Models.getPropertyResource(aadmModel, trigger,
@@ -761,7 +754,7 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			if (triggerName != null && (triggerName.equals("node"))) {
+			if (triggerName.equals("node")) {
 				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
 				IRI kbNode = getKBTemplate(n);
 				if (kbNode == null) {
@@ -774,7 +767,7 @@ public class DSLMappingService {
 				}
 				if(kbNode != null)
 					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-			} else if (triggerName!=null && (triggerName.equals("capability") || triggerName.equals("requirement"))) {
+			} else if (triggerName.equals("capability") || triggerName.equals("requirement")) {
 				IRI req_cap = GetResources.getReqCapFromEventFilter(kb, value.getLabel());
 				if (req_cap != null) {
 					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), req_cap);

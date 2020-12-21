@@ -91,9 +91,5 @@ public class VerifySingularity {
 		}
 		
 	}
-	
-	public static void main(String[] args) {
-
-	}
 
 }

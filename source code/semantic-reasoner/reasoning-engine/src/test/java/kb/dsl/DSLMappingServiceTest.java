@@ -32,6 +32,7 @@ import kb.validation.exceptions.models.ValidationModel;
 class DSLMappingServiceTest {
 	
 	private static final Logger LOG = Logger.getLogger(DSLMappingServiceTest.class.getName());
+	private static final String SEMANTIC_REASONER_TEST = "SEMANTIC_REASONER_TEST";
 	
 	private static SodaliteRepository repositoryManager;
 	private static Repository repository;
@@ -46,9 +47,9 @@ class DSLMappingServiceTest {
 	 static void loadRepository() {
 		LOG.info("loadRepository");
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
-		kb = new KB(repositoryManager, "SEMANTIC_REASONER_TEST");
+		kb = new KB(repositoryManager, SEMANTIC_REASONER_TEST);
 
-		repository = repositoryManager.getRepository("SEMANTIC_REASONER_TEST");
+		repository = repositoryManager.getRepository(SEMANTIC_REASONER_TEST);
 		
 		RepositoryConnection repositoryConnection = repository.getConnection();
 		try {
@@ -131,7 +132,7 @@ class DSLMappingServiceTest {
 	
 	static void removeRepository() {
 		repository.shutDown();
-		repositoryManager.removeRepository("SEMANTIC_REASONER_TEST");
+		repositoryManager.removeRepository(SEMANTIC_REASONER_TEST);
 		repositoryManager.shutDown("TEST");
 	}
 	

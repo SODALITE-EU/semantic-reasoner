@@ -2,6 +2,7 @@ package kb.dsl.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -19,7 +20,8 @@ public class GetResources {
 	private static final Logger LOG = Logger.getLogger(GetResources.class.getName());
 
 	public static IRI getKBNodeType(NamedResource n, String type, KB kb) {
-		LOG.info("getKBNodeType label = " + n.getResource() + ", type = " + type);
+		LOG.log(Level.INFO, "getKBNodeType label = {0}, type = {1}\n", 
+					new Object[] {n.getResource(), type});
 		String namespace = n.getNamespace();
 		String resource = n.getResource();
 		
@@ -58,7 +60,8 @@ public class GetResources {
 	}
 	
 	public static IRI getKBProperty(String label, List<String> namespaces, KB kb) {
-		LOG.info("getKBProperty label = " + label + ", namespaces = " + namespaces);
+		LOG.log(Level.INFO, "getKBProperty label = {0}, namespaces = {1}\n", 
+				new Object[] {label, namespaces});
 		
 		String sparql = "select distinct ?x \r\n" +
 						"FROM <http://www.ontotext.com/explicit>\r\n" +
@@ -124,7 +127,7 @@ public class GetResources {
 	 * the List of all the inherited namespaces is returned e.g. [docker, vehicleiot]
 	 */
 	public static List<String> getInheritedNamespacesFromType(KB kb, String type) {
-		LOG.info("getInheritedNamespacesFromType type =" + type);
+		LOG.log(Level.INFO, "getInheritedNamespacesFromType type  = {0}\n", type);
 		List<String> namespacesOfType = new ArrayList<String>();
 		String query = KB.PREFIXES +
 						" select ?g { \r\n" + 
@@ -169,7 +172,8 @@ public class GetResources {
 		
 		String resource_iri = MyUtils.getFullResourceIRI(resource, kb);
 		
-		LOG.info("req_cap = " + req_cap + ", resource = " + resource + ", resource_iri = " + resource_iri);
+		LOG.log(Level.INFO, "req_cap = {0}, resource = {1}, resource_iri = {2}\n", 
+				new Object[] {req_cap, resource, resource_iri});
 		
 		String sparql = "select ?requirement \r\n" + 
 				"where {\r\n" + 

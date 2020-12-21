@@ -146,9 +146,7 @@ public class DSLRMMappingService {
 				resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasDSL"), rmDSL);
 			}
 			
-			resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasName"), name);
-			
-			break;
+			resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasName"), name);			
 		}
 
 		if (rmKB == null) {
@@ -688,21 +686,21 @@ public class DSLRMMappingService {
 				}
 				if(kbNode != null)
 					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-			} else {
+			} else if (triggerName!=null && (triggerName.equals("capability") || triggerName.equals("requirement"))) {
+			 IRI req_cap = GetResources.getReqCapFromEventFilter(kb, value.getLabel());
+				if (req_cap != null) {
+					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), req_cap);
+				} else {
+					mappingModels.add(new MappingValidationModel(currentType, trigger.getLocalName(), "Cannot find " + value.getLabel() + " for trigger = " + triggerName));
+					LOG.log(Level.WARNING, "{0}: Cannot find: {1} for interface {2}", new Object[] {currentType, value.getLabel(), triggerName});
+				}
+		 	} else {
 				Object i = null;
 				if ((i = Ints.tryParse(value.toString())) != null)
 					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 				else 
 					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
 			}
-		} else if (triggerName!=null && (triggerName.equals("capability") || triggerName.equals("requirement"))) {
-			IRI req_cap = GetResources.getReqCapFromEventFilter(kb, value.getLabel());
-			if (req_cap != null) {
-				nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), req_cap);
-			} else {
-				mappingModels.add(new MappingValidationModel(currentType, trigger.getLocalName(), "Cannot find " + value.getLabel() + " for trigger = " + triggerName));
-				LOG.log(Level.WARNING, "{0}: Cannot find: {1} for interface {2}", new Object[] {currentType, value.getLabel(), triggerName});
-			}		
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, trigger,
 					factory.createIRI(KB.EXCHANGE + "hasParameter"));
