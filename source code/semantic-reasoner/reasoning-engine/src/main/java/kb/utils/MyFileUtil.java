@@ -50,7 +50,7 @@ public class MyFileUtil {
 			myWriter.close();
 			LOG.log(Level.INFO, "Successfully wrote to the file.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, e.getMessage(), e);
 		} finally {
 			if (myWriter != null)
 				myWriter.close();

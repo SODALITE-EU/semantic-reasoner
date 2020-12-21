@@ -139,7 +139,7 @@ public class SubmitService extends AbstractService {
 			LOG.log(Level.WARNING, "rawStatus={0}, api={1}, statusCode={2}, error={3}", new Object[] {erm.rawStatus, erm.api, erm.statusCode, erm.error});
 		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, e.getMessage(), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("There was an internal server error").build();
 		} finally {
 			m.shutDown();

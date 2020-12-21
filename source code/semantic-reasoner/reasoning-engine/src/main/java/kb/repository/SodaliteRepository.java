@@ -57,7 +57,7 @@ public class SodaliteRepository {
 			try {
 				config.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.log(Level.SEVERE, e.getMessage(), e);
 			}
 
 			Resource repositoryNode = Models.subject(
@@ -66,8 +66,7 @@ public class SodaliteRepository {
 			RepositoryConfig repositoryConfig = RepositoryConfig.create(graph, repositoryNode);
 			_manager.addRepositoryConfig(repositoryConfig);
 		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -84,8 +83,8 @@ public class SodaliteRepository {
 		if (_manager != null) {
 			try {
 				_manager.shutDown();
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				LOG.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 	}

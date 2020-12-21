@@ -62,7 +62,7 @@ public class ConfigsLoader {
 			} catch (IOException e) {
 
 				LOG.warning("Property file not found");
-				e.printStackTrace();
+				LOG.log(Level.SEVERE, e.getMessage(), e);
 			}
 
 			// Read properties
@@ -74,8 +74,7 @@ public class ConfigsLoader {
 			//omit for developement purposes
 			keycloak = properties.getProperty("keycloak");
 			keycloakClientId = properties.getProperty("keycloakClientId");
-			keycloakClientSecret = properties.getProperty("keycloakClientSecret");	
-			
+			keycloakClientSecret = properties.getProperty("keycloakClientSecret");
 		} else if (environment.equals("docker")) {
 			graphdb = System.getenv("graphdb");
 			bugPredictorServer = System.getenv("bugPredictorServer");

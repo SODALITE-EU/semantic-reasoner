@@ -122,7 +122,7 @@ public class OptimizationService extends AbstractService {
 			
 		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, e.getMessage(), e);
 		} finally {
 			m.shutDown();
 		}

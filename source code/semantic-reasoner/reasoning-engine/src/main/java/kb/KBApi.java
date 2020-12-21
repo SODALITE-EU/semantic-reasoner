@@ -67,6 +67,10 @@ public class KBApi {
 	public KBApi() {
 		kb = new KB(configInstance.getGraphdb(), "TOSCA");
 	}
+	
+	public KBApi(KB kb) {
+		this.kb = kb;
+	}
 
 	public void shutDown() {
 		kb.shutDown();
@@ -751,7 +755,7 @@ public class KBApi {
 							try {
 								fileUrl = MyFileUtil.uploadFile(content);
 							} catch (IOException e) {
-								e.printStackTrace();
+								LOG.log(Level.SEVERE, e.getMessage(), e);
 							}
 						
 							Value fileUrlValue = null;
