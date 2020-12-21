@@ -27,13 +27,13 @@ public class HttpRequestErrorModel {
 	}
 	
 	public JSONObject toJson() {		
-		JSONObject error = new JSONObject();
+		JSONObject errorObj = new JSONObject();
 		
-		error.put("timestamp", timestamp.toString());
-		error.put("api", api.toString());
-		error.put("statusCode", statusCode.toString());
-		error.put("description", description);
+		errorObj.put("timestamp", timestamp.toString());
+		errorObj.put("api", api.toString());
+		errorObj.put("statusCode", statusCode.toString());
+		errorObj.put("description", description);
 		
-		return error;
+		return errorObj;
 	}
 }

@@ -3,6 +3,7 @@ package httpclient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.http.HttpEntity;
@@ -124,7 +125,7 @@ public final class HttpClientRequest {
 		String url = bugPredictor + BUG_PREDICTOR_SERVICE;
 		
 		String input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"aadmid\":\""+ aadmId + "\"}";
-		LOG.info("input = " + input);
+		LOG.log(Level.INFO, "input = {0}", input);
 		
 		String result = null;
 		result = sendJSONMessage(new URI(url), HttpMethod.POST, input, String.class, new BugCustomErrorHandler());

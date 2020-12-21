@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConfigsLoader {
@@ -48,7 +49,7 @@ public class ConfigsLoader {
 		Properties properties = new Properties();
 	
 		environment =  System.getenv("environment");
-		LOG.info("environment = " + environment);
+		LOG.log(Level.INFO, "environment = {0}", environment);
 
 		if (environment == null) {
 			environment = "dev";
@@ -88,7 +89,7 @@ public class ConfigsLoader {
 			keycloakClientId = System.getenv("keycloakClientId");
 			keycloakClientSecret = System.getenv("keycloakClientSecret");			
 		}
-		LOG.info(String.format("graphdb = %s, bugpredictorServer = %s, ansiblePath = %s, reasonerServer = %s, keycloak = %s, keycloakClientId = %s", graphdb, bugPredictorServer, ansiblePath, reasonerServer, keycloak, keycloakClientId));
+		LOG.log(Level.INFO, "graphdb = {0}, bugpredictorServer = {1}, ansiblePath = {2}, reasonerServer = {3}, keycloak = {4}, keycloakClientId = {5}", new Object[] {graphdb, bugPredictorServer, ansiblePath, reasonerServer, keycloak, keycloakClientId});
 	}
 	
 	public String getEnvironment() {

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -53,7 +54,7 @@ public class ModifyKB {
 	}
 
 	public void deleteNode(IRI node) {
-		LOG.info("deleteNode = " + node);
+		LOG.log(Level.INFO, "deleteNode {0}", node);
 		GraphQueryResult gresultM = QueryUtil.evaluateConstructQuery(kb.getConnection(), queryModel,
 				new SimpleBinding("s", node));
 		
@@ -165,7 +166,7 @@ public class ModifyKB {
 			GraphQueryResult gresultM = QueryUtil.evaluateConstructQuery(kb.getConnection(), queryModel, new SimpleBinding("r", m));
 		
 			if (!gresultM.hasNext()) {
-				LOG.info("delete empty models = " + models);
+				LOG.log(Level.INFO, "delete empty models = {0}", models);
 				GraphQueryResult gresult =  QueryUtil.evaluateConstructQuery(kb.getConnection(), query, new SimpleBinding("s", m));
 				
 				Model result = QueryResults.asModel(gresult);
@@ -180,8 +181,9 @@ public class ModifyKB {
 	
 	public void displayModel(Model model) {
 		for (Statement st : model) {
-			LOG.info(String.format("%-50s %-20s %-40s", MyUtils.getStringValue(st.getSubject()),
-			MyUtils.getStringValue(st.getPredicate()), st.getObject().toString()));
+			//%-50s %-20s %-40s
+			LOG.log(Level.INFO, "{0} {1} {2}", new Object[] {MyUtils.getStringValue(st.getSubject()),
+					MyUtils.getStringValue(st.getPredicate()), st.getObject().toString()});
 		}
 	}
 	
