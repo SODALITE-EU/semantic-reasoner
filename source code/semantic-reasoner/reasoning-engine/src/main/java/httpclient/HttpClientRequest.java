@@ -56,7 +56,14 @@ public class HttpClientRequest {
 	public static final String BUG_PREDICTOR_SERVICE = "bug-predictor-api/v0.1/bugs/tosca/jsonv2";
 	public static final String INTROSPECT_SERVICE = "auth/realms/SODALITE/protocol/openid-connect/token/introspect";
 	
-
+	public static void setKeyCloak(String urlbase) {
+		keycloak = urlbase;
+	}
+	
+	public static void setBugPredictor(String urlbase) {
+		bugPredictor = urlbase;
+	}
+	
 	public static <T> T sendJSONMessage(URI uri, HttpMethod method, String content, Class<T> returnType, ResponseErrorHandler errorHandler) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
