@@ -32,7 +32,7 @@ import httpclient.exceptions.MyRestTemplateException;
 import kb.configs.ConfigsLoader;
 import kb.repository.KB;
 
-public final class HttpClientRequest {
+public class HttpClientRequest {
 	
 	private static final Logger LOG = Logger.getLogger(HttpClientRequest.class.getName());
 	
