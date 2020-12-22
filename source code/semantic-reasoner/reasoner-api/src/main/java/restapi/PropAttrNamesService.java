@@ -3,6 +3,8 @@ package restapi;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,6 +30,7 @@ import kb.KBApi;
 @Path("/prop-attr-names")
 @Api()
 public class PropAttrNamesService extends AbstractService {
+	private static final Logger LOG = Logger.getLogger(PropAttrNamesService.class.getName());
 
 	/**
 	 * Getting the names of properties or attributes of a template.
@@ -53,7 +56,7 @@ public class PropAttrNamesService extends AbstractService {
 					defaultValue = "prop") @QueryParam("element") String element)
 		throws IOException {
 		
-		System.out.println("resource = " + resource + ", element = " + element);
+		LOG.log(Level.INFO, "resource={0}, element={1}", new Object[] {resource, element});
 		
 		KBApi api = new KBApi();
 		

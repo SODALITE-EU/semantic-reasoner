@@ -3,6 +3,8 @@ package restapi;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -21,20 +23,22 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import httpclient.HttpClientRequest;
+import httpclient.dto.HttpRequestErrorModel;
+import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.clean.ModifyKB;
+import kb.configs.ConfigsLoader;
 import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
 
 import kb.repository.KB;
-import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
-import restapi.utils.HttpClientRequest;
 
 
 /** A service that submits the abstract application deployment model to the Knowledge Base and
@@ -47,6 +51,7 @@ import restapi.utils.HttpClientRequest;
 @Path("/optimizations")
 @Api()
 public class OptimizationService extends AbstractService {
+	private static final Logger LOG = Logger.getLogger(OptimizationService.class.getName());
 	static ConfigsLoader configInstance;
 	static {
 		configInstance = ConfigsLoader.getInstance();
@@ -92,10 +97,9 @@ public class OptimizationService extends AbstractService {
 			aadmUri = m.start();
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			if(!HttpClientRequest.getWarnings(response, aadmid)) {
-				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getTemplateNames()));
-				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
-			}
+			
+			HttpClientRequest.getWarnings(response, aadmid);
+			
 			getOptimizations(response, aadmid);
 		} catch (MappingException e) {
 			e.printStackTrace();
@@ -109,8 +113,16 @@ public class OptimizationService extends AbstractService {
 			JSONObject errors = new JSONObject();
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
+		} catch (MyRestTemplateException e) {
+			if (aadmUri != null)
+				new ModifyKB(kb).deleteModel(aadmUri.toString());
+			
+			HttpRequestErrorModel erm = e.error_model;
+			LOG.log(Level.WARNING, "rawStatus={0}, api={1}, statusCode={2}, error={3}", new Object[] {erm.rawStatus, erm.api, erm.statusCode, erm.error});
+			
+		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, e.getMessage(), e);
 		} finally {
 			m.shutDown();
 		}

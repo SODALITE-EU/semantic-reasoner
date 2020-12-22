@@ -1,0 +1,13 @@
+{
+  "warnings": [
+    {
+      "type": "WeakSSHKeySize",
+      "info": {
+        "name": "test",
+        "context": "test",
+        "element_type": "test",
+        "description": "test"
+      }
+    }
+  ]
+}

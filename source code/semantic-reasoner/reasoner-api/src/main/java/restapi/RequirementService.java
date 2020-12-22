@@ -2,6 +2,7 @@ package restapi;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -27,7 +28,6 @@ import kb.dto.Requirement;
 @Path("/requirements")
 @Api()
 public class RequirementService extends AbstractService {
-
 	/**
 	 * Getting the requirements of a single TOSCA resource.
 	 * @param resource The resource name

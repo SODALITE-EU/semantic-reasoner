@@ -2,6 +2,8 @@ package restapi;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -27,7 +29,7 @@ import kb.dto.Property;
 @Path("/properties")
 @Api()
 public class PropertyService extends AbstractService {
-
+	private static final Logger LOG = Logger.getLogger(PropertyService.class.getName());
 	/**
 	 * Getting the properties of a single TOSCA resource.
 	 * @param resource The resource name
@@ -51,7 +53,7 @@ public class PropertyService extends AbstractService {
 					required = true,
 					defaultValue = "false") @QueryParam("template") boolean template)
 		throws IOException {
-
+		
 		KBApi api = new KBApi();
 
 		// need later a parameter here from the IDE to determine if we are talking about
@@ -73,6 +75,6 @@ public class PropertyService extends AbstractService {
 	public static void main(String[] args) throws IOException {
 		PropertyService s = new PropertyService();
 		Response property = s.getProperty("tosca.capabilities.Compute", true);
-		System.out.println(property);
+		LOG.log(Level.INFO, "property={0}", property);
 	}
 }

@@ -17,9 +17,9 @@ import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import kb.KBApi;
+import kb.configs.ConfigsLoader;
 import kb.dto.Capability;
 import kb.repository.KB;
-import kb.utils.ConfigsLoader;
 
 /** A service that returns all the namespaces in KB in JSON format
  * @author George Meditskos
@@ -45,7 +45,6 @@ public class NamespaceService extends AbstractService {
 			throws IOException {
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		List<Resource> cList = Iterations.asList(kb.connection.getContextIDs());
-		System.out.println("shutting down");
 		if (kb != null) {
 			kb.shutDown();
 		}

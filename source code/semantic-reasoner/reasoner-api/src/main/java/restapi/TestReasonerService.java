@@ -1,6 +1,6 @@
 package restapi;
 
-import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -8,14 +8,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
+import httpclient.HttpClientRequest;
+import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import kb.utils.ConfigsLoader;
-import restapi.utils.HttpClientRequest;
+import kb.configs.ConfigsLoader;
 
 /** A service that submits the abstract application deployment model to the Knowledge Base.
  * @author George Meditskos
@@ -31,7 +33,7 @@ public class TestReasonerService extends AbstractService {
 	@Produces("text/plain")
 	@ApiOperation(
 			value = "Returns the result of the communication between reasoner and its dependent components")
-	public Response testReasoner() {
+	public Response testReasoner() throws URISyntaxException, ParseException {  
 		//Test defect predictor		
 		ConfigsLoader configInstance = ConfigsLoader.getInstance();
 		configInstance.loadProperties();
@@ -41,18 +43,16 @@ public class TestReasonerService extends AbstractService {
 		}
 		
 		try {
-			String response = HttpClientRequest.bugPredictorApi("123");
+			
+			JSONObject response = new JSONObject();
+			HttpClientRequest.getWarnings(response, "AADM_ID_88978979");
 			if (response.equals("Unreachable"))
 				return Response.status(Status.BAD_REQUEST).entity("Error connecting to defect predictor host: " + configInstance.getBugPredictorServer()).build();
-		} catch (ClientProtocolException e) {
+		} catch (MyRestTemplateException e) {
 			e.printStackTrace();
-			return Response.status(Status.BAD_REQUEST).entity("Error while trying to connect to defect-predictor").build();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return Response.status(Status.BAD_REQUEST).entity("Error while trying to connect to defect-predictor").build();
+			return Response.status(Status.BAD_REQUEST).entity("Error while trying to connect to defect-predictor:\n" + e.error_model.toJson().toString()).build();
 		}
-		
-		//test graphdb
+
 		String message = null;
 		String graphdb = configInstance.getGraphdb();
 		if (graphdb == null) {

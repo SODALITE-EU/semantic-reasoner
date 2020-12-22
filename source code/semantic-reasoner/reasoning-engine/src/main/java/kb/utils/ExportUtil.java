@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -17,6 +19,7 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
  * Utility methods for exporting data from a GraphDB repository.
  */
 public class ExportUtil {
+	private static final Logger LOG = Logger.getLogger(ExportUtil.class.getName());
 	public enum ExportType {
 		EXPLICIT, IMPLICIT, ALL;
 	}
@@ -42,7 +45,7 @@ public class ExportUtil {
 			throw new RuntimeException("Unknown export format requested.");
 		}
 
-		System.out.println("Exporting " + type + " statements to " + filename + " (" + exportFormat.getName() + ")");
+		LOG.log(Level.INFO, "Exporting  {0} statements to {1} ({2})\n", new Object[] {type, filename, exportFormat.getName()});
 
 		Writer writer = new BufferedWriter(new FileWriter(filename), 256 * 1024);
 		RDFWriter rdfWriter = Rio.createWriter(exportFormat, writer);

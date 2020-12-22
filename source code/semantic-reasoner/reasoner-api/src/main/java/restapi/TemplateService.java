@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -30,7 +32,7 @@ import kb.dto.Node;
 @Path("/templates")
 @Api()
 public class TemplateService extends AbstractService {
-	
+	private static final Logger LOG = Logger.getLogger(TemplateService.class.getName());
 	/**
 	  * Getting all the templates in the KB that belong to global namespace and in the imports namespaces
 	  * @param imports The namespaces to be searched e.g. docker, snow
@@ -45,7 +47,7 @@ public class TemplateService extends AbstractService {
 			required = true,
 			defaultValue = "") @MatrixParam("imports") List<String> imports) throws IOException {
 		
-		 System.out.println("imports are " + Arrays.toString(imports.toArray()));
+		 LOG.log(Level.WARNING, "imports = {0}",  Arrays.toString(imports.toArray()));
 		
 		KBApi api = new KBApi();
 		Set<Node> nodes = api.getTemplates(imports);

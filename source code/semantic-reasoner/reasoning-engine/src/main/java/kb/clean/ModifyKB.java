@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -19,12 +21,13 @@ import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
+import kb.configs.ConfigsLoader;
 import kb.repository.KB;
-import kb.utils.ConfigsLoader;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 
 public class ModifyKB {
+	private static final Logger LOG = Logger.getLogger(ModifyKB.class.getName());
 		
 	public KB kb;
 	static ConfigsLoader configInstance = ConfigsLoader.getInstance();
@@ -51,7 +54,7 @@ public class ModifyKB {
 	}
 
 	public void deleteNode(IRI node) {
-		System.err.println("deleteNode = " + node);
+		LOG.log(Level.INFO, "deleteNode {0}", node);
 		GraphQueryResult gresultM = QueryUtil.evaluateConstructQuery(kb.getConnection(), queryModel,
 				new SimpleBinding("s", node));
 		
@@ -69,7 +72,6 @@ public class ModifyKB {
 
 		if (gresult.hasNext()) {
 			Model result = QueryResults.asModel(gresult);
-			//System.err.println(result);
 			gresult.close();
 			addModel(result);
 
@@ -82,7 +84,6 @@ public class ModifyKB {
 											new SimpleBinding("s", context));
 				
 			Model result2 = QueryResults.asModel(gresult2);
-			//System.err.println(result2);
 			addModel(result2);
 			
 			gresult2.close();
@@ -120,11 +121,7 @@ public class ModifyKB {
 			
 			}
 		}
-			
-			
-		//displayModel(model);
-		
-		//remove Node
+					
 		kb.connection.remove(model);
 		
 		deleteEmptyModels(models);
@@ -169,7 +166,7 @@ public class ModifyKB {
 			GraphQueryResult gresultM = QueryUtil.evaluateConstructQuery(kb.getConnection(), queryModel, new SimpleBinding("r", m));
 		
 			if (!gresultM.hasNext()) {
-				System.err.println("delete empty models = " + models);
+				LOG.log(Level.INFO, "delete empty models = {0}", models);
 				GraphQueryResult gresult =  QueryUtil.evaluateConstructQuery(kb.getConnection(), query, new SimpleBinding("s", m));
 				
 				Model result = QueryResults.asModel(gresult);
@@ -184,8 +181,9 @@ public class ModifyKB {
 	
 	public void displayModel(Model model) {
 		for (Statement st : model) {
-			System.err.println(String.format("%-50s %-20s %-40s", MyUtils.getStringValue(st.getSubject()),
-			MyUtils.getStringValue(st.getPredicate()), st.getObject().toString()));
+			//%-50s %-20s %-40s
+			LOG.log(Level.INFO, "{0} {1} {2}", new Object[] {MyUtils.getStringValue(st.getSubject()),
+					MyUtils.getStringValue(st.getPredicate()), st.getObject().toString()});
 		}
 	}
 	
@@ -209,7 +207,7 @@ public class ModifyKB {
 						"}";
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("m", kb.getFactory().createIRI(modelUri)));
 		
-		System.out.println(query);
+		LOG.info(query);
 		
 		Set<IRI> nodes = new HashSet<>();
 		while (result.hasNext()) {

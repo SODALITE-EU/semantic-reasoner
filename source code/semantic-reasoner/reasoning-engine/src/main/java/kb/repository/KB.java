@@ -1,6 +1,5 @@
 package kb.repository;
 
-import kb.utils.ConfigsLoader;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -16,11 +15,16 @@ import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.rio.*;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
+import kb.configs.ConfigsLoader;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KB {
-
+	private static final Logger LOG = Logger.getLogger(KB.class.getName());
+	
     public static String SERVER_URL = "http://localhost:7200";
     public static String ANSIBLE = "http://160.40.52.200:8084/Ansibles/";
     public static String REPOSITORY = "TOSCA";
@@ -165,9 +169,8 @@ public class KB {
                     KB.class.getResourceAsStream("/ontologies/core/optimizations.ttl");
             connection.add(input, "", RDFFormat.TURTLE);
         } catch (IOException e) {
-            e.printStackTrace();
+        	LOG.log(Level.SEVERE,e.getMessage(), e);
         }
-
 
         return false;
     }

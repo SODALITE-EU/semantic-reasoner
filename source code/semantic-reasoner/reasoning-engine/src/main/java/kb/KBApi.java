@@ -10,7 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.rdf4j.model.IRI;
@@ -22,11 +23,11 @@ import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import kb.clean.ModifyKB;
+import kb.configs.ConfigsLoader;
 import kb.dto.AADM;
 import kb.dto.Attribute;
 import kb.dto.Capability;
@@ -42,7 +43,6 @@ import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
 import kb.repository.KB;
 import kb.repository.KBConsts;
-import kb.utils.ConfigsLoader;
 import kb.utils.InferencesUtil;
 import kb.utils.MyFileUtil;
 import kb.utils.MyUtils;
@@ -55,6 +55,8 @@ import kb.validation.exceptions.models.optimization.OptimizationMismatchModel;
 import kb.validation.exceptions.models.optimization.OptimizationModel;
 
 public class KBApi {
+	
+	private static final Logger LOG = Logger.getLogger(KBApi.class.getName());
 
 	public KB kb;
 	static ConfigsLoader configInstance = ConfigsLoader.getInstance();
@@ -64,6 +66,10 @@ public class KBApi {
 	
 	public KBApi() {
 		kb = new KB(configInstance.getGraphdb(), "TOSCA");
+	}
+	
+	public KBApi(KB kb) {
+		this.kb = kb;
 	}
 
 	public void shutDown() {
@@ -75,7 +81,7 @@ public class KBApi {
 	}
 	
 	public Set<Attribute> getAttributes(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getAttributes: " + resource);
+		LOG.log(Level.INFO, "getAttributes: {0}", resource);
 		
 		Set<Attribute> attributes = new HashSet<>();
 		String sparql = MyUtils
@@ -83,7 +89,6 @@ public class KBApi {
 
 		String query = KB.PREFIXES + sparql;
 
-		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
 
@@ -109,7 +114,7 @@ public class KBApi {
 	}
 
 	public Set<Property> getProperties(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getProperties: " +  resource);
+		LOG.log(Level.INFO, "getProperties: {0}", resource);
 		
 		Set<Property> properties = new HashSet<>();
 		String sparql = MyUtils
@@ -141,7 +146,7 @@ public class KBApi {
 	}
 	
 	public Set<String> getPropAttrNames(String resource, String elem) throws IOException {
-		System.out.println("getPropAttrNames: " +  resource);
+		LOG.log(Level.INFO, "getPropAttrNames: {0}", resource);
 		
 		Set<String> names = new HashSet<>();
 		boolean is_property = elem.equals("prop");
@@ -166,7 +171,7 @@ public class KBApi {
 	}
 
 	public Set<Property> getInputs(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getInputs: " + resource);
+		LOG.log(Level.INFO, "getInputs: {0}", resource);
 		
 		Set<Property> inputs = new HashSet<>();
 		String sparql = MyUtils.fileToString("sparql/getInputs.sparql");
@@ -176,7 +181,6 @@ public class KBApi {
 				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
 		while (result.hasNext()) {
-			System.err.println("in");
 			BindingSet bindingSet = result.next();
 			IRI p1 = (IRI) bindingSet.getBinding("property").getValue();
 			IRI concept = (IRI) bindingSet.getBinding("concept").getValue();
@@ -198,7 +202,7 @@ public class KBApi {
 	}
 
 	public Set<Capability> getCapabilities(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getCapabilities: " + resource);
+		LOG.log(Level.INFO, "getCapabilities: {0}", resource);
 		
 		Set<Capability> capabilities = new HashSet<>();
 
@@ -206,7 +210,6 @@ public class KBApi {
 				.fileToString(!isTemplate ? "sparql/getCapabilities.sparql" : "sparql/getCapabilitiesTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
 
-		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
@@ -230,7 +233,7 @@ public class KBApi {
 	}
 
 	public Set<Requirement> getRequirements(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getRequirements: " + resource);
+		LOG.log(Level.INFO, "getRequirements: {0}", resource);
 		
 		Set<Requirement> requirements = new HashSet<>();
 
@@ -238,7 +241,6 @@ public class KBApi {
 				.fileToString(!isTemplate ? "sparql/getRequirements.sparql" : "sparql/getRequirementsTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
 
-		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
@@ -266,13 +268,15 @@ public class KBApi {
 	}
 
 	public Set<Node> getNodes(List<String> imports, String type) throws IOException {
+		LOG.log(Level.INFO, "getNodes: imports= {0}, type = {1}", new Object[] {imports, type});
+		
 		Set<Node> nodes = new HashSet<>();
 
 		//get types in global workspace
 		String sparql = type.equals("data") ? MyUtils.fileToString("sparql/getDataTypes.sparql") : MyUtils.fileToString("sparql/getTypes.sparql");
 		String query = KB.PREFIXES + sparql;
 
-		System.out.println(query);
+		LOG.info(query);
 		String root_type = KBConsts.TYPES.get(type);
 		TupleQueryResult result;
 		if (!type.equals("data"))
@@ -306,7 +310,7 @@ public class KBApi {
 			sparql2+="}\r\n";
 			String query2 = KB.PREFIXES + sparql2;
 		
-			System.out.println(query2);
+			LOG.info(query2);
 			TupleQueryResult result2 = QueryUtil.evaluateSelectQuery(kb.getConnection(), query2, new SimpleBinding("root_type", kb.getFactory().createIRI(KB.TOSCA + root_type)));
 			_setNodeTypes(result2, nodes);
 		}
@@ -335,14 +339,12 @@ public class KBApi {
 	}
 
 	public NodeFull getNode(String resource, boolean filterNormatives) throws IOException {
-		if(filterNormatives) {
-			if (resource.contains("/tosca."))
+		if(filterNormatives && resource.contains("/tosca."))
 				return null;
-		}
+		
 		String sparql = MyUtils.fileToString("sparql/getNode.sparql");
 		String query = KB.PREFIXES + sparql;
 
-		// System.out.println(resource);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("node", kb.getFactory().createIRI(resource)));
 
@@ -372,7 +374,7 @@ public class KBApi {
 	}
 
 	public Set<Interface> getInterfaces(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getInterfaces: " + resource);
+		LOG.log(Level.INFO, "getInterfaces = {0}", resource);
 		Set<Interface> interfaces = new HashSet<>();
 		
 		Set<IRI> nodes =  new HashSet<>();
@@ -383,7 +385,6 @@ public class KBApi {
 				.fileToString(!isTemplate ? "sparql/getInterfaces.sparql" : "sparql/getInterfacesTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
 		
-		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
@@ -425,7 +426,6 @@ public class KBApi {
 		String sparql = MyUtils.fileToString("sparql/getMostSpecificRequirementNode.sparql");
 		String query = KB.PREFIXES + sparql;
 
-		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding[] { new SimpleBinding("node", kb.getFactory().createIRI(ofNode)),
 						new SimpleBinding("requirementName", kb.getFactory().createLiteral(requirementName)) });
@@ -436,7 +436,7 @@ public class KBApi {
 		}
 		result.close();
 		
-		System.out.println("getMostSpecificRequirementNode nodeTypes = " + nodeTypes);
+		LOG.log(Level.INFO, "getMostSpecificRequirementNode nodeTypes = {0}", nodeTypes);
 		IRI nodeType = null;
 		if (!nodeTypes.isEmpty())
 			nodeType = InferencesUtil.getLowestSubclass(kb, nodeTypes);
@@ -446,7 +446,7 @@ public class KBApi {
 
 	//Get templates based on requirements/reqname/node requirements/reqname/capability of the template type
 	public Set<Node> getRequirementValidNodes(String requirement, String nodeType, List<String> imports) throws IOException {
-		System.out.println("getRequirementValidNodes: " + MyUtils.getFullResourceIRI(nodeType, kb));
+		LOG.log(Level.INFO, "getRequirementValidNodes = {0}", MyUtils.getFullResourceIRI(nodeType, kb));
 		
 		Set<Node> nodes = new HashSet<>();
 		
@@ -456,12 +456,12 @@ public class KBApi {
 		if (types.isEmpty()) {	
 			return nodes;
 		}
-		System.out.println("getRequirementValidNodeType: " + types);		
+		LOG.log(Level.INFO, "getRequirementValidNodeType: {0}", types);
 		
 		String sparqlg = MyUtils.fileToString("sparql/getGlobalRequirementValidNodes.sparql");
 		String queryg = KB.PREFIXES + sparqlg;
 		
-		System.out.println(queryg);
+		LOG.info(queryg);
 
 		for(NodeType nt: types) {
 			IRI node = kb.factory.createIRI(nt.getUri());
@@ -472,7 +472,7 @@ public class KBApi {
 			if(!imports.isEmpty()) {
 				String query = _getQueryTemplates(true, imports);
 				if (!query.isEmpty()) {		
-					System.out.println(query);
+					LOG.info(query);
 					TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 											new SimpleBinding("var", node));
 					_setNodes(result, nodes);
@@ -543,7 +543,7 @@ public class KBApi {
 	 * for also proposing local applicable templates of the aadm
 	 */
 	public Set<NodeType> getRequirementValidNodeType(String requirement, String nodeType, List<String> imports) throws IOException {
-		System.out.println("getRequirementValidNodeTypes: " + MyUtils.getFullResourceIRI(nodeType, kb));
+		LOG.log(Level.INFO, "getRequirementValidNodeTypes: {0}", MyUtils.getFullResourceIRI(nodeType, kb));
 		String _nodeType = MyUtils.getFullResourceIRI(nodeType, kb);
 		
 		Set<NodeType> nodeTypes = new HashSet<>();
@@ -553,7 +553,7 @@ public class KBApi {
 		_nodeTypes.add(node);
 
 		IRI req_cap = getRequirementCapability(requirement, _nodeType);
-		System.out.println("req_cap = " + req_cap);
+		LOG.log(Level.INFO, "req_cap: {0}", req_cap);
 		
 		Set<IRI> _capTypes = getValidSourceTypes(requirement, req_cap, kb.factory.createIRI(_nodeType), imports);
 		for (IRI c:_capTypes) {
@@ -575,12 +575,12 @@ public class KBApi {
 	
 	//Get requirements/requirementName/capability
 	public IRI getRequirementCapability(String requirementName, String ofNode) throws IOException {
-		System.out.println("getRequirementCapabilityType: requirementName = " + requirementName + ", ofNode = " + ofNode);
+		LOG.log(Level.INFO, "getRequirementCapabilityType: requirementName = {0}, ofNode = {1}", new Object[]{requirementName, ofNode});
 		IRI nodeType = null;
 		
 		String sparql = MyUtils.fileToString("sparql/getRequirementCapability.sparql");
 		String query = KB.PREFIXES + sparql;
-		System.out.println(query);
+		LOG.info(query);
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding[] { new SimpleBinding("node", kb.getFactory().createIRI(ofNode)),
@@ -605,7 +605,7 @@ public class KBApi {
 		Set<IRI> nodeTypes = new HashSet<>();
 		//<node, list_of_valid_source_types>, e.g. <DockerHost, [DockerizedComponent]>,<tosca.nodes.SoftwareComponent, tosca.nodes.Compute>
 		HashMap<IRI, Set<IRI>> vsTypes = new HashMap<IRI,Set<IRI>>();
-		System.out.println("getValidSourceTypes: requirementName = " + requirementName + ", cap_type = " + capType + "nodeType = " + nodeType +" imports = " + imports);
+		LOG.log(Level.INFO, "getValidSourceTypes: requirementName = {0}, capType = {1}, nodeType = {2}, imports = {3}", new Object[]{requirementName, capType, nodeType, imports});
 		
 		//Both global space and the named graphs, denoted in imports, are queried
 		String sparql = "select ?node ?v_s_type\r\n"
@@ -631,7 +631,7 @@ public class KBApi {
 				"}\r\n";
 		
 		String query = KB.PREFIXES + sparql;
-		System.out.println(query);
+		LOG.info(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 						new SimpleBinding[] { new SimpleBinding("cap_type", capType),
 								new SimpleBinding("requirementName", kb.getFactory().createLiteral(requirementName)) });
@@ -649,7 +649,7 @@ public class KBApi {
 		}
 		result.close();
 		
-		for (Map.Entry e : vsTypes.entrySet()) {
+		for (Map.Entry<IRI, Set<IRI>> e : vsTypes.entrySet()) {
 			 IRI node = (IRI) e.getKey();
 			 Set<IRI> vList = (Set<IRI>)e.getValue();
 			 if(InferencesUtil.checkSubclassList(kb, nodeType, vList))
@@ -665,7 +665,7 @@ public class KBApi {
 		String sparqlg = MyUtils.fileToString("sparql/getGlobalTemplates.sparql");
 		String queryg = KB.PREFIXES + sparqlg;
 		
-		System.out.println(queryg);
+		LOG.info(queryg);
 
 		//Global space queried
 		TupleQueryResult resultg = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryg);
@@ -675,7 +675,7 @@ public class KBApi {
 		if(!imports.isEmpty()) {
 			String query = _getQueryTemplates(false, imports);
 			if (!query.isEmpty()) {		
-				System.out.println(query);
+				LOG.info(query);
 				TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
 				_setNodes(result, nodes);
 			}
@@ -697,7 +697,7 @@ public class KBApi {
 	}
 
 	public Set<String> isSubClassOf(List<String> nodeTypes, String superNodeType) {
-		System.out.println("isSubClassOf: nodeType = " + nodeTypes.toString() + ", superNodeType = " + MyUtils.getFullResourceIRI(superNodeType, kb));
+		LOG.log(Level.INFO, "isSubClassOf: nodeType =: {0}, superNodeType: {1}", new Object[] {nodeTypes.toString(), MyUtils.getFullResourceIRI(superNodeType, kb)});
 		Set<String> _nodeTypes = new HashSet<>();
 		
 		for(String n: nodeTypes) {
@@ -755,7 +755,7 @@ public class KBApi {
 							try {
 								fileUrl = MyFileUtil.uploadFile(content);
 							} catch (IOException e) {
-								e.printStackTrace();
+								LOG.log(Level.SEVERE, e.getMessage(), e);
 							}
 						
 							Value fileUrlValue = null;
@@ -784,7 +784,7 @@ public class KBApi {
 				p = new Parameter(_parameter);
 				p.setClassifiedBy(_classifier);		
 				if (_value != null) {
-					System.err.println(_value);
+					LOG.log(Level.WARNING, "_value = {0}", _value);
 					p.setValue(_value, kb);
 				}
 				
@@ -823,7 +823,7 @@ public class KBApi {
 	}
 
 	public Set<IRI> getValidTargetTypes(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getValidTargetTypes: " + resource);
+		LOG.log(Level.INFO, "getValidTargetTypes: {0}", resource);
 		
 		Set<IRI> results = new HashSet<>();
 		String sparql = MyUtils.fileToString(
@@ -842,13 +842,12 @@ public class KBApi {
 	}
 
 	public Set<Operation> getOperations(String resource, boolean isTemplate) throws IOException {
-		System.out.println("getOperations: " + resource);
+		LOG.log(Level.INFO, "getOperations: {0}", resource);
 		Set<Operation> operations = new HashSet<>();
 		String sparql = MyUtils
 				.fileToString(!isTemplate ? "sparql/getOperations.sparql" : "sparql/getOperationsTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
 
-		// System.out.println(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
 
@@ -890,7 +889,7 @@ public class KBApi {
 	}
 	
 	public Set<ValidationModel> getOptimizationSuggestions(String aadmId) throws IOException, ValidationException {
-		System.out.println("getOptimizations aadmid = " + aadmId);
+		LOG.log(Level.INFO, "getOptimizations aadmId = {0}", aadmId);
 		Set<ValidationModel> templateOptimizations = new HashSet<>();
 		HashMap<IRI, Set<String>> resourceOptimizations = new HashMap<IRI, Set<String>>();
 		HashMap<IRI, String>  resourceOptimizationJson = new HashMap<IRI, String>();//templates -  optimization json pairs
@@ -931,13 +930,13 @@ public class KBApi {
 			
 			resourceOptimizationJson.put(r, optimization_json);
 			
-			System.out.println("Querying for resource =" + r.toString() + ", optimizations = " + optimization_json + ", capability = " + capability_iri.toString());
+			LOG.log(Level.INFO, "Querying for resource = {0}, optimizations = {1}, capability = {2}", new Object[] {r.toString(), optimization_json,  capability_iri.toString()});
 			JsonObject jsonObject = JsonParser.parseString(optimization_json).getAsJsonObject();
 			String app_type = jsonObject.getAsJsonObject("optimization").get("app_type").getAsString();
 			String ai_framework = null;
 			if	(app_type.equals("ai_training"))
 				ai_framework = jsonObject.getAsJsonObject("optimization").getAsJsonObject("app_type-" + app_type).getAsJsonObject("config").get("ai_framework").getAsString();
-			System.out.println("app_type= " + app_type + ", ai_framework=" + ai_framework);
+			LOG.log(Level.INFO, "app_type = {0} , ai_framework = {1}", new Object[] {app_type, ai_framework});
 			
 			//Check app type
 			if(!appTypes.containsKey(app_type)) {
@@ -965,7 +964,7 @@ public class KBApi {
 					Set<String> optimizations=null;
 					String capability_value = bindingSet.hasBinding(capability) ? MyUtils.getStringValue(bindingSet.getBinding(capability).getValue()) : null;
 					if (capability_value != null) {
-						System.out.println("Querying for capability = " + capability +", capability value = " + capability_value);
+						LOG.log(Level.INFO, "Querying for capability = {0}, capability value = {1}", new Object[] {capability, capability_value});
 						String opt_element = (ai_framework != null) ? ai_framework : app_type;
 						optimizations = _getOptimizationSuggestions(capability, capability_value, opt_element);
 						
@@ -983,9 +982,9 @@ public class KBApi {
 		}
 		result_r.close();
 		
-		System.out.println("\nOptimizations: ");
+		LOG.info("\nOptimizations: ");
 		resourceOptimizations.forEach((r,o)->{
-			System.out.println("Resource : " + r + " Optimizations : " + o);
+			LOG.log(Level.INFO, "Resource : {0}, Optimizations : {1}", new Object[] {r, o});
 			HashMap<String,String> targetValue = new HashMap <String,String>();
 			//Validation of the returned optimizations compared with the given optimization json in the aadm
 			for (String opt: o) {
@@ -1007,7 +1006,7 @@ public class KBApi {
 					if (!userOptValue.isEmpty()) {
 						
 						String user_opt_value = userOptValue.get(0).toString();
-						System.out.println("Resource = " + r.toString() + " has user optimization " + jsonelement + ":" + user_opt_value);
+						LOG.log(Level.INFO, "Resource = {0}, has user optimization  {1}:{2}", new Object[] {r.toString(), jsonelement, user_opt_value});
 						if (BooleanUtils.toBooleanObject(user_opt_value) != null) {
 							if (!userOptValue.contains(expectedValue)) {
 								targetJson.add(jsonelement, JsonParser.parseString(expectedValue).getAsJsonPrimitive());
@@ -1073,7 +1072,7 @@ public class KBApi {
 	
 	
 	public AADM getAADM(String aadmId) throws IOException {
-		System.out.println("AADM: " + aadmId);
+		LOG.log(Level.INFO, "AADM: {0}", aadmId);
 		String sparql = MyUtils.fileToString("sparql/getAADM.sparql");
 		String query = KB.PREFIXES + sparql;
 
@@ -1122,14 +1121,14 @@ public class KBApi {
 		if (aadm != null) {
 			aadm.build(this);
 		} else {
-			System.err.println("AADM is null");
+			LOG.warning("AADM is null");
 		}
 
 		return aadm;
 	}
 
 	public Set<SodaliteAbstractModel> getModels(String type, String namespace) throws IOException {
-		System.out.println(String.format("getModels for %s type, %s namespace", type, namespace));
+		LOG.log(Level.INFO, "getModels for {0} type, {1} namespace", new Object[] {type, namespace});
 		Set<SodaliteAbstractModel> models = new HashSet<>();
 		
 		String sparql = "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/> \r\n" +
@@ -1141,9 +1140,8 @@ public class KBApi {
 		
 		String query = sparql;
 		
-		System.out.println(query);
+		LOG.info(query);
 
-		
 		TupleQueryResult result = null;
 		if 	("".equals(namespace) )
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
@@ -1172,7 +1170,7 @@ public class KBApi {
 	}
 	
 	public SodaliteAbstractModel getModelForResource(String resource, String namespace) throws IOException {
-		System.out.println(String.format("getModels for %s resource, %s namespace", resource, namespace));
+		LOG.log(Level.INFO, "getModelForResource for {0} resource, {1} namespace", new Object[] {resource, namespace});
 		SodaliteAbstractModel a = null;
 		
 		String sparql = "";
@@ -1181,13 +1179,13 @@ public class KBApi {
 		if ("".equals(namespace)) {
 			sparql += MyUtils.fileToString("sparql/models/getModelFromGlobalResource.sparql");
 			query = KB.SODA_DUL_PREFIXES + sparql;
-			System.out.println(query);
+			LOG.info(query);
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 														new SimpleBinding("name", kb.getFactory().createLiteral(resource)));
 		} else {
 			sparql += MyUtils.fileToString("sparql/models/getModelFromNamedResource.sparql");
 			query = KB.SODA_DUL_PREFIXES + sparql;
-			System.out.println(query);
+			LOG.info(query);
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("g", kb.getFactory().createIRI(namespace)),
 					new SimpleBinding("name", kb.getFactory().createLiteral(resource))});
 			
@@ -1212,12 +1210,12 @@ public class KBApi {
 	}
 	
 	public SodaliteAbstractModel getModelFromURI (String uri) throws IOException {
-		System.out.println(String.format("getModelFromURI for %s uri", uri));
+		LOG.log(Level.INFO, "getModelFromURI for {0} uri", uri);
 		SodaliteAbstractModel a = null;
 		
 		String sparql = MyUtils.fileToString("sparql/models/getModel.sparql");
 		String query = KB.SODA_DUL_PREFIXES + sparql;
-		System.out.println(query);
+		LOG.info(query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, 
 										new SimpleBinding("m", kb.getFactory().createIRI(uri)));
 		
@@ -1241,7 +1239,7 @@ public class KBApi {
 	}
 	
 	public boolean deleteModel (String uri) {
-		System.out.println(String.format("deleteModel, uri = %s ",  uri));
+		LOG.log(Level.INFO, "deleteModel, uri = {0}", uri);
 
 		boolean res = new ModifyKB(kb).deleteModel(uri);
 		return res;
@@ -1299,7 +1297,7 @@ public class KBApi {
 
 		AADM aadm = a.getAADM(
 				"https://www.sodalite.eu/ontologies/snow-blueprint-containerized-OS/AbstractApplicationDeployment_1");
-		System.err.println(aadm);
+		LOG.log(Level.INFO, "AADM = {0}", aadm);
 
 	}
 

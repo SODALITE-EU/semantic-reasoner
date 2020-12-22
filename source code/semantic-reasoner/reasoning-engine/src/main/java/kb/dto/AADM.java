@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.model.IRI;
 
@@ -14,8 +16,10 @@ import com.google.gson.JsonObject;
 
 import kb.KBApi;
 import kb.utils.MyUtils;
+import kb.utils.QueryUtil;
 
 public class AADM extends Resource {
+	private static final Logger LOG = Logger.getLogger(AADM.class.getName());
 
 	IRI user;
 	ZonedDateTime createdAt;
@@ -99,11 +103,11 @@ public class AADM extends Resource {
 
 //			System.out.println("---->" + nodeFull.relevantUris);
 			list.addAll(getNodes(nodeFull.relevantUris));
-			System.out.println("list: " + list.size());
-			System.out.println("bag: " + bag.size());
+			LOG.log(Level.INFO, "list: {0}", list.size());
+			LOG.log(Level.INFO, "bag: {0}", bag.size());
 		}
 
-		System.out.println("Bag:" + MyUtils.getGson(true).toJson(bag));
+		LOG.log(Level.INFO, "Bag: {0}", MyUtils.getGson(true).toJson(bag));
 
 		return aadm;
 	}

@@ -80,7 +80,6 @@ public abstract class Feature extends Parameter {
 
 		JsonObject feature = new JsonObject();
 		feature.add(uri, data);
-//		System.out.println(feature);
 		return feature;
 	}
 

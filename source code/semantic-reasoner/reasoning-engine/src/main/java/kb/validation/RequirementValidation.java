@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
@@ -25,10 +27,11 @@ import kb.validation.exceptions.models.RequirementModel;
 ///			System.out.println(MyUtils.getGson(true).toJson(requirementDefinitionExists));
 
 /*
- * THIS NEEDS TO BE CHANGE IN ORDER TO PERFORM VALIDATION ON THE MODEL, BEFORE SAVING IT TO THE KB
+ * THIS NEEDS TO BE CHANGED IN ORDER TO PERFORM VALIDATION ON THE MODEL, BEFORE SAVING IT TO THE KB
  */
 
 public class RequirementValidation extends ValidationManager {
+	private static final Logger LOG = Logger.getLogger(RequirementValidation.class.getName());
 
 	String aadmId;
 	List<RequirementModel> models = new ArrayList<RequirementModel>();
@@ -44,10 +47,10 @@ public class RequirementValidation extends ValidationManager {
 		//	NodeMismatchValidationException, CapabilityMismatchValidationException {
 		
 	public List<RequirementModel> start() throws IOException {
-		System.out.println("Sommelier Validations for requirements aadmId = " + aadmId);
+		LOG.log(Level.INFO, "Sommelier Validations for requirements aadmId = {0}", aadmId);
 		Set<HashMap<String, IRI>> templateRequirements = getTemplateRequirements();
 		if (templateRequirements.isEmpty()) {
-			System.out.println("No requirements to validate");
+			LOG.info("No requirements to validate");
 			return models;
 			//return true;
 		}
@@ -55,7 +58,7 @@ public class RequirementValidation extends ValidationManager {
 			IRI template = templateRequirement.get("template");
 			IRI r_a = templateRequirement.get("r_a");
 			
-			System.out.println("RequirementValidation" +  templateRequirement.get("template").toString() + " r_a = " + r_a.toString());
+			LOG.log(Level.INFO, "RequirementValidation {0}, r_a = {1}", new Object[] {templateRequirement.get("template").toString(), r_a.toString()});
 			// 1.1 + 1.2 (check if rd.node exists)
 			Set<HashMap<String, IRI>> requirementDefinitions = requirementDefinitions(templateRequirement);
 			if (requirementDefinitions.isEmpty()) {
@@ -69,7 +72,7 @@ public class RequirementValidation extends ValidationManager {
 
 				// 1.2
 				HashMap<String, IRI> nodeMismatch = nodeMismatch(ctx, r_a, template);
-				System.out.println("template = " + template +  ", r_a = " + r_a + ", ctx = " + ctx);
+				LOG.log(Level.INFO, "template = {0}, r_a = {1}, ctx = {2}", new Object[] {template, r_a, ctx});
 				if (!nodeMismatch.isEmpty()) {
 					//throw new NodeMismatchValidationException(nodeMismatch.get("type_r_a_node"), template,
 							//nodeMismatch.get("r_d_node"));
@@ -108,8 +111,7 @@ public class RequirementValidation extends ValidationManager {
 	
 	
 	private HashMap<String, IRI> capabilityExistsMismatch(IRI template, IRI r_a, IRI ctx) throws IOException {
-		System.err.println(String.format("capabilityExistsMismatch: template:%s, r_a:%s, ctx:%s ",
-				template.getLocalName(), r_a.getLocalName(), ctx.getLocalName()));
+		LOG.log(Level.INFO, "capabilityExistsMismatch: template:{0}, r_a:{1}, ctx:{2}", new Object[] {template.getLocalName(), r_a.getLocalName(), ctx.getLocalName()});
 
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/capabilityExistsViolation.sparql");
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
@@ -133,8 +135,7 @@ public class RequirementValidation extends ValidationManager {
 	}
 
 	private HashMap<String, IRI> capabilityMatch(IRI template, IRI r_a, IRI ctx) throws IOException {
-		System.err.println(String.format("capabilityNotExistsCheck: template:%s, r_a:%s, ctx:%s ",
-				template.getLocalName(), r_a.getLocalName(), ctx.getLocalName()));
+		LOG.log(Level.INFO, "capabilityNotExistsCheck: template:{0}, r_a:{1}, ctx:{2}", new Object[] {template.getLocalName(), r_a.getLocalName(), ctx.getLocalName()});
 
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/capabilityNotExistsCheck.sparql");
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
@@ -159,8 +160,8 @@ public class RequirementValidation extends ValidationManager {
 
 
 	private HashMap<String, IRI> nodeMismatch(IRI ctx, IRI r_a, IRI template) throws IOException {
-		System.err.println(String.format("nodeMismatch: ctx:%s, r_a:%s, template:%s ", ctx.getLocalName(),
-				r_a.getLocalName(), template.getLocalName()));
+		LOG.log(Level.INFO, "nodeMismatch: ctx:{0}, r_a:{1}, template:{2}", new Object[] { ctx.getLocalName(),
+				r_a.getLocalName(), template.getLocalName()});
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/nodeMismatch.sparql");
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding[] { new SimpleBinding("r_a", r_a), new SimpleBinding("template", template),
@@ -183,8 +184,8 @@ public class RequirementValidation extends ValidationManager {
 	}
 	
 	private HashMap<String, IRI> relationshipMisMatch(IRI template, IRI r_a, IRI ctx) throws IOException {
-		System.err.println(String.format("capabilityExistsMismatch: template:%s, r_a:%s, ctx:%s ",
-				template.getLocalName(), r_a.getLocalName(), ctx.getLocalName()));
+		LOG.log(Level.INFO, "capabilityExistsMismatch: template:{0}, r_a:{1}, ctx:{2}", new Object[] { template.getLocalName(),
+				r_a.getLocalName(), ctx.getLocalName()});
 
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/relationshipMismatch.sparql");
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,

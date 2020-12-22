@@ -2,12 +2,13 @@ package kb.dsl.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
-
 
 import kb.repository.KB;
 import kb.utils.MyUtils;
@@ -15,9 +16,12 @@ import kb.utils.QueryUtil;
 /* All the utility functions used by DSL Mapping services.*/
 
 public class GetResources {
+	
+	private static final Logger LOG = Logger.getLogger(GetResources.class.getName());
 
 	public static IRI getKBNodeType(NamedResource n, String type, KB kb) {
-		System.out.println("getKBNodeType label = " + n.getResource() + ", type = " + type);
+		LOG.log(Level.INFO, "getKBNodeType label = {0}, type = {1}\n", 
+					new Object[] {n.getResource(), type});
 		String namespace = n.getNamespace();
 		String resource = n.getResource();
 		
@@ -41,7 +45,7 @@ public class GetResources {
 		sparql += 	" ?x rdfs:subClassOf " + type + " .\r\n" +
 					" FILTER (strends(str(?x), \"" + resource + "\")). \r\n" +
 					"}";
-		System.out.println(sparql);
+		LOG.info(sparql);
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
@@ -56,6 +60,8 @@ public class GetResources {
 	}
 	
 	public static IRI getKBProperty(String label, List<String> namespaces, KB kb) {
+		LOG.log(Level.INFO, "getKBProperty label = {0}, namespaces = {1}\n", 
+				new Object[] {label, namespaces});
 		
 		String sparql = "select distinct ?x \r\n" +
 						"FROM <http://www.ontotext.com/explicit>\r\n" +
@@ -81,7 +87,7 @@ public class GetResources {
 					    "  }\r\n";
 		sparql += 	"}";
 			
-		System.out.println(sparql);
+		LOG.info(sparql);
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
@@ -121,7 +127,7 @@ public class GetResources {
 	 * the List of all the inherited namespaces is returned e.g. [docker, vehicleiot]
 	 */
 	public static List<String> getInheritedNamespacesFromType(KB kb, String type) {
-		System.out.println("getInheritedNamespacesFromType type =" + type);
+		LOG.log(Level.INFO, "getInheritedNamespacesFromType type  = {0}\n", type);
 		List<String> namespacesOfType = new ArrayList<String>();
 		String query = KB.PREFIXES +
 						" select ?g { \r\n" + 
@@ -132,7 +138,7 @@ public class GetResources {
 						"		?superclass soda:hasContext ?c .\r\n" + 
 						"	}\r\n" + 
 						"}";
-		System.out.println(query);
+		LOG.info(query);
 		
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 									new SimpleBinding("x", kb.getFactory().createIRI(type)));
@@ -144,8 +150,54 @@ public class GetResources {
 			namespacesOfType.add(g.toString());
 		}
 		
+		result.close();
 		return namespacesOfType;
 	}
+	
+	
+	/* Triggers in policies contain event filters where requirement and capability
+	 * point within a requirement or capability name of the requirements/node
+	 * target_filter:              
+		node: <node_type>/<node_template> 
+		requirement: <req_name> 
+		capability: <req_name>/<cap_name>
+		
+		if requirement: host, e.g. https://www.sodalite.eu/ontologies/workspace/1/radon/host is returned
+	 */
+	public static IRI getReqCapFromEventFilter(KB kb, String event_filter_req_cap) {
+		LOG.info("getReqCapFromEventFilter:");
+		
+		String req_cap = MyUtils.getStringPattern(event_filter_req_cap, ".*\\.([A-Za-z]*)$");
+		String resource= MyUtils.getStringPattern(event_filter_req_cap, "(.*)\\.[A-Za-z]*$");
+		
+		String resource_iri = MyUtils.getFullResourceIRI(resource, kb);
+		
+		LOG.log(Level.INFO, "req_cap = {0}, resource = {1}, resource_iri = {2}\n", 
+				new Object[] {req_cap, resource, resource_iri});
+		
+		String sparql = "select ?requirement \r\n" + 
+				"where {\r\n" + 
+				"	?resource soda:hasContext ?context .\r\n" + 
+				"	?context tosca:requirements|tosca:capabilities ?classifier.\r\n" + 
+				"	?classifier DUL:classifies ?requirement .\r\n" + 
+				"    filter(regex(str(?requirement), \"" + req_cap  + "$\", \"i\")) .\r\n" + 
+				"}";
+		
+		String query = KB.PREFIXES + sparql;
+		LOG.info(query);
+		
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+									new SimpleBinding("resource", kb.getFactory().createIRI(resource_iri)));
+		IRI requirement = null;
+		if (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			requirement = (IRI) bindingSet.getBinding("requirement").getValue();
+		}
+				
+		result.close();
+		return requirement;		
+	}
+	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

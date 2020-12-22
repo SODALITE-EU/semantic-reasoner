@@ -25,7 +25,7 @@ import restapi.AbstractService;
 */
 @Path("/delete")
 @Api()
-public class DeleteModel extends AbstractService {
+public class DeleteModelService extends AbstractService {
 	/**
 	  * Delete a model in KB
 	  * Internal Note: Check for changing the operation from GET to DELETE
@@ -38,7 +38,7 @@ public class DeleteModel extends AbstractService {
 	@ApiOperation(
 			value = "Delete a model in Knowledge Base")
 //			response = String.class)
-	public Response DeleteModel(@ApiParam(value = "uri", required = true) @QueryParam("uri") String uri)
+	public Response deleteModel(@ApiParam(value = "uri", required = true) @QueryParam("uri") String uri)
 			throws IOException {
 
 		KBApi api = new KBApi();
