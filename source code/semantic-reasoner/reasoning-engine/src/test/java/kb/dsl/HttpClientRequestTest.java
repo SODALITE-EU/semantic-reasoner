@@ -5,6 +5,7 @@ import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -25,6 +26,7 @@ import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HttpClientRequestTest {
 	private static final Logger LOG = Logger.getLogger(HttpClientRequestTest.class.getName());
 	private static WireMockServer wireMockServer;
@@ -58,7 +60,7 @@ public class HttpClientRequestTest {
 	}
 	  
 	@Test
-	public static void testBugPredictor() throws MyRestTemplateException, URISyntaxException, ParseException {
+	public void testBugPredictor() throws MyRestTemplateException, URISyntaxException, ParseException {
 		HttpClientRequest.setBugPredictor("http://localhost:" + wireMockPort+"/");
 		JSONObject response = new JSONObject();
 		HttpClientRequest.getWarnings(response, "ddd");
@@ -67,7 +69,7 @@ public class HttpClientRequestTest {
 	}
 	  
 	@Test
-	public static void testValidateToKenFalse() throws URISyntaxException, ParseException {
+	public void testValidateToKenFalse() throws URISyntaxException, ParseException {
 		HttpClientRequest.setKeyCloak("http://localhost:" + wireMockPort+"/");
 		try {
 			HttpClientRequest.validateToKen("testtoken");
