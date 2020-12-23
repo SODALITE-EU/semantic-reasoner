@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -48,6 +50,7 @@ import kb.utils.QueryUtil;
 import kb.validation.RequirementExistenceValidation;
 import kb.validation.RequirementValidation;
 import kb.validation.ValidationService;
+import kb.validation.constraints.ConstraintsPropertyValidation;
 import kb.validation.exceptions.CapabilityMismatchValidationException;
 import kb.validation.exceptions.NoRequirementDefinitionValidationException;
 import kb.validation.exceptions.NodeMismatchValidationException;
@@ -92,7 +95,8 @@ public class DSLMappingService {
 	// Validation
 	Set<String> definedPropertiesForValidation = new HashSet<String>(),
 			definedAttributesForValidation = new HashSet<String>();
-
+	
+	Map<String, String> propertyValuesForValidation = new HashMap<String, String>();
 
 	List<ValidationModel> validationModels = new ArrayList<>();
 	List<ValidationModel> modifiedModels = new ArrayList<>();
@@ -224,15 +228,15 @@ public class DSLMappingService {
 			
 			LOG.log(Level.INFO, "Name: {0}, type: {1}",  new Object[] {templateName, templateType});
 			
-			NamedResource n = GetResources.setNamedResource(namespacews, templateType);
+			NamedResource fullTemplateType = GetResources.setNamedResource(namespacews, templateType);
 			//this.namespaceOfType = n.getNamespace();
 			
-			templateType = n.getResource();
-			String resourceIRI = n.getResourceURI() ;
+			templateType = fullTemplateType.getResource();
+			String resourceIRI = fullTemplateType.getResourceURI() ;
 			if (resourceIRI != null)
 				namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, resourceIRI);
 			
-			LOG.log(Level.INFO, "namespaceOfType={0} that are inherited from templateType={1}",  new Object[] {this.namespacesOfType, templateType});
+			LOG.log(Level.INFO, "namespacesOfType={0} that are inherited from templateType={1}",  new Object[] {this.namespacesOfType, templateType});
 			
 			IRI templateDescriptionKB = null;
 			// add template to the aadm container instance
@@ -240,7 +244,7 @@ public class DSLMappingService {
 				IRI templateKB = factory.createIRI(namespace + templateName); // this will be always new
 				templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasName"), templateName);
 				
-				IRI kbNodeType = GetResources.getKBNodeType(n, "tosca:tosca.entity.Root", kb);
+				IRI kbNodeType = GetResources.getKBNodeType(fullTemplateType, "tosca:tosca.entity.Root", kb);
 
 				if (kbNodeType == null) {
 					mappingModels.add(new MappingValidationModel(templateName, templateType, "'type' not found "));
@@ -260,6 +264,7 @@ public class DSLMappingService {
 			Set<Resource> _properties = Models.getPropertyResources(aadmModel, _template,
 					factory.createIRI(KB.EXCHANGE + "properties"));
 			definedPropertiesForValidation.clear();
+			propertyValuesForValidation.clear();
 			for (Resource _property : _properties) {
 				IRI property = (IRI) _property;
 				IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
@@ -272,7 +277,10 @@ public class DSLMappingService {
 			RequiredPropertyValidation v = new RequiredPropertyValidation(templateName,
 					factory.createLiteral(templateType), definedPropertiesForValidation, kb);
 			validationModels.addAll(v.validate());
-
+			
+			ConstraintsPropertyValidation c = new ConstraintsPropertyValidation(templateName, fullTemplateType, propertyValuesForValidation, kb);
+			validationModels.addAll(c.validate());
+			
 			// attributes
 			definedAttributesForValidation.clear();
 			for (Resource _attribute : Models.getPropertyResources(aadmModel, _template,
@@ -608,6 +616,7 @@ public class DSLMappingService {
 					templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (boolean) i);
 				} else
 					templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+				propertyValuesForValidation.put(propertyName, value);
 			} else {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 				for (String string : _values) {
@@ -620,8 +629,7 @@ public class DSLMappingService {
 						templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
 				}
 				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
-			}
-
+			}			
 		} else if (!listValues.isEmpty()) {
 			LOG.info("*****************************} else if (!listValues.isEmpty()) {");
 			IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
@@ -767,7 +775,7 @@ public class DSLMappingService {
 				}
 				if(kbNode != null)
 					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-			} else if (triggerName.equals("capability") || triggerName.equals("requirement")) {
+			} /*else if (triggerName.equals("capability") || triggerName.equals("requirement")) {
 				IRI req_cap = GetResources.getReqCapFromEventFilter(kb, value.getLabel());
 				if (req_cap != null) {
 					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), req_cap);
@@ -775,7 +783,7 @@ public class DSLMappingService {
 					mappingModels.add(new MappingValidationModel(currentTemplate, trigger.getLocalName(), "Cannot find " + value.getLabel() + " for trigger = " + triggerName));
 					LOG.log(Level.WARNING, "{0}: Cannot find template: {1} for trigger {2}", new Object[] {currentTemplate, value.getLabel(), triggerName});
 				}		
-			} else {
+			} */else {
 				Object i = null;
 				if ((i = Ints.tryParse(value.toString())) != null)
 					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
