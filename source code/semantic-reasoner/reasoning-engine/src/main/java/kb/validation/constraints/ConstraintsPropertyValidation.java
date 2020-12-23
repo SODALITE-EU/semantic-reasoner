@@ -10,14 +10,12 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
-import com.google.common.primitives.Ints;
 
 import kb.dsl.utils.NamedResource;
 import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 import kb.validation.exceptions.models.ConstraintPropertyModel;
-import kb.validation.exceptions.models.RequiredPropertyAttributeModel;
 
 public class ConstraintsPropertyValidation {
 	private static final Logger LOG = Logger.getLogger(ConstraintsPropertyValidation.class.getName());

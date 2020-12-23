@@ -15,8 +15,19 @@ public enum ConstraintsEnum {
 	LESS_OR_EQUAL {
 		@Override
         public boolean compare(String a, String b, String constr_type) {
-            System.out.println("LESS_OR_EQUAL a = " + a + " b = " + b);
-            return true;
+			return true;
+        }
+	},
+	EQUAL{
+		@Override
+        public boolean compare(String a, String b, String constr_type) {
+			return true;
+        }
+	},
+	MIN_LENGTH{
+		@Override
+        public boolean compare(String a, String b, String constr_type) {
+			return true;
         }
 	};
 	
