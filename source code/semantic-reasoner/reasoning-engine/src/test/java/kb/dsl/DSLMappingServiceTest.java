@@ -187,8 +187,7 @@ class DSLMappingServiceTest {
 				LOG.info("Test Passed: group_description required property is missing");
 				return;
 			} catch (Exception e) {
-				if (m!=null)
-					m.shutDown();
+				m.shutDown();
 				LOG.log(Level.SEVERE, e.getMessage(), e);
 			}
 		} catch (Exception e) {
@@ -234,8 +233,7 @@ class DSLMappingServiceTest {
 		} catch (IOException e) {
 			LOG.log(Level.SEVERE, e.getMessage(), e);
 		}
-		if (m!=null)
-			m.shutDown();
+		m.shutDown();
 		assertTrue(false);
 	}
 	//MOVE THOSE KBAPI tests in another test file class

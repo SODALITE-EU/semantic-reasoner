@@ -24,7 +24,6 @@ import kb.validation.exceptions.NodeMismatchValidationException;
 import kb.validation.exceptions.models.RequiredPropertyAttributeModel;
 import kb.validation.exceptions.models.RequirementModel;
 
-///			System.out.println(MyUtils.getGson(true).toJson(requirementDefinitionExists));
 
 /*
  * THIS NEEDS TO BE CHANGED IN ORDER TO PERFORM VALIDATION ON THE MODEL, BEFORE SAVING IT TO THE KB

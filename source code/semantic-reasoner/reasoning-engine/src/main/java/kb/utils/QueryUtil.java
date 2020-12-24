@@ -22,6 +22,9 @@ import kb.repository.KB;
  * Utility class for evaluating SPARQL queries.
  */
 public class QueryUtil {
+	public QueryUtil() {
+		throw new IllegalStateException("QueryUtil class");
+	}
 	/**
 	 * Prepares (parses) any kind of SPARQL query.
 	 *

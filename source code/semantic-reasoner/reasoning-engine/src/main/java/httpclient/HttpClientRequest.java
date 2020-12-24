@@ -136,7 +136,7 @@ public class HttpClientRequest {
 		
 		String result = null;
 		result = sendJSONMessage(new URI(url), HttpMethod.POST, input, String.class, new BugCustomErrorHandler());
-		LOG.log(Level.INFO, "result = {0}", result.toString());
+		LOG.log(Level.INFO, "result = {0}", result);
 		JSONParser parser = new JSONParser();
 		JSONArray warningsJson = (JSONArray)((JSONObject) parser.parse(result)).get("warnings");
 		if (!warningsJson.isEmpty())

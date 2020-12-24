@@ -32,11 +32,13 @@ import com.google.gson.reflect.TypeToken;
 import kb.repository.KB;
 
 public class MyUtils {
+	private MyUtils() {
+		throw new IllegalStateException("MyUtils class");
+	}
 
 	public static String fileToString(String file) throws IOException {
 		InputStream resourceAsStream = MyUtils.class.getClassLoader().getResourceAsStream(file);
 		return IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8.name());
-//		return FileUtils.readFileToString(new File(), StandardCharsets.UTF_8);
 	}
 
 	public static Gson getGson(boolean pretty) {
@@ -50,7 +52,6 @@ public class MyUtils {
 			return value.stringValue();
 		} else {
 			return ((IRI) value).getLocalName();
-			// return ((IRI) value).toString();
 		}
 	}
 	

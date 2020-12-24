@@ -45,6 +45,7 @@ import kb.dsl.utils.GetResources;
 import kb.dsl.utils.NamedResource;
 import kb.dsl.verify.singularity.VerifySingularity;
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 import kb.validation.RequirementExistenceValidation;
@@ -391,14 +392,14 @@ public class DSLMappingService {
 				templateBuilder.add(inputDescriptionKB, factory.createIRI(KB.TOSCA + "input"), inputFeatureKB);
 
 				Set<Resource> _parameters = Models.getPropertyResources(aadmModel, _input,
-						factory.createIRI(KB.EXCHANGE + "hasParameter"));
+						factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 
 				// TODO: HERE WE NEED TO IMPLEMENT RECURSION
 				for (Resource _parameter : _parameters) {
 					IRI parameter = (IRI) _parameter;
 					IRI propertyClassifierKB = createPropertyOrAttributeKBModel(parameter);
 
-					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DUL + "hasParameter"), propertyClassifierKB);
+					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), propertyClassifierKB);
 				}
 
 			}
@@ -475,7 +476,7 @@ public class DSLMappingService {
 
 			IRI root = createParameterKBModel(requirement);
 			if (root != null)
-				templateBuilder.add(requirementClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
+				templateBuilder.add(requirementClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), root);
 		}
 
 		return requirementClassifierKB;
@@ -486,7 +487,7 @@ public class DSLMappingService {
 		IRI parameterClassifierKB = null;
 		
 		Optional<Resource> _parameter = Models.getPropertyResource(aadmModel, requirement,
-				factory.createIRI(KB.EXCHANGE + "hasParameter"));
+				factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 		IRI parameter = null;
 		if (!_parameter.isPresent()) {
 			mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "Cannot find requirement parameter"));
@@ -533,7 +534,7 @@ public class DSLMappingService {
 			} else {
 
 				IRI root = createParameterKBModel(parameter);
-				templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
+				templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), root);
 
 			}
 		}
@@ -645,13 +646,13 @@ public class DSLMappingService {
 			templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, exchangeParameter,
-					factory.createIRI(KB.EXCHANGE + "hasParameter"));
+					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createPropertyOrAttributeKBModel(parameter);
 
-				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
 			}
 
 //			IRI root = createPropertyOrAttributeKBModel(exchangeParameter);
@@ -701,7 +702,7 @@ public class DSLMappingService {
 			//definedPropertiesForValidation.clear();
 			if (_properties.isEmpty()) {
 				IRI root = createParameterKBModel(capability);
-				templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), root);
+				templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), root);
 			} else {
 				for (Resource _property : _properties) {
 					IRI property = (IRI) _property;
@@ -792,11 +793,11 @@ public class DSLMappingService {
 			}
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, trigger,
-					factory.createIRI(KB.EXCHANGE + "hasParameter"));
+					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createTriggerKBModel(parameter);
-				aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+				aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
 			}
 		}
 		return triggerClassifierKB;
@@ -907,14 +908,14 @@ public class DSLMappingService {
 		return this.templateNames;
 	}
 	
-	public Set<IRI> getTemplatesIRIs(IRI namespace, String resourceName) {
+	/*public Set<IRI> getTemplatesIRIs(IRI namespace, String resourceName) {
 		Set<IRI> templatesIRIs = new HashSet<>();
 		for (String t: this.templateNames) {
 			templatesIRIs.add(kb.factory.createIRI(namespace + t));
 		}
 		
 		return templatesIRIs;
-	}
+	}*/
 	
 	public List<ValidationModel> getModifiedModels() {
 		return modifiedModels;

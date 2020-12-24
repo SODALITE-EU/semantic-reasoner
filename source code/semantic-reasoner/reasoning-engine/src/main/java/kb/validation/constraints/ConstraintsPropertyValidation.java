@@ -66,11 +66,14 @@ public class ConstraintsPropertyValidation {
 						case GREATER_OR_EQUAL:
 							if (!ConstraintsEnum.GREATER_OR_EQUAL.compare(templateValue, c.value, c.const_type)) {
 								models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
-										c.property, "template value: " + templateValue + " not greater than constraint definition: " + c.value));
+										c.property, "template value: " + templateValue + " not greater or equal than constraint definition: " + c.value));
 							}
 						break;
 						case LESS_OR_EQUAL:
-							ConstraintsEnum.LESS_OR_EQUAL.compare("0", "1", c.const_type);
+							if (!ConstraintsEnum.LESS_OR_EQUAL.compare(templateValue, c.value, c.const_type)) {
+								models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
+										c.property, "template value: " + templateValue + " not less or equal than constraint definition: " + c.value));	
+							}
 						break;
 						default:
 							break;

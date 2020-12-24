@@ -56,7 +56,6 @@ public class TypeService extends AbstractService {
 		KBApi api = new KBApi();
 		Set<Node> nodes = api.getNodes(imports, type);
 		api.shutDown();
-		// Gson gson = new Gson();
 
 		JsonObject _nodes = new JsonObject();
 		JsonArray array = new JsonArray();

@@ -42,6 +42,7 @@ import kb.dsl.utils.GetResources;
 import kb.dsl.utils.NamedResource;
 import kb.dsl.verify.singularity.VerifySingularity;
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 import kb.validation.exceptions.ValidationException;
@@ -393,7 +394,7 @@ public class DSLRMMappingService {
 			Set<IRI> parameters = createrRequirementParameterKBModel(requirement);
 			
 			for (IRI parameter : parameters) {
-				nodeBuilder.add(requirementClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), parameter);
+				nodeBuilder.add(requirementClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), parameter);
 			}
 			//builder.add(requirementClassifierKB, factory.createIRI("dul:hasParameter"), root);
 		}
@@ -406,7 +407,7 @@ public class DSLRMMappingService {
 		Set <IRI> parameterClassifiers =  new HashSet<>();
 		
 		Set<Resource> _parameters = Models.getPropertyResources(rmModel, requirement,
-				factory.createIRI(KB.EXCHANGE + "hasParameter"));
+				factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 		if (_parameters.isEmpty()) {
 			mappingModels.add(new MappingValidationModel(currentType, requirement.getLocalName(), "Cannot find parameters"));
 		}
@@ -471,7 +472,7 @@ public class DSLRMMappingService {
 			} else {
 				Set<IRI> parameterList = createrRequirementParameterKBModel(parameter);
 				for (IRI parameter_1 : parameterList) {
-					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), parameter_1);
+					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), parameter_1);
 				}
 			}
 		}
@@ -525,7 +526,7 @@ public class DSLRMMappingService {
 		} else {
 			Set<IRI> parameters = createCapabilityParameterKBModel(capability);
 			for (IRI parameter : parameters) {
-				nodeBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), parameter);
+				nodeBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), parameter);
 			}
 		}
 		return capabilityClassifierKB;
@@ -609,11 +610,11 @@ public class DSLRMMappingService {
 			}
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, interface_iri,
-					factory.createIRI(KB.EXCHANGE + "hasParameter"));
+					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createInterfaceKBModel(parameter);
-				nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+				nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
 			}
 		}
 		return interfaceClassifierKB;
@@ -703,11 +704,11 @@ public class DSLRMMappingService {
 			}
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, trigger,
-					factory.createIRI(KB.EXCHANGE + "hasParameter"));
+					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createTriggerKBModel(parameter);
-				nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+				nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
 			}
 		}
 		return triggerClassifierKB;
@@ -717,7 +718,7 @@ public class DSLRMMappingService {
 		Set <IRI> parameterClassifiers =  new HashSet<>();
 		
 		Set<Resource> _parameters = Models.getPropertyResources(rmModel, capability,
-				factory.createIRI(KB.EXCHANGE + "hasParameter"));
+				factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 					
 		Optional<Resource> _parameterType  = Models.getPropertyResource(rmModel, capability,
 				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
@@ -798,7 +799,7 @@ public class DSLRMMappingService {
 			} else {
 				Set<IRI> parameterList = createCapabilityParameterKBModel(parameter);
 				for (IRI parameter_1 : parameterList) {
-					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), parameter_1);
+					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), parameter_1);
 				}
 			}
 		}
@@ -926,13 +927,13 @@ public class DSLRMMappingService {
 			nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, exchangeParameter,
-					factory.createIRI(KB.EXCHANGE + "hasParameter"));
+					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createPropertyOrAttributeKBModel(parameter);
 
-				nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "hasParameter"), _p);
+				nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
 			}
 
 //			IRI root = createPropertyOrAttributeKBModel(exchangeParameter);

@@ -6,16 +6,20 @@ public enum ConstraintsEnum {
         public boolean compare(String a, String b, String constr_type) {
             System.out.println("GREATER_OR_EQUAL a = " + a + " b = " + b);
             if (constr_type.equals("integer"))
-            	return Integer.parseInt(a.toString()) >= Integer.parseInt(b.toString());
+            	return Integer.parseInt(a) >= Integer.parseInt(b);
             else if (constr_type.equals("float"))
-            	return Float.parseFloat(a.toString()) >= Float.parseFloat(b.toString());
+            	return Float.parseFloat(a) >= Float.parseFloat(b);
             return false;
         }
 	},
 	LESS_OR_EQUAL {
 		@Override
         public boolean compare(String a, String b, String constr_type) {
-			return true;
+			if (constr_type.equals("integer"))
+				return Integer.parseInt(a) <= Integer.parseInt(b);
+			else if (constr_type.equals("float"))
+				return Float.parseFloat(a) <= Float.parseFloat(b);
+			return false;
         }
 	},
 	EQUAL{

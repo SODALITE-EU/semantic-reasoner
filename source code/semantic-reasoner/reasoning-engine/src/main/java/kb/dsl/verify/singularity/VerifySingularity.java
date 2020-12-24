@@ -16,6 +16,9 @@ import kb.repository.KB;
 import kb.utils.QueryUtil;
 
 public class VerifySingularity {
+	private VerifySingularity() {
+	}
+	
 	private static final Logger LOG = Logger.getLogger(VerifySingularity.class.getName());
 	
 	public static void removeExistingDefinitions (KB kb, Set<String> nodeTypes, String namespace) throws IOException {

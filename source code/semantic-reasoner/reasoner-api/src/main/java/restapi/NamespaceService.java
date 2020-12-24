@@ -45,9 +45,7 @@ public class NamespaceService extends AbstractService {
 			throws IOException {
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		List<Resource> cList = Iterations.asList(kb.connection.getContextIDs());
-		if (kb != null) {
-			kb.shutDown();
-		}
+		kb.shutDown();
 		
 		JsonObject _context = new JsonObject();
 		JsonArray array = new JsonArray();
