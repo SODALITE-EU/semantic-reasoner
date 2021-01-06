@@ -1,5 +1,6 @@
 package httpclient.exceptions;
 
+
 import httpclient.dto.HttpRequestErrorModel;
 
 public class MyRestTemplateException extends RuntimeException {

@@ -1,5 +1,4 @@
-<configuration>
-# Console appender
+<configuration scan="true">
 <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
 	<layout class="ch.qos.logback.classic.PatternLayout">
 		# Pattern of log message for console appender
@@ -10,9 +9,9 @@
 <appender name="roll-by-time" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	<file>semantic_reasoner_logs/roll-by-time/reasoner.log</file>
 	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-		<fileNamePattern>logs/roll-by-time/reasoner.%d{yyyy-MM-dd}.log
+		<fileNamePattern>semantic_reasoner_logs/roll-by-time/reasoner.%d{yyyy-MM-dd}.log
 		</fileNamePattern>
-		<maxHistory>100</maxHistory>
+		<maxHistory>30</maxHistory>
 		<totalSizeCap>100MB</totalSizeCap>
 	</rollingPolicy>
 	<encoder>
@@ -20,14 +19,24 @@
 	</encoder>
 </appender>
 
-
-# Override log level for specified package
-<logger name="com.baeldung.slf4j.Slf4jRollingExample" level="TRACE">
+<logger name="restapi" level="INFO" additivity="false">
 	<appender-ref ref="roll-by-time"/>
+	<appender-ref ref="stdout"/>
 </logger>
 
+<logger name="kb"  level="INFO" additivity="false" >
+	<appender-ref ref="roll-by-time"/>
+	<appender-ref ref="stdout"/>
+</logger>
+<logger name="httpclient" level="INFO" additivity="false">
+	<appender-ref ref="roll-by-time"/>
+	<appender-ref ref="stdout"/>
+</logger>
+
+
 <root level="INFO">
-		<appender-ref ref="stdout"/>
-		<appender-ref ref="roll-by-time"/>
+	<appender-ref ref="stdout"/>
+	<appender-ref ref="roll-by-time"/>
 </root>
+
 </configuration>

@@ -55,7 +55,7 @@ public class MyUtils {
 		}
 	}
 	
-	public static String getStringPattern (String string, String spattern) {
+	public static String getStringPattern(String string, String spattern) {
 		Pattern pattern = Pattern.compile(spattern);
 		Matcher matcher = pattern.matcher(string);
 		String pattern_string = null;

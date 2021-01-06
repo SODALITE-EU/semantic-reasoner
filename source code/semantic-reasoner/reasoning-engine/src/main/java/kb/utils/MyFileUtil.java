@@ -5,14 +5,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import kb.configs.ConfigsLoader;
 
 
 public class MyFileUtil {
-	private static final Logger LOG = Logger.getLogger(MyFileUtil.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(MyFileUtil.class.getName());
 	
 	public final static String ANSIBLE_PATH;
 	public final static String REASONER_SERVER;
@@ -35,12 +35,12 @@ public class MyFileUtil {
         	
 			fileName = UUID.randomUUID().toString();
 			String path = ANSIBLE_PATH + fileName;
-			LOG.log(Level.INFO, "path = {0}", path);
+			LOG.info("path = {}", path);
 			File myObj = new File(path);
 			if (myObj.createNewFile()) {
-				LOG.log(Level.INFO, "File created: {0}", myObj.getName());
+				LOG.info("File created: {}", myObj.getName());
 			} else {
-				LOG.log(Level.WARNING, "File already exists.");
+				LOG.warn("File already exists.");
 			}
 
 			myWriter = new FileWriter(path);
@@ -48,9 +48,9 @@ public class MyFileUtil {
 			String _content = content.replaceAll("^\"|\"$", "");
 			myWriter.write(_content);
 			myWriter.close();
-			LOG.log(Level.INFO, "Successfully wrote to the file.");
+			LOG.info( "Successfully wrote to the file.");
 		} catch (IOException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		} finally {
 			if (myWriter != null)
 				myWriter.close();

@@ -3,8 +3,8 @@ package kb.validation.constraints;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -18,7 +18,7 @@ import kb.utils.QueryUtil;
 import kb.validation.exceptions.models.ConstraintPropertyModel;
 
 public class ConstraintsPropertyValidation {
-	private static final Logger LOG = Logger.getLogger(ConstraintsPropertyValidation.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(ConstraintsPropertyValidation.class.getName());
 	String templateName;
 	NamedResource templateType;
 	Map<String, String> exchangePropertyValues;
@@ -43,7 +43,7 @@ public class ConstraintsPropertyValidation {
 		
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("var", kb.factory.createIRI(type)));
 
-		LOG.log(Level.INFO, "exchange properties values: {0}", exchangePropertyValues);
+		LOG.info("exchange properties values: {}", exchangePropertyValues);
 		
 		while(result.hasNext()) {
 			BindingSet bindingSet = result.next();

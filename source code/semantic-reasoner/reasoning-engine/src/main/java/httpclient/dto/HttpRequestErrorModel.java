@@ -4,11 +4,7 @@ import org.joda.time.LocalDateTime;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 
-public class HttpRequestErrorModel {
-	public enum DownstreamApi {
-		  BUG_PREDICTOR_API,
-		  KEYCLOAK_API
-		}
+public class HttpRequestErrorModel extends AuthModel {
 	
 	public LocalDateTime timestamp;
 	public DownstreamApi api;

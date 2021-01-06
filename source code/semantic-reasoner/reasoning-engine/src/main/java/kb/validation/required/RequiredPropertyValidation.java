@@ -3,8 +3,8 @@ package kb.validation.required;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -18,7 +18,7 @@ import kb.utils.QueryUtil;
 import kb.validation.exceptions.models.RequiredPropertyAttributeModel;
 
 public class RequiredPropertyValidation {
-	private static final Logger LOG = Logger.getLogger(RequiredPropertyValidation.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(RequiredPropertyValidation.class.getName());
 
 	Literal templateType;
 	String templateName;
@@ -45,8 +45,8 @@ public class RequiredPropertyValidation {
 				.stream()
 				.map(x -> ((IRI) x.getBinding("property").getValue()).getLocalName()).collect(Collectors.toList());
 
-		LOG.log(Level.INFO, "validation: [{0}]  {1}", new Object[] {templateType, schemaProperties});
-		LOG.log(Level.INFO, "exchange properties: {0}", exchangeProperties);
+		LOG.info("validation: [{}]  {}", new Object[] {templateType, schemaProperties});
+		LOG.info("exchange properties: {}", exchangeProperties);
 
 		boolean found = false;
 		for (String sch : schemaProperties) {

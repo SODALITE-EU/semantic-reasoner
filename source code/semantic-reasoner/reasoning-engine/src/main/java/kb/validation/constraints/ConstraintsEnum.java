@@ -4,7 +4,6 @@ public enum ConstraintsEnum {
 	GREATER_OR_EQUAL {
 		@Override
         public boolean compare(String a, String b, String constr_type) {
-            System.out.println("GREATER_OR_EQUAL a = " + a + " b = " + b);
             if (constr_type.equals("integer"))
             	return Integer.parseInt(a) >= Integer.parseInt(b);
             else if (constr_type.equals("float"))

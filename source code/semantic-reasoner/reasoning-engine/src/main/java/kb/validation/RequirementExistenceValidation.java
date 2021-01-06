@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -35,7 +35,7 @@ import kb.validation.utils.UpdateKB;
  * @since 1.0
 */
 public class RequirementExistenceValidation extends ValidationManager {
-	private static final Logger LOG = Logger.getLogger(RequirementExistenceValidation.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(RequirementExistenceValidation.class.getName());
 	
 	boolean complete;
 	String aadmId;
@@ -96,15 +96,15 @@ public class RequirementExistenceValidation extends ValidationManager {
 		List<RequirementExistenceModel> models;
 
 		for (Map.Entry e : map.entrySet()) {
-			 LOG.log(Level.INFO, "Template: {0}", e.getKey());
+			 LOG.info("Template: {}", e.getKey());
 			 IRI template = (IRI) e.getKey();
 			 HashMap<IRI,HashMap<IRI,Set<IRI>>> innerMap =  (HashMap<IRI,HashMap<IRI,Set<IRI>>>) e.getValue();
 			 for (Map.Entry e2 : innerMap.entrySet()) {
-				 LOG.log(Level.INFO, "r_a: {0}", e2.getKey());
+				 LOG.info("r_a: {}", e2.getKey());
 				 IRI r_a = (IRI) e2.getKey();
 				 HashMap<IRI,Set<IRI>> in_inMap = (HashMap<IRI,Set<IRI>>)e2.getValue();
 				 for (Map.Entry e3 : in_inMap.entrySet()) {
-					 LOG.log(Level.INFO, "r_i: {0}, types = {1}", new Object[] {e3.getKey(), e3.getValue()});
+					 LOG.info("r_i: {}, types = {}", e3.getKey(), e3.getValue());
 					 IRI r_i = (IRI) e3.getKey();
 					 //Get the most specific type
 					 IRI type = InferencesUtil.getLowestSubclass(kb, (Set<IRI>)e3.getValue());

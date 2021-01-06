@@ -6,12 +6,15 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.http.HttpStatus;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 
 import httpclient.HttpClientRequest;
-import httpclient.dto.HttpRequestErrorModel;
+import httpclient.dto.AuthErrorModel;
+
+import httpclient.exceptions.AuthException;
 import httpclient.exceptions.MyRestTemplateException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -23,12 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HttpClientRequestTest {
-	private static final Logger LOG = Logger.getLogger(HttpClientRequestTest.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(HttpClientRequestTest.class.getName());
 	private static WireMockServer wireMockServer;
 	private static int wireMockPort;
 	  
@@ -73,10 +77,13 @@ public class HttpClientRequestTest {
 		HttpClientRequest.setKeyCloak("http://localhost:" + wireMockPort+"/");
 		try {
 			HttpClientRequest.validateToKen("testtoken");
-		} catch (MyRestTemplateException e) {
-			HttpRequestErrorModel erm = e.error_model;
-			assertEquals(erm.rawStatus, 401);
-			assertEquals(erm.description,"Access Token not active");
+		} catch (AuthException e) {
+			List<AuthErrorModel> models = e.roleModels;
+			for (AuthErrorModel r : models) {
+				assertEquals(r.statusCode, HttpStatus.UNAUTHORIZED);
+				assertEquals(r.description,"Access Token not active");
+			}
+			
 			LOG.info("Test Passed: testValidateToKenFalse");
 		}
 	}
@@ -84,7 +91,7 @@ public class HttpClientRequestTest {
 	private static int getAvailablePort() throws IOException {
 		try (ServerSocket socket = new ServerSocket(0); ) {
 			int port = socket.getLocalPort();
-			LOG.log(Level.INFO,"Using port {0}", port);
+			LOG.info("Using port {}", port);
 			return port;
 		}
 	}

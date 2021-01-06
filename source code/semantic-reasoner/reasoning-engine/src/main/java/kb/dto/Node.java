@@ -67,7 +67,6 @@ public class Node extends Resource {
 	public static void main(String[] args) {
 		JsonObject node = new JsonObject();
 		node.add("node", null);
-		System.err.println(node);
 	}
 
 	@Override

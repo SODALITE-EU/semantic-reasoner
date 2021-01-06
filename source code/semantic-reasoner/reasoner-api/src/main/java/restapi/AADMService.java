@@ -1,8 +1,8 @@
 package restapi;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -29,7 +29,7 @@ import kb.utils.MyUtils;
 @Path("/aadm")
 @Api()
 public class AADMService extends AbstractService {
-	private static final Logger LOG = Logger.getLogger(AADMService.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(AADMService.class.getName());
 	/**
 	 * Getting the abstract application deployment model in JSON format.
 	 * @param aadmIRI The IRI of AADM
@@ -59,7 +59,7 @@ public class AADMService extends AbstractService {
 		AADMService s = new AADMService();
 		Response aadm = s.getAADM(
 				"https://www.sodalite.eu/ontologies/snow-blueprint-containerized-OS/AbstractApplicationDeployment_1");
-		LOG.log(Level.INFO, "AADM = {0}", aadm.getEntity().toString());
+		LOG.info("AADM = {}", aadm.getEntity().toString());
 	}
 
 }

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -61,7 +61,7 @@ import kb.validation.exceptions.models.ValidationModel;
 import kb.validation.required.RequiredPropertyValidation;
 
 public class DSLMappingService {
-	private static final Logger LOG = Logger.getLogger(DSLMappingService.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(DSLMappingService.class.getName());
 	
 	public KB kb;
 	public ValueFactory factory;
@@ -169,7 +169,7 @@ public class DSLMappingService {
 				userId = _userId.get().getLabel();
 					
 			ws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
-			LOG.log(Level.INFO, "namespace = {0}", ws);
+			LOG.info("namespace = {}", ws);
 			aadmBuilder.setNamespace("ws", ws);
 
 			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(ws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
@@ -227,7 +227,7 @@ public class DSLMappingService {
 			else
 				templateType = _templateType.get().getLabel();
 			
-			LOG.log(Level.INFO, "Name: {0}, type: {1}",  new Object[] {templateName, templateType});
+			LOG.info("Name: {}, type: {}", templateName, templateType);
 			
 			NamedResource fullTemplateType = GetResources.setNamedResource(namespacews, templateType);
 			//this.namespaceOfType = n.getNamespace();
@@ -237,7 +237,7 @@ public class DSLMappingService {
 			if (resourceIRI != null)
 				namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, resourceIRI);
 			
-			LOG.log(Level.INFO, "namespacesOfType={0} that are inherited from templateType={1}",  new Object[] {this.namespacesOfType, templateType});
+			LOG.info("namespacesOfType={} that are inherited from templateType={}", this.namespacesOfType, templateType);
 			
 			IRI templateDescriptionKB = null;
 			// add template to the aadm container instance
@@ -374,7 +374,7 @@ public class DSLMappingService {
 					mappingModels.add(new MappingValidationModel(currentTemplate, input.getLocalName(), "No 'name' defined for input"));
 				else {
 					inputName = _inputName.get().getLabel();
-					LOG.log(Level.INFO, "Input name: {0}",  inputName);
+					LOG.info("Input name: {}",  inputName);
 				}
 
 				// for each tosca input we need to have a Feature
@@ -424,7 +424,7 @@ public class DSLMappingService {
 			if (!aadmURI.isEmpty())
 				VerifySingularity.removeInputs(kb, aadmURI);
 		} catch (IOException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage());
 		}
 		
 		return aadmKB;
@@ -560,18 +560,18 @@ public class DSLMappingService {
 		Set<String> listValues = Models.getPropertyStrings(aadmModel, exchangeParameter,
 				factory.createIRI(KB.EXCHANGE + "listValue"));
 
-		LOG.log(Level.INFO, "------------ {0}", _values);
-		LOG.log(Level.INFO, "-----ListValues----- {0}", listValues);
+		LOG.info("------------ {}", _values);
+		LOG.info("-----ListValues----- {}", listValues);
 
 		if (_values.isEmpty() && listValues.isEmpty()) {
-			LOG.log(Level.INFO, "No value found for property: {0}", exchangeParameter.getLocalName());
+			LOG.info("No value found for property: {}", exchangeParameter.getLocalName());
 		}
 
 //		String value = _value.isPresent() ? _value.get().stringValue() : null;
 		if (propertyName != null)
 			definedPropertiesForValidation.add(propertyName);
 
-		LOG.log(Level.INFO, "Property name: {0}, value: {1}", new Object[] {propertyName, _values});
+		LOG.info("Property name: {}, value: {}", new Object[] {propertyName, _values});
 		
 		Optional<Resource> _parameterType  = Models.getPropertyResource(aadmModel, exchangeParameter,
 				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
@@ -592,7 +592,7 @@ public class DSLMappingService {
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
 				break;
 			default:
-				LOG.log(Level.INFO, "parameterType = {0} does not exist", parameterType);
+				LOG.info("parameterType = {} does not exist", parameterType);
 		}
 
 		// create rdf:property
@@ -746,7 +746,7 @@ public class DSLMappingService {
 				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			default:
-				LOG.warning("type = " + type + " does not exist");
+				LOG.warn("type = " + type + " does not exist");
 		}
 		
 		if (triggerProperty != null)
@@ -771,7 +771,7 @@ public class DSLMappingService {
 						kbNode = factory.createIRI(namespace + n.getResource());
 					else {
 						mappingModels.add(new MappingValidationModel(currentTemplate, trigger.getLocalName(), "Cannot find Template: " + value.getLabel() + " for trigger = " + triggerName));
-						LOG.log(Level.WARNING, "{0}: Cannot find template: {1} for trigger {2}", new Object[] {currentTemplate, value.getLabel(), triggerName});
+						LOG.warn("{}: Cannot find template: {} for trigger {}", currentTemplate, value.getLabel(), triggerName);
 					}
 				}
 				if(kbNode != null)
@@ -814,10 +814,10 @@ public class DSLMappingService {
 	}
 
 	private IRI createTargetKBModel(IRI parameter) throws MappingException {
-		LOG.log(Level.INFO, "createTargetKBModel {0}", parameter);
+		LOG.info("createTargetKBModel {}", parameter);
 		Set<Literal> listValues= Models.objectLiterals(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "listValue"), null));
 		
-		LOG.log(Level.INFO, "-----ListValue--- {0}", listValues);
+		LOG.info("-----ListValue--- {}", listValues);
 		IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 		
 		IRI parameterClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
@@ -837,7 +837,7 @@ public class DSLMappingService {
 					kbNode = factory.createIRI(namespace + n.getResource());
 				else {
 					mappingModels.add(new MappingValidationModel(currentTemplate, "targets", "Cannot find target: " + l.getLabel()));
-					LOG.log(Level.WARNING, "{0}: Cannot find Node: {1} ", new Object[] {currentTemplate, l.getLabel()});
+					LOG.warn("{}: Cannot find Node: {} ", currentTemplate, l.getLabel());
 				}
 			}
 			if(kbNode != null)
@@ -848,7 +848,7 @@ public class DSLMappingService {
 	}
 
 	private IRI getKBTemplate(NamedResource n) {
-		LOG.log(Level.INFO, "getKBTemplate label={0}, namespace ={1} ", new Object[] {n.getResource(), n.getNamespace()});
+		LOG.info("getKBTemplate label={}, namespace ={} ", n.getResource(), n.getNamespace());
 		String namespace = n.getNamespace();
 		String resource = n.getResource();
 		String sparql = "select distinct ?x { \r\n" + 

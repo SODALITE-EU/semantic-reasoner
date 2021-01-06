@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import org.eclipse.rdf4j.model.IRI;
 
@@ -41,7 +42,7 @@ import kb.validation.exceptions.models.ValidationModel;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DSLMappingServiceTest {
 	
-	private static final Logger LOG = Logger.getLogger(DSLMappingServiceTest.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(DSLMappingServiceTest.class.getName());
 	private static final String SEMANTIC_REASONER_TEST = "SEMANTIC_REASONER_TEST";
 	
 	private static SodaliteRepository repositoryManager;
@@ -77,7 +78,7 @@ class DSLMappingServiceTest {
 				DSLMappingServiceTest.class.getResourceAsStream("/core/tosca-builtins.ttl");
 			repositoryConnection.add(input3, "", RDFFormat.TURTLE);
 		} catch (IOException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		}
 		
 		
@@ -113,18 +114,18 @@ class DSLMappingServiceTest {
 				
 				LOG.info("Test Passed: saving rm for openstack");
 			} catch (MappingException e) {
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			} catch (ValidationException e) {
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
 					LOG.info("validationModel" + validationModel.toJson());
 				}
 			} catch (Exception e) {
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			}
 			
 		} catch (IOException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		}
 		
 		repositoryConnection.close();
@@ -145,7 +146,7 @@ class DSLMappingServiceTest {
 				aadmIRI = m.start();
 				m.save();
 			} catch (MappingException e) {
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 				m.shutDown();
 			} catch (ValidationException e) {
 				List<ValidationModel> validationModels = e.validationModels;
@@ -155,11 +156,11 @@ class DSLMappingServiceTest {
 				m.shutDown();
 				return;
 			} catch (Exception e) {
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 				m.shutDown();
 			}
 		} catch (IOException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 			if (m!=null)
 				m.shutDown();
 		}
@@ -188,10 +189,10 @@ class DSLMappingServiceTest {
 				return;
 			} catch (Exception e) {
 				m.shutDown();
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			}
 		} catch (Exception e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		}
 	
 		if (m != null)
@@ -222,16 +223,16 @@ class DSLMappingServiceTest {
 			} catch (ValidationException e) {	
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
-					LOG.log(Level.INFO, "validationModel {0}", validationModel.toJson());
+					LOG.info("validationModel {}", validationModel.toJson());
 				}
 			} catch (Exception e) {
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			} finally {
 				if (m!=null)
 					m.shutDown();
 			}
 		} catch (IOException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		}
 		m.shutDown();
 		assertTrue(false);
@@ -275,7 +276,7 @@ class DSLMappingServiceTest {
 		
 		Set<Capability> capabilities;
 		capabilities = api.getCapabilities(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false);
-		LOG.log(Level.INFO, "capabilities.size = {0}\n", capabilities.size());
+		LOG.info("capabilities.size = {}\n", capabilities.size());
 		assertTrue(capabilities.size() == 7);
 		LOG.info("Test Passed: getCapabilities of a node type");
 	}

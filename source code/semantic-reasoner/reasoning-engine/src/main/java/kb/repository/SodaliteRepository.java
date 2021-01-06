@@ -21,11 +21,11 @@ import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SodaliteRepository {
-	private static final Logger LOG = Logger.getLogger(SodaliteRepository.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(SodaliteRepository.class.getName());
 	private RepositoryManager _manager;
 
 	public SodaliteRepository(String serverURL, String username, String password) {
@@ -35,7 +35,7 @@ public class SodaliteRepository {
 			((RemoteRepositoryManager)_manager).setUsernameAndPassword(username, password);
 			_manager.init();
 		} catch (RepositoryException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		}
 
 	}
@@ -51,12 +51,12 @@ public class SodaliteRepository {
 			try {
 				rdfParser.parse(config, RepositoryConfigSchema.NAMESPACE);
 			} catch (IOException e) {
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			}
 			try {
 				config.close();
 			} catch (IOException e) {
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			}
 
 			Resource repositoryNode = Models.subject(
@@ -65,7 +65,7 @@ public class SodaliteRepository {
 			RepositoryConfig repositoryConfig = RepositoryConfig.create(graph, repositoryNode);
 			_manager.addRepositoryConfig(repositoryConfig);
 		} catch (RepositoryException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -78,12 +78,12 @@ public class SodaliteRepository {
 	}
 
 	public void shutDown(String CONTEXT) {
-		LOG.log(Level.INFO, "closing GraphDb manager [ {0}]\n", CONTEXT);
+		LOG.info("closing GraphDb manager [ {}]\n", CONTEXT);
 		if (_manager != null) {
 			try {
 				_manager.shutDown();
 			} catch (Exception e) {
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.error(e.getMessage(), e);
 			}
 		}
 	}
