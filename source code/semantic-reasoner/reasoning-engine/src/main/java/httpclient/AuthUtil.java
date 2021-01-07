@@ -10,7 +10,11 @@ import httpclient.dto.AuthErrorModel;
 import httpclient.exceptions.AuthException;
 import kb.configs.ConfigsLoader;
 
-public class AuthUtil {
+public class AuthUtil {	
+	private AuthUtil() {
+		throw new IllegalStateException("AuthUtil class");
+	}
+	
 	static ConfigsLoader configInstance = ConfigsLoader.getInstance();
 	static {
 		configInstance.loadProperties();

@@ -21,6 +21,9 @@ import httpclient.exceptions.AuthException;
 import httpclient.exceptions.MyRestTemplateException;
 
 public class SharedUtil {
+	private SharedUtil() {
+		throw new IllegalStateException("SharedUtil class");
+	}
 	private static final Logger LOG = Logger.getLogger(SharedUtil.class.getName());
 	
 	public static Response authorization(String namespace, ArrayList<String> roles, String toKen, String typeOfRole) throws URISyntaxException {
