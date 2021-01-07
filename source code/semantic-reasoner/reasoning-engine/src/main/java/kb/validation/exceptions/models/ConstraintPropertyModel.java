@@ -3,7 +3,10 @@ package kb.validation.exceptions.models;
 import org.json.simple.JSONObject;
 
 public class ConstraintPropertyModel  extends ValidationModel {
-	String templateName, templateType, property, description;
+	public String templateName;
+	public String templateType;
+	public String property;
+	public String description;
 	
 	public ConstraintPropertyModel(String templateName, String templateType, String property, String description) {
 		this.templateName = templateName;

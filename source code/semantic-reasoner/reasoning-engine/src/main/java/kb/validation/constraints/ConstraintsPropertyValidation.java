@@ -19,14 +19,23 @@ import kb.validation.exceptions.models.ConstraintPropertyModel;
 
 public class ConstraintsPropertyValidation {
 	private static final Logger LOG = LoggerFactory.getLogger(ConstraintsPropertyValidation.class.getName());
-	String templateName;
-	NamedResource templateType;
-	Map<String, String> exchangePropertyValues;
-	KB kb;
+	private String templateName;
+	private NamedResource templateType;
+	private Map<String, String> exchangePropertyValues;
+	private KB kb;
 	
-	List<ConstraintPropertyModel> models = new ArrayList<ConstraintPropertyModel>();
+	private List<ConstraintPropertyModel> models = new ArrayList<ConstraintPropertyModel>();
 	
-	List<ConstraintResult> results = new ArrayList<ConstraintResult>();
+	private List<ConstraintResult> results = new ArrayList<ConstraintResult>();
+	
+	private String constraintsQuery = "select distinct ?property ?constraint ?constr_type ?value\r\n" + 
+			"where {\r\n" + 
+			"   ?var soda:hasInferredContext ?context .\r\n" + 
+			"	?context tosca:properties ?concept .\r\n" + 
+			"	?concept DUL:classifies ?property .\r\n" + 
+			"	?concept DUL:hasParameter [DUL:classifies tosca:constraints; DUL:hasParameter [DUL:classifies ?constraint; tosca:hasDataValue ?value]].\r\n" + 
+			"   ?concept DUL:hasParameter [DUL:classifies tosca:type; tosca:hasValue ?constr_type].\r\n" + 
+			"}";
 	
 	public ConstraintsPropertyValidation(String templateName, NamedResource templateType, Map<String, String> exchangePropertyValues, KB kb) {
 		this.templateName = templateName;
@@ -84,17 +93,6 @@ public class ConstraintsPropertyValidation {
 		
 		return models;
 	}
-	
-	
-	
-	private String constraintsQuery = "select distinct ?property ?constraint ?constr_type ?value\r\n" + 
-			"where {\r\n" + 
-			"   ?var soda:hasInferredContext ?context .\r\n" + 
-			"	?context tosca:properties ?concept .\r\n" + 
-			"	?concept DUL:classifies ?property .\r\n" + 
-			"	?concept DUL:hasParameter [DUL:classifies tosca:constraints; DUL:hasParameter [DUL:classifies ?constraint; tosca:hasDataValue ?value]].\r\n" + 
-			"   ?concept DUL:hasParameter [DUL:classifies tosca:type; tosca:hasValue ?constr_type].\r\n" + 
-			"}";
 
 	private class ConstraintResult {
 		String property;

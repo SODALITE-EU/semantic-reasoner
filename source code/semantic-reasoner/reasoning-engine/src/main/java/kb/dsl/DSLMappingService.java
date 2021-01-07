@@ -79,32 +79,32 @@ public class DSLMappingService {
 	String ws = base + "workspace/1/";
 	String namespacews = base + "workspace/1/";
 	
-	IRI aadmKB;
-	String aadmURI;
-	String aadmDSL;
+	public IRI aadmKB;
+	public String aadmURI;
+	public String aadmDSL;
 	
 	//e.g.docker or openstack
-	IRI namespace;
-	String name;
+	public IRI namespace;
+	public String name;
 	
 	boolean complete;
 	
-	String currentTemplate;
-	List<String> namespacesOfType = new ArrayList<String>();
+	private String currentTemplate;
+	public List<String> namespacesOfType = new ArrayList<String>();
 	
 
 	// Validation
-	Set<String> definedPropertiesForValidation = new HashSet<String>(),
+	public Set<String> definedPropertiesForValidation = new HashSet<String>(),
 			definedAttributesForValidation = new HashSet<String>();
 	
-	Map<String, String> propertyValuesForValidation = new HashMap<String, String>();
+	public Map<String, String> propertyValuesForValidation = new HashMap<String, String>();
 
-	List<ValidationModel> validationModels = new ArrayList<>();
-	List<ValidationModel> modifiedModels = new ArrayList<>();
-	List<ValidationModel> suggestedModels = new ArrayList<>();
-	List<DslValidationModel>  mappingModels =  new ArrayList<>();
+	public List<ValidationModel> validationModels = new ArrayList<>();
+	public List<ValidationModel> modifiedModels = new ArrayList<>();
+	public List<ValidationModel> suggestedModels = new ArrayList<>();
+	public List<DslValidationModel>  mappingModels =  new ArrayList<>();
 	
-	Set<String> templateNames = new HashSet<>();
+	public Set<String> templateNames = new HashSet<>();
 	
 
 	public DSLMappingService(KB kb, String aadmTTL, String aadmURI, boolean complete, String namespace, String aadmDSL, String name)

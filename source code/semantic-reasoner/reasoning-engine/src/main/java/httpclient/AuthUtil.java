@@ -10,14 +10,14 @@ import httpclient.dto.AuthErrorModel;
 import httpclient.exceptions.AuthException;
 import kb.configs.ConfigsLoader;
 
-public class AuthUtil {	
-	private AuthUtil() {
-		throw new IllegalStateException("AuthUtil class");
-	}
-	
+public class AuthUtil {
 	static ConfigsLoader configInstance = ConfigsLoader.getInstance();
 	static {
 		configInstance.loadProperties();
+	}
+	
+	private AuthUtil() {
+		throw new IllegalStateException("AuthUtil class");
 	}
 	
 	public static boolean authentication() {
@@ -30,10 +30,6 @@ public class AuthUtil {
 			errors.add(new AuthErrorModel(LocalDateTime.now(), role + " role not assigned", HttpStatus.FORBIDDEN));
 			throw new AuthException(errors);
 		}
-	}
-	
-	public static void main(String[] args) {
-
 	}
 
 }

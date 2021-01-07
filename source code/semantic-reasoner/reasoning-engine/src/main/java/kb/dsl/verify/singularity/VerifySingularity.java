@@ -16,10 +16,9 @@ import kb.repository.KB;
 import kb.utils.QueryUtil;
 
 public class VerifySingularity {
+	private static final Logger LOG = LoggerFactory.getLogger(VerifySingularity.class.getName());
 	private VerifySingularity() {
 	}
-	
-	private static final Logger LOG = LoggerFactory.getLogger(VerifySingularity.class.getName());
 	
 	public static void removeExistingDefinitions (KB kb, Set<String> nodeTypes, String namespace) throws IOException {
 		LOG.info("removeExistingTypes = {}", QueryUtil.convertToSPARQLList(nodeTypes));
