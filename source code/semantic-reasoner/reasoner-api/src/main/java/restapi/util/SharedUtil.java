@@ -26,9 +26,9 @@ public class SharedUtil {
 		throw new IllegalStateException("SharedUtil class");
 	}
 	
-	public static Response authorization(String namespace, ArrayList<String> roles, String toKen, String typeOfRole) throws URISyntaxException {
+	public static Response authorization(String namespace, ArrayList<String> roles, String token, String typeOfRole) throws URISyntaxException {
 		try {	
-			roles = HttpClientRequest.validateToKen(toKen);
+			roles = HttpClientRequest.validateToKen(token);
 			LOG.log(Level.INFO, "roles={0}", roles);
 			String role = null;
 			switch (typeOfRole) {

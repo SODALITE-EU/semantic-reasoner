@@ -68,7 +68,7 @@ public class SubmitService extends AbstractService {
 	 * @param complete flag for auto-completion of entities
 	 * @param namespace The namespace of the model
 	 * @param name The file name of the model
-	 * @param toKen The toKen
+	 * @param token The token
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid
@@ -88,12 +88,12 @@ public class SubmitService extends AbstractService {
 			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
-			@ApiParam(value = "toKen") @FormParam("toKen") String toKen)
+			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
 		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(namespace, roles, toKen, AuthConsts.AADM_W);
+			Response res = SharedUtil.authorization(namespace, roles, token, AuthConsts.AADM_W);
 			if (res != null)
 				return res;
 		}
