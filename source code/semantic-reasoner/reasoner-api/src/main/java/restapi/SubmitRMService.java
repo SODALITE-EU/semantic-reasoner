@@ -59,7 +59,7 @@ public class SubmitRMService extends AbstractService  {
 	 * @param  rmDSL The original DSL of the resource model
 	 * @param  namespace The namespace of the resource model e.g. docker
 	 * @param  name The filename of the model
-	 * @param toKen The toKen
+	 * @param token The token
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid
@@ -77,11 +77,11 @@ public class SubmitRMService extends AbstractService  {
 			@ApiParam(value = "The rm in DSL", required = true) @FormParam("rmDSL") String rmDSL,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
-			@ApiParam(value = "toKen") @FormParam("toKen") String toKen)
+			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException {
 		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(namespace, roles, toKen, AuthConsts.AADM_W);
+			Response res = SharedUtil.authorization(namespace, roles, token, AuthConsts.RM_W);
 			if (res != null)
 				return res;
 		}
