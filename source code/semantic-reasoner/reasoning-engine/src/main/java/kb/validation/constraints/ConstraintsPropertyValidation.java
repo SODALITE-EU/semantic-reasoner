@@ -95,10 +95,10 @@ public class ConstraintsPropertyValidation {
 	}
 
 	private class ConstraintResult {
-		String property;
-		String constraint;
-		String const_type;
-		String value;
+		private String property;
+		private String constraint;
+		private String const_type;
+		private String value;
 		
 		ConstraintResult(String property, String constraint, String const_type, String value) {
 			this.property = property;
