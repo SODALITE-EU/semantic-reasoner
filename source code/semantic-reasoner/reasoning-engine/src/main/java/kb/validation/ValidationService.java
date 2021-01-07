@@ -44,8 +44,7 @@ public class ValidationService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/ finally {
-			if (requirementValidation != null)
-				requirementValidation.shutDown();
+			requirementValidation.shutDown();
 		}
 		return models;
 	}

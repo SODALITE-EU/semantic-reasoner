@@ -3,8 +3,10 @@ package httpclient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,17 +26,20 @@ import org.json.simple.parser.ParseException;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import httpclient.dto.HttpRequestErrorModel;
-import httpclient.dto.HttpRequestErrorModel.DownstreamApi;
+import httpclient.dto.AuthErrorModel;
+
+import httpclient.exceptions.AuthException;
 import httpclient.exceptions.MyRestTemplateException;
 import kb.configs.ConfigsLoader;
 import kb.repository.KB;
 
 public class HttpClientRequest {
 	
-	private static final Logger LOG = Logger.getLogger(HttpClientRequest.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(HttpClientRequest.class.getName());
 	
 	static ConfigsLoader configInstance = ConfigsLoader.getInstance();
 	static {
@@ -106,7 +111,7 @@ public class HttpClientRequest {
 		return response.getBody();
 	}
 	
-	public static void validateToKen(String token) throws URISyntaxException, MyRestTemplateException {
+	public static ArrayList<String> validateToKen(String token) throws URISyntaxException, MyRestTemplateException, AuthException {
 		LOG.info("validateToKen:");
 		String url = keycloak + INTROSPECT_SERVICE;
 		
@@ -121,10 +126,19 @@ public class HttpClientRequest {
 		boolean active = jsonObject.get("active").getAsBoolean();
 		
 		if(!active) {
-			HttpRequestErrorModel e = new HttpRequestErrorModel(LocalDateTime.now(), DownstreamApi.KEYCLOAK_API, HttpStatus.UNAUTHORIZED, 401, "", "Access Token not active");
-			throw new MyRestTemplateException(e);
+			List<AuthErrorModel> errors = new ArrayList<AuthErrorModel>();
+			errors.add(new AuthErrorModel(LocalDateTime.now(),  "Access Token not active", HttpStatus.UNAUTHORIZED));
+			throw new AuthException(errors);	
 		}
 		
+		JsonArray roles = jsonObject.getAsJsonObject("resource_access").getAsJsonObject(keycloakClientId).getAsJsonArray("roles");
+
+		ArrayList<String> rolesList = new ArrayList<String>();
+		for (JsonElement r : roles) {
+			 rolesList.add(r.getAsString());
+		}
+		LOG.info("rolesList={}", rolesList);
+		return rolesList;
 	}
 	
 	public static void getWarnings(JSONObject response, String aadmId) throws URISyntaxException, ParseException, MyRestTemplateException {
@@ -132,11 +146,11 @@ public class HttpClientRequest {
 		String url = bugPredictor + BUG_PREDICTOR_SERVICE;
 		
 		String input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"aadmid\":\""+ aadmId + "\"}";
-		LOG.log(Level.INFO, "input = {0}", input);
+		LOG.info("input = {}", input);
 		
 		String result = null;
 		result = sendJSONMessage(new URI(url), HttpMethod.POST, input, String.class, new BugCustomErrorHandler());
-		LOG.log(Level.INFO, "result = {0}", result.toString());
+		LOG.info("result = {}", result);
 		JSONParser parser = new JSONParser();
 		JSONArray warningsJson = (JSONArray)((JSONObject) parser.parse(result)).get("warnings");
 		if (!warningsJson.isEmpty())
@@ -144,7 +158,7 @@ public class HttpClientRequest {
 	}
 	
 	
-	public static void main(String[] args) throws ParseException, MyRestTemplateException, URISyntaxException  {			
+	public static void main(String[] args) throws ParseException, MyRestTemplateException, URISyntaxException, AuthException  {
 		JSONObject response = new JSONObject();
 		HttpClientRequest.getWarnings(response, "ddd");
 			

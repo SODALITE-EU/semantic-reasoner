@@ -12,6 +12,9 @@ import org.eclipse.rdf4j.repository.RepositoryException;
  * Utility methods for executing updates.
  */
 public class UpdateUtil {
+	private UpdateUtil() {
+		throw new IllegalStateException("UpdateUtil class");
+	}
 	/**
 	 * Executes a SPARQL UPDATE (INSERT or DELETE) statement.
 	 *

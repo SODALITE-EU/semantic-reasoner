@@ -2,8 +2,8 @@ package kb.dto;
 
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,10 +20,9 @@ import com.google.gson.JsonObject;
 
 import kb.repository.KB;
 import kb.utils.MyUtils;
-import kb.utils.QueryUtil;
 
 public class Parameter extends Resource {
-	private static final Logger LOG = Logger.getLogger(Parameter.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(Parameter.class.getName());
 
 	String value;
 	String valueUri;
@@ -136,22 +135,22 @@ public class Parameter extends Resource {
 		
 		if (value instanceof Literal) {
 			this.value = value.stringValue();
-			LOG.log(Level.INFO, "VALUE1: {0}", value);
+			LOG.info("VALUE1: {}", value);
 		} else {
-			LOG.log(Level.INFO, "VALUE2: {0}", value);
+			LOG.info("VALUE2: {}", value);
 			IRI v = (IRI) value;
 			List<String> collect = Iterations.asList(
 					kb.connection.getStatements(v, kb.factory.createIRI(KB.TOSCA + "hasValue"), null))
 					.stream().map(x -> MyUtils.getStringValue(x.getObject())).collect(Collectors.toList());
 			if (collect.isEmpty() && !v.stringValue().contains("List")) { //this could be [], i.e. an instance of List without values...
-				LOG.log(Level.INFO, "collect.isEmpty() {0}", collect);
+				LOG.info("collect.isEmpty() {}", collect);
 				this.valueUri = v.toString();
 				this.value = v.getLocalName();
 //				this.value = v.toString();
 			} else {
-				LOG.log(Level.INFO, "collect.not empty() {0}", collect);
+				LOG.info("collect.not empty() {}", collect);
 				this.value = MyUtils.getGson(false).toJson(collect);//.replaceAll("\"", "");
-				LOG.log(Level.INFO, "{0} - {1}", new Object[] {this.value, collect});
+				LOG.info("{} - {}", this.value, collect);
 			}
 		}
 	}

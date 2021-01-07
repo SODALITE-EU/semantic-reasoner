@@ -2,8 +2,8 @@ package kb.dsl.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -17,11 +17,10 @@ import kb.utils.QueryUtil;
 
 public class GetResources {
 	
-	private static final Logger LOG = Logger.getLogger(GetResources.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(GetResources.class.getName());
 
 	public static IRI getKBNodeType(NamedResource n, String type, KB kb) {
-		LOG.log(Level.INFO, "getKBNodeType label = {0}, type = {1}\n", 
-					new Object[] {n.getResource(), type});
+		LOG.info("getKBNodeType label = {}, type = {}\n", n.getResource(), type);
 		String namespace = n.getNamespace();
 		String resource = n.getResource();
 		
@@ -60,8 +59,7 @@ public class GetResources {
 	}
 	
 	public static IRI getKBProperty(String label, List<String> namespaces, KB kb) {
-		LOG.log(Level.INFO, "getKBProperty label = {0}, namespaces = {1}\n", 
-				new Object[] {label, namespaces});
+		LOG.info("getKBProperty label = {}, namespaces = {}\n", label, namespaces);
 		
 		String sparql = "select distinct ?x \r\n" +
 						"FROM <http://www.ontotext.com/explicit>\r\n" +
@@ -127,7 +125,7 @@ public class GetResources {
 	 * the List of all the inherited namespaces is returned e.g. [docker, vehicleiot]
 	 */
 	public static List<String> getInheritedNamespacesFromType(KB kb, String type) {
-		LOG.log(Level.INFO, "getInheritedNamespacesFromType type  = {0}\n", type);
+		LOG.info("getInheritedNamespacesFromType type  = {}\n", type);
 		List<String> namespacesOfType = new ArrayList<String>();
 		String query = KB.PREFIXES +
 						" select ?g { \r\n" + 
@@ -172,8 +170,7 @@ public class GetResources {
 		
 		String resource_iri = MyUtils.getFullResourceIRI(resource, kb);
 		
-		LOG.log(Level.INFO, "req_cap = {0}, resource = {1}, resource_iri = {2}\n", 
-				new Object[] {req_cap, resource, resource_iri});
+		LOG.info("req_cap = {}, resource = {}, resource_iri = {}\n", req_cap, resource, resource_iri);
 		
 		String sparql = "select ?requirement \r\n" + 
 				"where {\r\n" + 

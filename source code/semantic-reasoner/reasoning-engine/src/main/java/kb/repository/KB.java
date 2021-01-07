@@ -19,11 +19,11 @@ import kb.configs.ConfigsLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KB {
-	private static final Logger LOG = Logger.getLogger(KB.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(KB.class.getName());
 	
     public static String SERVER_URL = "http://localhost:7200";
     public static String ANSIBLE = "http://160.40.52.200:8084/Ansibles/";
@@ -169,7 +169,7 @@ public class KB {
                     KB.class.getResourceAsStream("/ontologies/core/optimizations.ttl");
             connection.add(input, "", RDFFormat.TURTLE);
         } catch (IOException e) {
-        	LOG.log(Level.SEVERE,e.getMessage(), e);
+        	LOG.error(e.getMessage(), e);
         }
 
         return false;

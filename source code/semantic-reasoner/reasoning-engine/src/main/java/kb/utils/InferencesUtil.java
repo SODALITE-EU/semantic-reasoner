@@ -1,17 +1,15 @@
 package kb.utils;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
+import java.util.Set;
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
 import kb.repository.KB;
 
 public class InferencesUtil {
+	private InferencesUtil() {
+	}
 	
 	/* Given a set of a classes, it returns the class that is lowest in the class hierarchy.
 	* e.g. tosca.nodes.Compute, sodalite.nodes.OpenStack.VM node types. 

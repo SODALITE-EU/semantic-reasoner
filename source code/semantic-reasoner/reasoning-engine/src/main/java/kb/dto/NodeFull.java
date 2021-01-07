@@ -2,6 +2,8 @@ package kb.dto;
 
 import java.io.IOException;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.rdf4j.model.IRI;
 
@@ -12,6 +14,7 @@ import com.google.gson.JsonObject;
 import kb.KBApi;
 
 public class NodeFull extends Node {
+	private static final Logger LOG = LoggerFactory.getLogger(NodeFull.class.getName());
 
 	Set<Property> properties;
 	Set<Attribute> attributes;
@@ -34,7 +37,7 @@ public class NodeFull extends Node {
 	}
 
 	public void build(KBApi api) throws IOException {
-		System.out.println("building: " + uri + ", isTemplate: " + isTemplate);
+		LOG.info("building={}, isTemplate={}", uri, isTemplate);
 
 		properties = api.getProperties(uri.toString(), isTemplate);
 		attributes = api.getAttributes(uri.toString(), isTemplate);
@@ -44,10 +47,9 @@ public class NodeFull extends Node {
 
 		// TODO orphan properties
 		validTargetTypes = api.getValidTargetTypes(uri.toString(), isTemplate);
-//		System.err.println("validTargetTypes " + validTargetTypes);
 
 		operations = api.getOperations(uri.toString(), isTemplate);
-//		System.err.println("validTargetTypes " + validTargetTypes);
+		
 		optimization = api.getOptimization(uri.toString());
 
 		// inputs
@@ -132,7 +134,7 @@ public class NodeFull extends Node {
 		array = new JsonArray();
 		for (Operation op : operations) {
 			array.add(op.serialise());
-			System.err.println("operations " + array);
+			LOG.info("operations {}", array);
 		}
 
 		if (!operations.isEmpty())

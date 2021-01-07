@@ -3,6 +3,7 @@ package httpclient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import java.util.stream.Collectors;
 
 import org.joda.time.LocalDateTime;
@@ -10,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import httpclient.dto.AuthModel.DownstreamApi;
 import httpclient.dto.HttpRequestErrorModel;
-import httpclient.dto.HttpRequestErrorModel.DownstreamApi;
 import httpclient.exceptions.MyRestTemplateException;
 
 public class KeycloakCustomErrorHandler implements ResponseErrorHandler {

@@ -1,7 +1,7 @@
 package kb.validation.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
@@ -13,7 +13,7 @@ import kb.repository.KB;
 import kb.utils.MyUtils;
 
 public class UpdateKB {
-	private static final Logger LOG = Logger.getLogger(UpdateKB.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(UpdateKB.class.getName());
 
 	KB kb;
 	IRI context;
@@ -33,7 +33,7 @@ public class UpdateKB {
 	
 	
 	public void addRequirement (IRI template, IRI r_i, IRI r_a, IRI matching_template) {
-		LOG.log(Level.INFO, "Adding requirement to template= {0}\n\t {1} \n\t\t {2} \n\t\t\t {3}", new Object[] {
+		LOG.info("Adding requirement to template= {}\n\t {} \n\t\t {} \n\t\t\t {}", new Object[] {
 								template, r_a, r_i, matching_template
 							});
 		RepositoryResult<Statement> statements = conn.getStatements(template, f.createIRI(KB.SODA + "hasContext"), null, context, null);

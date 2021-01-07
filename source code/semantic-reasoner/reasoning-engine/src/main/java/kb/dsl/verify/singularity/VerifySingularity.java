@@ -3,8 +3,8 @@ package kb.dsl.verify.singularity;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -16,10 +16,12 @@ import kb.repository.KB;
 import kb.utils.QueryUtil;
 
 public class VerifySingularity {
-	private static final Logger LOG = Logger.getLogger(VerifySingularity.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(VerifySingularity.class.getName());
+	private VerifySingularity() {
+	}
 	
 	public static void removeExistingDefinitions (KB kb, Set<String> nodeTypes, String namespace) throws IOException {
-		LOG.log(Level.INFO, "removeExistingTypes = {0}", QueryUtil.convertToSPARQLList(nodeTypes));
+		LOG.info("removeExistingTypes = {}", QueryUtil.convertToSPARQLList(nodeTypes));
 		
 		String sparql = "select ?m (group_concat(?x) AS ?nodes) { \r\n" + 
 						"    	?m a ?ModelType .\r\n" + 
@@ -48,7 +50,7 @@ public class VerifySingularity {
 		
 
 		String query = KB.PREFIXES + sparql;
-		LOG.log(Level.INFO, "removeExistingTypes query = {0}", query);
+		LOG.info("removeExistingTypes query = {}", query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
 		
 		while (result.hasNext()) {
@@ -59,14 +61,14 @@ public class VerifySingularity {
 			String[] nsplit = nodes.split(" ");
 			
 			long startTime = Instant.now().toEpochMilli();
-			LOG.log(Level.INFO, "VerifySingularity model = {0}, nodes = {1}\n", new Object[] {model , nodes});
+			LOG.info("VerifySingularity model = {}, nodes = {}\n", model , nodes);
 			for (String n: nsplit) {
 
 				new ModifyKB(kb).deleteNode(kb.factory.createIRI(n));
 			}
 			long endTime = Instant.now().toEpochMilli();
 			long timeElapsed = endTime - startTime;
-			LOG.log(Level.INFO, "Delete nodes execution time in milliseconds: {0}\n", timeElapsed);
+			LOG.info("Delete nodes execution time in milliseconds: {}\n", timeElapsed);
 		}
 		
 		result.close();	
@@ -79,7 +81,7 @@ public class VerifySingularity {
 						"}";
 		
 		String query = KB.SODA_DUL_PREFIXES + sparql;
-		LOG.log(Level.INFO, "removeInputs  query = {0}\n", query);
+		LOG.info("removeInputs  query = {}\n", query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, 
 										new SimpleBinding("m", kb.getFactory().createIRI(aadmURI)));
 		

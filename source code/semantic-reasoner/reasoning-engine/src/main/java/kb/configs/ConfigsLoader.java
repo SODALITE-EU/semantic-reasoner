@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfigsLoader {
-	private static final Logger LOG = Logger.getLogger(ConfigsLoader.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(ConfigsLoader.class.getName());
 	
 	private static ConfigsLoader configLoader;
 	String environment;
@@ -29,8 +29,7 @@ public class ConfigsLoader {
 	//envs for authentication
 	public static final List<String> AUTHENVS = Collections.unmodifiableList(
 		    Arrays.asList(new String[] {"qa", "docker"}));
-	
-	
+		
 	private ConfigsLoader(){}
 
     public static ConfigsLoader getInstance(){
@@ -49,7 +48,7 @@ public class ConfigsLoader {
 		Properties properties = new Properties();
 	
 		environment =  System.getenv("environment");
-		LOG.log(Level.INFO, "environment = {0}", environment);
+		LOG.info("environment = {}", environment);
 
 		if (environment == null) {
 			environment = "dev";
@@ -61,8 +60,8 @@ public class ConfigsLoader {
 				properties.load(is);
 			} catch (IOException e) {
 
-				LOG.warning("Property file not found");
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.warn("Property file not found");
+				LOG.error(e.getMessage());
 			}
 
 			// Read properties
@@ -88,7 +87,7 @@ public class ConfigsLoader {
 			keycloakClientId = System.getenv("keycloakClientId");
 			keycloakClientSecret = System.getenv("keycloakClientSecret");			
 		}
-		LOG.log(Level.INFO, "graphdb = {0}, bugpredictorServer = {1}, ansiblePath = {2}, reasonerServer = {3}, keycloak = {4}, keycloakClientId = {5}", new Object[] {graphdb, bugPredictorServer, ansiblePath, reasonerServer, keycloak, keycloakClientId});
+		LOG.info("graphdb = {}, bugpredictorServer = {}, ansiblePath = {}, reasonerServer = {}, keycloak = {}, keycloakClientId = {}", graphdb, bugPredictorServer, ansiblePath, reasonerServer, keycloak, keycloakClientId);
 	}
 	
 	public String getEnvironment() {
@@ -129,6 +128,8 @@ public class ConfigsLoader {
 	public String getKeycloakClientSecret() {
 		return keycloakClientSecret;
 	}
+	
+
 	
 	public static void main(String[] args) throws IOException {
 		ConfigsLoader configInstance = ConfigsLoader.getInstance();

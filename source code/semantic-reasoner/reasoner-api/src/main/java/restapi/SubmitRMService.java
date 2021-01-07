@@ -1,10 +1,11 @@
 package restapi;
 
 import java.io.IOException;
-import java.time.Instant;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -21,6 +22,8 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import httpclient.AuthConsts;
+import httpclient.AuthUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -32,6 +35,7 @@ import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
+import restapi.util.SharedUtil;
 
 /** A service that submits the resource model to the Knowledge Base.
  * @author George Meditskos
@@ -42,7 +46,7 @@ import kb.validation.exceptions.models.ValidationModel;
 @Path("/saveRM")
 @Api()
 public class SubmitRMService extends AbstractService  {
-	private static final Logger LOG = Logger.getLogger(SubmitRMService.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(SubmitRMService.class.getName());
 	static ConfigsLoader configInstance;
 	static {
 		configInstance = ConfigsLoader.getInstance();
@@ -55,11 +59,13 @@ public class SubmitRMService extends AbstractService  {
 	 * @param  rmDSL The original DSL of the resource model
 	 * @param  namespace The namespace of the resource model e.g. docker
 	 * @param  name The filename of the model
+	 * @param toKen The toKen
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid
 	 * @throws MappingException Unknown entity issue
 	 * @return The AADM URI
+	 * @throws URISyntaxException 
 	*/
 	@POST
 	//@Produces("text/plain")
@@ -70,8 +76,15 @@ public class SubmitRMService extends AbstractService  {
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("rmURI") String rmURI,
 			@ApiParam(value = "The rm in DSL", required = true) @FormParam("rmDSL") String rmDSL,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
-			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name)
-			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException {
+			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
+			@ApiParam(value = "toKen") @FormParam("toKen") String toKen)
+			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException {
+		ArrayList<String> roles = null;
+		if(AuthUtil.authentication()) {
+			Response res = SharedUtil.authorization(namespace, roles, toKen, AuthConsts.AADM_W);
+			if (res != null)
+				return res;
+		}
 		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
@@ -110,7 +123,7 @@ public class SubmitRMService extends AbstractService  {
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		} catch (Exception e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("There was an internal server error").build();
 		} finally {
 			m.shutDown();

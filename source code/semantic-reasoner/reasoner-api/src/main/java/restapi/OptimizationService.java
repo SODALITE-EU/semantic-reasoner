@@ -3,8 +3,8 @@ package restapi;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -51,7 +51,7 @@ import kb.validation.exceptions.models.ValidationModel;
 @Path("/optimizations")
 @Api()
 public class OptimizationService extends AbstractService {
-	private static final Logger LOG = Logger.getLogger(OptimizationService.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(OptimizationService.class.getName());
 	static ConfigsLoader configInstance;
 	static {
 		configInstance = ConfigsLoader.getInstance();
@@ -118,11 +118,11 @@ public class OptimizationService extends AbstractService {
 				new ModifyKB(kb).deleteModel(aadmUri.toString());
 			
 			HttpRequestErrorModel erm = e.error_model;
-			LOG.log(Level.WARNING, "rawStatus={0}, api={1}, statusCode={2}, error={3}", new Object[] {erm.rawStatus, erm.api, erm.statusCode, erm.error});
+			LOG.error("rawStatus={}, api={}, statusCode={}, error={}", erm.rawStatus, erm.api, erm.statusCode, erm.error);
 			
 		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
+			LOG.error(e.getMessage());
 		} finally {
 			m.shutDown();
 		}
