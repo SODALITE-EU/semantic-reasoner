@@ -20,6 +20,10 @@ pipeline {
        //KB DEPLOYMENT SETTINGS
        KB_USERNAME = credentials('kb-username')
        KB_PASSWORD = credentials('kb-password')
+       //KEYCLOAK SETTINGS
+       KEYCLOAK_URL = credentials('keycloak-url')
+       KEYCLOAK_CLIENT_ID = credentials('keycloak-client-id')
+       KEYCLOAK_CLIENT_SECRET = credentials('keycloak-client-secret')
        // OPENSTACK DEPLOYMENT FALLBACK SETTINGS
        OS_PROJECT_DOMAIN_NAME = "Default"
        OS_USER_DOMAIN_NAME = "Default"

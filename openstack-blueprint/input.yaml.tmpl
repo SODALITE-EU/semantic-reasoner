@@ -23,6 +23,9 @@ reasoner_env:
   reasonerServer: "http://{{ public_address }}:8080/"
   kbUsername: "${KB_USERNAME}"
   kbPassword: "${KB_PASSWORD}"
+  keycloak: "${KEYCLOAK_URL}"
+  keycloakClientId:"${KEYCLOAK_CLIENT_ID}"
+  keycloakClientSecret:"${KEYCLOAK_CLIENT_SECRET}"
 toscasmells_env:
   WAIT_HOSTS: graph-db:7200
   environment: docker
