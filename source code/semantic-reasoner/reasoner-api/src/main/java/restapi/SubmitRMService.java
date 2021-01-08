@@ -81,7 +81,7 @@ public class SubmitRMService extends AbstractService  {
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException {
 		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(namespace, roles, token, AuthConsts.RM_W);
+			Response res = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, AuthConsts.RM_W), roles, token, true);
 			if (res != null)
 				return res;
 		}

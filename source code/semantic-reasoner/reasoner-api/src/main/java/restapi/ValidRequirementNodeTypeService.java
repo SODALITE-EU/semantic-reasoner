@@ -1,6 +1,7 @@
 package restapi;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 
@@ -8,20 +9,20 @@ import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.rdf4j.model.IRI;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import httpclient.AuthConsts;
+import httpclient.AuthUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
-import kb.dto.Node;
 import kb.dto.NodeType;
+import restapi.util.SharedUtil;
 
 /** A service that returns node types that satisfy a certain requirement of a node template of type nodeType.
  * @author George Meditskos
@@ -37,8 +38,10 @@ public class ValidRequirementNodeTypeService extends AbstractService {
 	 * @param requirement The name of a requirement
 	 * @param nodeType The name of the node type
 	 * @param imports The imported modules
+	 * @param token token
 	 * @throws IOException If your input format is invalid
 	 * @return The node types in JSON format
+	 * @throws URISyntaxException 
 	*/
 	@GET
 	@Produces("application/json")
@@ -57,9 +60,16 @@ public class ValidRequirementNodeTypeService extends AbstractService {
 					defaultValue = "tosca.nodes.SoftwareComponent") @MatrixParam("nodeType") String nodeType,
 			@ApiParam(
 							value = "e.g. docker, hpc",
-							required = true) @MatrixParam("imports") List<String> imports)
-			throws IOException {
-
+							required = true) @MatrixParam("imports") List<String> imports,
+			@ApiParam(value = "token", required = false) @MatrixParam("token") String token)
+			throws IOException, URISyntaxException {
+		
+		if(AuthUtil.authentication()) {
+		 	Response res = SharedUtil.authorization(AuthUtil.createRolesFromNamespaces(imports, AuthConsts.RM_R), null, token, true);
+		 	if (res != null)
+				return res;
+		}
+		
 		KBApi api = new KBApi();
 		Set<NodeType> nodeTypes = api.getRequirementValidNodeType(requirement, nodeType, imports);
 		api.shutDown();

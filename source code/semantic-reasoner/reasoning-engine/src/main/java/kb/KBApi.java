@@ -41,6 +41,7 @@ import kb.dto.Parameter;
 import kb.dto.Property;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
+import kb.dto.Trigger;
 import kb.repository.KB;
 import kb.repository.KBConsts;
 import kb.utils.InferencesUtil;
@@ -143,6 +144,39 @@ public class KBApi {
 		}
 
 		return properties;
+	}
+	
+	public Set<Trigger> getTriggers(String resource, boolean isTemplate) throws IOException {
+		LOG.info("getTrigger: {}", resource);
+
+		Set<Trigger> triggers = new HashSet<>();
+		String sparql = MyUtils
+				.fileToString(!isTemplate ? "sparql/getTriggers.sparql" : "sparql/getTriggersTemplate.sparql");
+
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
+
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI trig = (IRI) bindingSet.getBinding("trigger").getValue();
+			IRI concept = (IRI) bindingSet.getBinding("concept").getValue();
+			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
+
+			Trigger tr = new Trigger(trig);
+			tr.setClassifiedBy(concept);
+
+			if (_value != null)
+				tr.setValue(_value, kb);
+
+			triggers.add(tr);
+		}
+		result.close();
+		for (Trigger t : triggers) {
+			t.build(this);
+		}
+		return triggers;
 	}
 	
 	public Set<String> getPropAttrNames(String resource, String elem) throws IOException {
@@ -828,6 +862,25 @@ public class KBApi {
 		Set<IRI> results = new HashSet<>();
 		String sparql = MyUtils.fileToString(
 				!isTemplate ? "sparql/getValidTargetTypes.sparql" : "sparql/getValidTargetTypesTemplate.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI value = (IRI) bindingSet.getBinding("value").getValue();
+			results.add(value);
+		}
+		result.close();
+		return results;
+	}
+	
+	public Set<IRI> getTargets(String resource, boolean isTemplate) throws IOException {
+		LOG.info("getTargets: {}", resource);
+
+		Set<IRI> results = new HashSet<>();
+		String sparql = MyUtils.fileToString(
+				!isTemplate ? "sparql/getTargets.sparql" : "sparql/getTargetsTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,

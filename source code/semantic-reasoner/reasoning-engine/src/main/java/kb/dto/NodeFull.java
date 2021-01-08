@@ -23,6 +23,8 @@ public class NodeFull extends Node {
 	Set<Interface> interfaces;
 	Set<IRI> validTargetTypes;
 	Set<Operation> operations;
+	Set<Trigger> triggers;
+	Set<IRI> targets;
 
 	Set<Property> inputs;	
 	Optimization optimization;
@@ -51,6 +53,9 @@ public class NodeFull extends Node {
 		operations = api.getOperations(uri.toString(), isTemplate);
 		
 		optimization = api.getOptimization(uri.toString());
+		//policies
+		triggers = api.getTriggers(uri.toString(), isTemplate);
+		targets = api.getTargets(uri.toString(), isTemplate);
 
 		// inputs
 		inputs = api.getInputs(uri.toString(), false);
@@ -152,6 +157,24 @@ public class NodeFull extends Node {
 
 		if(optimization != null)
 			data.addProperty("optimization", optimization.getJson());
+		
+		// triggers
+		array = new JsonArray();
+		for (Trigger t : triggers) {
+			array.add(t.serialise());
+			relevantUris.addAll(t.relevantUris);
+		}
+		
+		if (!triggers.isEmpty())
+			data.add("triggers", array);
+		
+		array = new JsonArray();
+		for (IRI t : targets) {
+			array.add(t.toString());
+			relevantUris.add(t.toString());
+		}
+		if (!targets.isEmpty())
+			data.add("targets", array);
 		
 		return data;
 	}

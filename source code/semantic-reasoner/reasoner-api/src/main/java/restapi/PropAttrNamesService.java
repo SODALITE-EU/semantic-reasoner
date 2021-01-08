@@ -1,6 +1,7 @@
 package restapi;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -15,11 +16,15 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import httpclient.AuthConsts;
+import httpclient.AuthUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 import kb.KBApi;
+import kb.utils.MyUtils;
+import restapi.util.SharedUtil;
 
 /** A service that returns the names of the properties or attributes of a template
  * @author George Meditskos
@@ -38,6 +43,7 @@ public class PropAttrNamesService extends AbstractService {
 	 * @param element The element type
 	 * @throws IOException If your input format is invalid
 	 * @return The requirements in JSON format
+	 * @throws URISyntaxException 
 	*/
 	@GET
 	@Produces("application/json")
@@ -53,10 +59,19 @@ public class PropAttrNamesService extends AbstractService {
 			@ApiParam(
 					value = "prop or attr",
 					required = true,
-					defaultValue = "prop") @QueryParam("element") String element)
-		throws IOException {
+					defaultValue = "prop") @QueryParam("element") String element,
+			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
+		throws IOException, URISyntaxException {
 		
 		LOG.info("resource={}, element={}", resource, element);
+		
+		if(AuthUtil.authentication()) {
+			String _namespace =  MyUtils.getNamespaceFromReference(resource);
+			String namespace = _namespace == null ? "global":_namespace;
+			Response res = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, AuthConsts.AADM_R ), null, token, true);
+			if (res != null)
+				return res;
+		}
 		
 		KBApi api = new KBApi();
 		

@@ -1,6 +1,7 @@
 package restapi;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -17,11 +18,14 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import httpclient.AuthConsts;
+import httpclient.AuthUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Node;
+import restapi.util.SharedUtil;
 
 /** A service that returns all the templates associated to specific namespaces
  * @author George Meditskos
@@ -37,8 +41,10 @@ public class TemplateService extends AbstractService {
 	/**
 	  * Getting all the templates in the KB that belong to global namespace and in the imports namespaces
 	  * @param imports The namespaces to be searched e.g. docker, snow
+	  * @param token token
 	  * @throws IOException if your input format is invalid
 	  * @return All the relevant templates in json format
+	 * @throws URISyntaxException 
 	 */
 	@GET
 	@Produces("application/json")
@@ -46,10 +52,17 @@ public class TemplateService extends AbstractService {
 	public Response getTemplates(@ApiParam(
 			value = "the namespaces",
 			required = true,
-			defaultValue = "") @MatrixParam("imports") List<String> imports) throws IOException {
+			defaultValue = "") @MatrixParam("imports") List<String> imports,
+			@ApiParam(value = "token", required = false) @MatrixParam("token") String token) throws IOException, URISyntaxException {
 		
 		 LOG.info( "imports = {}",  Arrays.toString(imports.toArray()));
-		
+		 
+		 if(AuthUtil.authentication()) {
+			 	Response res = SharedUtil.authorization(AuthUtil.createRolesFromNamespaces(imports, AuthConsts.AADM_R), null, token, true);
+			 	if (res != null)
+					return res;
+		 }		
+		 
 		KBApi api = new KBApi();
 		Set<Node> nodes = api.getTemplates(imports);
 		api.shutDown();

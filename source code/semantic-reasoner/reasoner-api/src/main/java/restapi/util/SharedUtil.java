@@ -1,5 +1,6 @@
 package restapi.util;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,30 +27,23 @@ public class SharedUtil {
 		throw new IllegalStateException("SharedUtil class");
 	}
 	
-	public static Response authorization(String namespace, ArrayList<String> roles, String token, String typeOfRole) throws URISyntaxException {
+	/**
+	 * Authorized the iser
+	 * @param roles_input includes all the roles to be validated. e.g. [docker_rm_r, openstack_rm_r]
+	 * @param roles_output The roles assigned to the user will be saved
+	 * @param token token
+	 * @param checkRole When enabled roles are checked. Some services such as NamespaceService do not need role validation
+	 * @return Response if error occurs
+	*/
+	public static Response authorization(ArrayList<String> roles_input, ArrayList<String> roles_output, String token, boolean checkRole) throws URISyntaxException {
 		try {	
-			roles = HttpClientRequest.validateToKen(token);
-			LOG.log(Level.INFO, "roles={0}", roles);
-			String role = null;
-			switch (typeOfRole) {
-				case AuthConsts.AADM_W:
-					role = namespace.isEmpty() ? AuthConsts.GLOBAL_AADM_W : namespace + AuthConsts.AADM_W;
-					break;
-				case AuthConsts.AADM_R:
-					role = namespace.isEmpty() ? AuthConsts.GLOBAL_AADM_R : namespace + AuthConsts.AADM_R;
-					break;
-				case AuthConsts.RM_W:
-					role = namespace.isEmpty() ? AuthConsts.GLOBAL_RM_W : namespace + AuthConsts.RM_W;
-					break;
-				case AuthConsts.RM_R:
-					role = namespace.isEmpty() ? AuthConsts.GLOBAL_RM_R : namespace + AuthConsts.RM_R;
-					break;
-				default:
-					LOG.log(Level.INFO, "default");
-					return null;
+			roles_output = HttpClientRequest.validateToKen(token);
+			if (checkRole) {
+				LOG.log(Level.INFO, "roles={0}", roles_input);
+								
+				if (checkRole)
+					AuthUtil.checkRoles(roles_input, roles_output);
 			}
-			if (role != null)
-				AuthUtil.checkRole(role, roles);
 		} catch (MyRestTemplateException e) {
 			HttpRequestErrorModel erm = e.error_model;
 			LOG.log(Level.WARNING, "rawStatus={0}, api={1}, statusCode={2}, error={3}", new Object[] {erm.rawStatus, erm.api, erm.statusCode, erm.error});
@@ -68,5 +62,6 @@ public class SharedUtil {
 		}
 		return null;
 	}
+
 
 }
