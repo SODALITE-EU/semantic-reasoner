@@ -76,8 +76,8 @@ public class DSLMappingService {
 	String base = "https://www.sodalite.eu/ontologies/";
 //	String ws = base + "workspace/woq2a8g0gscuqos88bn2p7rvlq3/";
 //	String ws = "http://";
-	String ws = base + "workspace/1/";
-	String namespacews = base + "workspace/1/";
+	String aadmws = KB.BASE_NAMESPACE;
+	String templatews = KB.BASE_NAMESPACE;
 	
 	public IRI aadmKB;
 	public String aadmURI;
@@ -131,9 +131,9 @@ public class DSLMappingService {
 		this.complete = complete;
 		
 		if (!"".equals(namespace))
-			this.namespace = factory.createIRI(ws + namespace + "/");
+			this.namespace = factory.createIRI(templatews + namespace + "/");
 		else
-			this.namespace = factory.createIRI(ws + "global/");
+			this.namespace = factory.createIRI(templatews + "global/");
 		
 		this.aadmDSL = aadmDSL;
 		this.name = name;
@@ -168,16 +168,16 @@ public class DSLMappingService {
 			else
 				userId = _userId.get().getLabel();
 					
-			ws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
-			LOG.info("namespace = {}", ws);
-			aadmBuilder.setNamespace("ws", ws);
+			aadmws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
+			LOG.info("namespace = {}", aadmws);
+			aadmBuilder.setNamespace("ws", aadmws);
 
-			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(ws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
+			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(aadmws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
 			//context = aadmKB;
 			aadmBuilder.add(aadmKB, RDF.TYPE, "soda:AbstractApplicationDeployment");
 
 			if (userId != null) {
-				IRI user = factory.createIRI(ws + userId);
+				IRI user = factory.createIRI(aadmws + userId);
 				aadmBuilder.add(user, RDF.TYPE, "soda:User");
 				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "createdBy"), user);
 			}
@@ -229,7 +229,7 @@ public class DSLMappingService {
 			
 			LOG.info("Name: {}, type: {}", templateName, templateType);
 			
-			NamedResource fullTemplateType = GetResources.setNamedResource(namespacews, templateType);
+			NamedResource fullTemplateType = GetResources.setNamedResource(templatews, templateType);
 			//this.namespaceOfType = n.getNamespace();
 			
 			templateType = fullTemplateType.getResource();
@@ -462,7 +462,7 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());			
+			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());			
 			IRI kbTemplate = getKBTemplate(n);
 			if (kbTemplate == null) {
 				if (templateNames.contains(n.getResource()))
@@ -521,7 +521,7 @@ public class DSLMappingService {
 					.orElse(null);
 
 			if (value != null) { // this means there is no parameters
-				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
 				IRI kbTemplate = getKBTemplate(n);
 				if (kbTemplate == null) {
 					if (templateNames.contains(n.getResource()))
@@ -686,7 +686,7 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
 			IRI kbTemplate = getKBTemplate(n);
 			if (kbTemplate == null) {
 				if (templateNames.contains(n.getResource()))
@@ -764,7 +764,7 @@ public class DSLMappingService {
 
 		if (value != null) { // this means there is no parameters
 			if (triggerName.equals("node")) {
-				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
 				IRI kbNode = getKBTemplate(n);
 				if (kbNode == null) {
 					if (templateNames.contains(n.getResource()))
@@ -830,7 +830,7 @@ public class DSLMappingService {
 			aadmBuilder.add(list, RDF.TYPE, "tosca:List");
 			
 			
-			NamedResource n = GetResources.setNamedResource(namespacews, l.getLabel());
+			NamedResource n = GetResources.setNamedResource(templatews, l.getLabel());
 			IRI kbNode = getKBTemplate(n);
 			if (kbNode == null) {
 				if (templateNames.contains(n.getResource()))

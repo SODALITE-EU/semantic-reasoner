@@ -75,14 +75,9 @@ public class AttributeService extends AbstractService {
 					defaultValue = "false") @QueryParam("template") boolean template,
 			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 			throws IOException, URISyntaxException {
-
-		ArrayList<String> roles = null;
 		
 		if(AuthUtil.authentication()) {
-			String typeOfRole = template ? AuthConsts.AADM_R : AuthConsts.RM_R;
-			String _namespace =  MyUtils.getNamespaceFromReference(resource);
-			String namespace = _namespace == null ? "global":_namespace;
-			Response res = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, typeOfRole), roles, token, true);
+			Response res = SharedUtil.authForReadRoleFromResource(template, resource, token);
 			if (res != null)
 				return res;
 		}

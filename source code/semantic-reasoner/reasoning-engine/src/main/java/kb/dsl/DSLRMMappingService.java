@@ -64,8 +64,8 @@ public class DSLRMMappingService {
 	String base = "https://www.sodalite.eu/ontologies/";
 //	String ws = base + "workspace/woq2a8g0gscuqos88bn2p7rvlq3/";
 //	String ws = "http://";
-	String ws = base + "workspace/1/";
-	final String namespacews = base + "workspace/1/";
+	String resourcews = KB.BASE_NAMESPACE;
+	final String nodews = KB.BASE_NAMESPACE;
 	
 
 	IRI rmKB;
@@ -127,15 +127,15 @@ public class DSLRMMappingService {
 			else
 				userId = _userId.get().getLabel();
 			
-			ws += (rmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(rmURI, ".*/(.*)/RM_.*") + "/";
-			LOG.info("ws = {}", ws);
-			resourceBuilder.setNamespace("ws", ws);
+			resourcews += (rmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(rmURI, ".*/(.*)/RM_.*") + "/";
+			LOG.info("resourcews = {}", resourcews);
+			resourceBuilder.setNamespace("ws", resourcews);
 
-			rmKB = (rmURI.isEmpty()) ? factory.createIRI(ws + "RM_" + MyUtils.randomString()) : factory.createIRI(rmURI);
+			rmKB = (rmURI.isEmpty()) ? factory.createIRI(resourcews + "RM_" + MyUtils.randomString()) : factory.createIRI(rmURI);
 			//context = rmKB;
 			resourceBuilder.add(rmKB, RDF.TYPE, "soda:ResourceModel");
 			if (userId != null) {
-				IRI user = factory.createIRI(ws + userId);
+				IRI user = factory.createIRI(resourcews + userId);
 				resourceBuilder.add(user, RDF.TYPE, "soda:User");
 				resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "createdBy"), user);
 			}
@@ -221,7 +221,7 @@ public class DSLRMMappingService {
 			
 			LOG.info("Name: {}, type: {}", nodeName, nodeType);
 			
-			NamedResource n = GetResources.setNamedResource(namespacews, nodeType);
+			NamedResource n = GetResources.setNamedResource(nodews, nodeType);
 			String resourceIRI = n.getResourceURI() ;
 			if (resourceIRI != null)
 				namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, resourceIRI);
@@ -376,7 +376,7 @@ public class DSLRMMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
 			IRI kbNode = getKBNode(n);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
@@ -454,7 +454,7 @@ public class DSLRMMappingService {
 				if ((i = Ints.tryParse(value.stringValue())) != null) {
 					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 				} else {
-						NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+						NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
 						IRI kbNode = getKBNode(n);
 						if (kbNode == null) {
 							// throw new Exception("Cannot find node: " + value);
@@ -510,7 +510,7 @@ public class DSLRMMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
 			IRI kbNode = getKBNode(n);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
@@ -589,7 +589,7 @@ public class DSLRMMappingService {
 
 		if (value != null) { // this means there is no parameters
 			if (interfaceName!=null && (interfaceName.equals("type"))) {
-				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
@@ -675,7 +675,7 @@ public class DSLRMMappingService {
 		if (value != null) { // this means there is no parameters
 			//probably for capability and requirement different handling needed, check event_fitler_definition in tosca yaml 1.3
 			if (triggerName!=null && triggerName.equals("node")) {
-				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
@@ -767,8 +767,8 @@ public class DSLRMMappingService {
 			LOG.info("-----ListValue---- = {}", listValue);
 			
 			if (value != null) { // this means there is no parameters
-				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
-				LOG.info("namespacews = {}", namespacews);
+				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
+				LOG.info("namespacews = {}", nodews);
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
@@ -784,7 +784,7 @@ public class DSLRMMappingService {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 				nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 				nodeBuilder.add(list, RDF.TYPE, "tosca:List");
-				NamedResource n = GetResources.setNamedResource(namespacews, listValue.getLabel());
+				NamedResource n = GetResources.setNamedResource(nodews, listValue.getLabel());
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
@@ -884,7 +884,7 @@ public class DSLRMMappingService {
 				String value = _values.iterator().next();
 
 				IRI kbNode = null;
-				NamedResource n = GetResources.setNamedResource(namespacews, value);
+				NamedResource n = GetResources.setNamedResource(nodews, value);
 				//Check if the node object exists in this local resource model
 				if (nodeNames.contains(n.getResource())) {
 					kbNode = factory.createIRI(namespace + factory.createLiteral(n.getResource()).getLabel());
@@ -959,7 +959,7 @@ public class DSLRMMappingService {
 		for (Literal l:listValues) {
 			nodeBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");			
 			
-			NamedResource n = GetResources.setNamedResource(namespacews, l.getLabel());
+			NamedResource n = GetResources.setNamedResource(nodews, l.getLabel());
 			IRI kbNode = getKBNode(n);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))

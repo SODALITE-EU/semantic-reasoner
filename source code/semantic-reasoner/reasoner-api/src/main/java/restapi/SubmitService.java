@@ -93,7 +93,7 @@ public class SubmitService extends AbstractService {
 		
 		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, AuthConsts.AADM_W), roles, token, true);
+			Response res = SharedUtil.authForWriteRoleFromNamespace(SharedUtil.IS_AADM, roles, namespace, token);
 			if (res != null)
 				return res;
 		}

@@ -51,6 +51,9 @@ public class KB {
     public static String TOSCA = "https://www.sodalite.eu/ontologies/tosca/";
     public static String SODA = "https://www.sodalite.eu/ontologies/sodalite-metamodel/";
     public static String EXCHANGE = "https://www.sodalite.eu/ontologies/exchange/";
+    public static String GLOBAL = "https://www.sodalite.eu/ontologies/global/";
+    
+    public static String BASE_NAMESPACE = "https://www.sodalite.eu/ontologies/workspace/1/";
 
 
     SodaliteRepository manager;

@@ -58,23 +58,23 @@ public class TemplateService extends AbstractService {
 		 LOG.info( "imports = {}",  Arrays.toString(imports.toArray()));
 		 
 		 if(AuthUtil.authentication()) {
-			 	Response res = SharedUtil.authorization(AuthUtil.createRolesFromNamespaces(imports, AuthConsts.AADM_R), null, token, true);
+			 	Response res = SharedUtil.authForImports(imports, AuthConsts.AADM_R, token);
 			 	if (res != null)
 					return res;
 		 }		
 		 
-		KBApi api = new KBApi();
-		Set<Node> nodes = api.getTemplates(imports);
-		api.shutDown();
+		 KBApi api = new KBApi();
+		 Set<Node> nodes = api.getTemplates(imports);
+		 api.shutDown();
 
-		JsonObject _nodes = new JsonObject();
-		JsonArray array = new JsonArray();
-		for (Node node : nodes) {
+		 JsonObject _nodes = new JsonObject();
+		 JsonArray array = new JsonArray();
+		 for (Node node : nodes) {
 			array.add(node.serialise());
-		}
-		_nodes.add("data", array);
+		 }
+		 _nodes.add("data", array);
 
-		return Response.ok(_nodes.toString()).build();
+		 return Response.ok(_nodes.toString()).build();
 	}
 
 }

@@ -62,7 +62,7 @@ public class TypeService extends AbstractService {
 		LOG.info("imports are {}, type is {}", Arrays.toString(imports.toArray()), type);
 		
 		if(AuthUtil.authentication()) {
-		 	Response res = SharedUtil.authorization(AuthUtil.createRolesFromNamespaces(imports, AuthConsts.RM_R), null, token, true);
+		 	Response res = SharedUtil.authForImports(imports, AuthConsts.RM_R, token);
 		 	if (res != null)
 				return res;
 		}	

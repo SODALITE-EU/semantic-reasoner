@@ -2,6 +2,7 @@ package restapi;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public class ValidRequirementNodeTypeService extends AbstractService {
 			throws IOException, URISyntaxException {
 		
 		if(AuthUtil.authentication()) {
-		 	Response res = SharedUtil.authorization(AuthUtil.createRolesFromNamespaces(imports, AuthConsts.RM_R), null, token, true);
+		 	Response res = SharedUtil.authForImports(imports, AuthConsts.RM_R, token);
 		 	if (res != null)
 				return res;
 		}

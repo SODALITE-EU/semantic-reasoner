@@ -81,7 +81,7 @@ public class SubmitRMService extends AbstractService  {
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException {
 		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, AuthConsts.RM_W), roles, token, true);
+			Response res = SharedUtil.authForWriteRoleFromNamespace(!SharedUtil.IS_AADM, roles, namespace, token);
 			if (res != null)
 				return res;
 		}
@@ -95,7 +95,7 @@ public class SubmitRMService extends AbstractService  {
 		JSONObject response = new JSONObject();
 		try {
 			rmUri = m.start();
-			String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(RM_.*).*");
+			String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
 			/*if(!HttpClientRequest.getWarnings(response, rmid)) {
 				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getNodeNames()));

@@ -66,9 +66,7 @@ public class PropAttrNamesService extends AbstractService {
 		LOG.info("resource={}, element={}", resource, element);
 		
 		if(AuthUtil.authentication()) {
-			String _namespace =  MyUtils.getNamespaceFromReference(resource);
-			String namespace = _namespace == null ? "global":_namespace;
-			Response res = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, AuthConsts.AADM_R ), null, token, true);
+			Response res = SharedUtil.authForReadRoleFromResource(SharedUtil.IS_AADM, resource, token);
 			if (res != null)
 				return res;
 		}

@@ -59,10 +59,7 @@ public class PropertyService extends AbstractService {
 		throws IOException, URISyntaxException {
 		
 		if(AuthUtil.authentication()) {
-			String typeOfRole = template ? AuthConsts.AADM_R : AuthConsts.RM_R;
-			String _namespace =  MyUtils.getNamespaceFromReference(resource);
-			String namespace = _namespace == null ? "global":_namespace;
-			Response res = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, typeOfRole), null, token, true);
+			Response res = SharedUtil.authForReadRoleFromResource(template,resource, token);
 			if (res != null)
 				return res;
 		}

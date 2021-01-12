@@ -64,6 +64,12 @@ public class MyUtils {
 		}
 		return pattern_string;
 	}
+	
+	public static boolean hasPattern(String string, String spattern) {
+		Pattern pattern = Pattern.compile(spattern);
+		Matcher matcher = pattern.matcher(string);
+		return matcher.find();
+	}
 
 	public static JsonObject getLabelIRIPair(IRI value) {
 		JsonObject result = new JsonObject();
@@ -185,7 +191,6 @@ public class MyUtils {
 	
 	/* resource: docker/sodalite.nodes.Dockerhost
 	 * https://www.sodalite.eu/ontologies/workspace/1/docker/ is returned
-	 * 
 	*/
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;
@@ -195,8 +200,12 @@ public class MyUtils {
 		
 		if (namespace != null)
 			resourceIRI = getFullNamespaceIRI(kb, namespace) + name;
-		else
-			resourceIRI = KB.TOSCA + resource;
+		else {
+			if (hasPattern(resource, "^tosca."))
+				resourceIRI = KB.TOSCA + resource;
+			else
+				resourceIRI = KB.GLOBAL + resource;
+		}
 		
 		return resourceIRI;
 	}
@@ -209,4 +218,10 @@ public class MyUtils {
 		return false;
 	}
 
+	/* context: https://www.sodalite.eu/ontologies/workspace/1/snow/
+	 * snow is returned
+	 */
+	public static String getNamespaceFromContext(String context) {
+		return MyUtils.getStringPattern(context, "^"+ KB.BASE_NAMESPACE + "(.*)/");
+	}
 }

@@ -1235,13 +1235,13 @@ public class KBApi {
 			query = KB.SODA_DUL_PREFIXES + sparql;
 			LOG.info(query);
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-														new SimpleBinding("name", kb.getFactory().createLiteral(resource)));
+														new SimpleBinding("res_name", kb.getFactory().createLiteral(resource)));
 		} else {
 			sparql += MyUtils.fileToString("sparql/models/getModelFromNamedResource.sparql");
 			query = KB.SODA_DUL_PREFIXES + sparql;
 			LOG.info(query);
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("g", kb.getFactory().createIRI(namespace)),
-					new SimpleBinding("name", kb.getFactory().createLiteral(resource))});
+					new SimpleBinding("res_name", kb.getFactory().createLiteral(resource))});
 			
 		}
 			
@@ -1252,12 +1252,16 @@ public class KBApi {
 			IRI user = (IRI) bindingSet.getBinding("user").getValue();
 			Value dsl = bindingSet.getBinding("dsl").getValue();
 			Value name = bindingSet.getBinding("name").getValue();
+			String isAADM = bindingSet.getBinding("isAADM").getValue().stringValue();
+			
 			
 			a = new SodaliteAbstractModel(model);
 			a.setUser(user);
 			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			a.setDsl(dsl.stringValue());
 			a.setName(name.stringValue());
+			a.setIsAADM(Boolean.parseBoolean(isAADM));
+			LOG.info( "isAADM = {}",  isAADM);
 		}
 		
 		return a;
@@ -1281,12 +1285,15 @@ public class KBApi {
 			IRI user = (IRI) bindingSet.getBinding("user").getValue();
 			Value dsl = bindingSet.getBinding("dsl").getValue();
 			Value name = bindingSet.getBinding("name").getValue();
+			IRI namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
 			
 			a = new SodaliteAbstractModel(model);
 			a.setUser(user);
 			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			a.setDsl(dsl.stringValue());
 			a.setName(name.stringValue());
+			if(namespace != null)
+				a.setNamespace(namespace.toString());
 		}
 		
 		return a;

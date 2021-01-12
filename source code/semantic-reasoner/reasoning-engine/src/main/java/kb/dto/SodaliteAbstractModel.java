@@ -16,6 +16,8 @@ public class SodaliteAbstractModel extends Resource {
 		String version;
 		String dsl;
 		String name;
+		boolean isAADM;
+		String namespace;
 
 		public SodaliteAbstractModel(IRI iri) {
 			super(iri);
@@ -79,4 +81,19 @@ public class SodaliteAbstractModel extends Resource {
 			this.name = name;
 		}
 
+		public boolean getIsAADM() {
+			return isAADM;
+		}
+
+		public void setIsAADM(boolean isAADM) {
+			this.isAADM = isAADM;
+		}
+		
+		public String getNamespace() {
+			return namespace;
+		}
+
+		public void setNamespace(String namespace) {
+			this.namespace = namespace;
+		}
 }

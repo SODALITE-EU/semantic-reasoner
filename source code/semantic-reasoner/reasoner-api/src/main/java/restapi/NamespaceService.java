@@ -54,7 +54,7 @@ public class NamespaceService extends AbstractService {
 			throws IOException, URISyntaxException {
 		
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(null, null, token, false);
+			Response res = SharedUtil.authWithoutRoles(token);
 			if (res != null)
 				return res;
 		}
