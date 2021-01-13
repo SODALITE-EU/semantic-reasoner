@@ -28,7 +28,7 @@ public class ConfigsLoader {
 	
 	//envs for authentication
 	public static final List<String> AUTHENVS = Collections.unmodifiableList(
-		    Arrays.asList(new String[] {"qa", "docker"}));
+		    Arrays.asList(new String[] {"qa", "docker", "dev"}));
 		
 	private ConfigsLoader(){}
 

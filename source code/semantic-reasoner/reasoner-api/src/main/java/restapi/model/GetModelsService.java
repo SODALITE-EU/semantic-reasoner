@@ -15,14 +15,13 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import httpclient.AuthConsts;
 import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.SodaliteAbstractModel;
-import kb.repository.KBConsts;
 import restapi.AbstractService;
 import restapi.util.SharedUtil;
 
@@ -55,11 +54,11 @@ public class GetModelsService extends AbstractService {
 			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 			throws IOException, URISyntaxException {
 		
-		if(AuthUtil.authentication()) {
+		if(AuthUtil.authentication() && !"".equals(namespace)) {
 			boolean template = type.equals(SharedUtil.AADM);
-			Response res = SharedUtil.authForReadRoleFromNamespace(template, namespace, token);
-			if (res != null)
-				return res;
+			AuthResponse ares = SharedUtil.authForReadRoleFromNamespace(template, namespace, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
 		}
 		
 		KBApi api = new KBApi();

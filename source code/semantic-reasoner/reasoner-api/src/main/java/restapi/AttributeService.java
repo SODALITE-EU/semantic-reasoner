@@ -2,7 +2,6 @@ package restapi;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -14,8 +13,8 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import httpclient.AuthConsts;
 import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -24,7 +23,6 @@ import io.swagger.annotations.Info;
 import io.swagger.annotations.SwaggerDefinition;
 import kb.KBApi;
 import kb.dto.Attribute;
-import kb.utils.MyUtils;
 import restapi.util.SharedUtil;
 
 /** A service that returns the attributes of a single TOSCA node
@@ -77,9 +75,9 @@ public class AttributeService extends AbstractService {
 			throws IOException, URISyntaxException {
 		
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authForReadRoleFromResource(template, resource, token);
-			if (res != null)
-				return res;
+			AuthResponse ares = SharedUtil.authForReadRoleFromResource(template, resource, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
 		}
 		
 		KBApi api = new KBApi();

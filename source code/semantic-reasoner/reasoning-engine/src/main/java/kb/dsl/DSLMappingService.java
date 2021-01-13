@@ -505,7 +505,7 @@ public class DSLMappingService {
 			}
 		
 			// create classifier
-			parameterClassifierKB = factory.createIRI(namespace + "ParamClassifier_" + MyUtils.randomString());
+			parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 			templateBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 			if (parameterName != null) {
 				IRI paramProperty = GetResources.getKBProperty(parameterName, this.namespacesOfType, kb);
@@ -580,15 +580,15 @@ public class DSLMappingService {
 		IRI propertyClassifierKB = null;
 		switch (parameterType) {
 			case "Attribute":
-				propertyClassifierKB = factory.createIRI(namespace + "AttrClassifer_" + MyUtils.randomString());
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.ATTR_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Attribute");
 				break;
 			case "Parameter":
-				propertyClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			case "Property" :
-				propertyClassifierKB = factory.createIRI(namespace + "PropClassifer_" + MyUtils.randomString());
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PROP_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
 				break;
 			default:
@@ -742,7 +742,7 @@ public class DSLMappingService {
 				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
 				break;
 			case "Parameter":
-				triggerClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+				triggerClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			default:
@@ -753,9 +753,9 @@ public class DSLMappingService {
 			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "classifies"), triggerProperty);
 		
 		Optional<String> description = Models.getPropertyString(aadmModel, trigger,
-				factory.createIRI(KB.EXCHANGE + "description"));
+				factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
 		if (description.isPresent())
-			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
 
 		// check for direct values of parameters
 		Literal value = Models
@@ -820,7 +820,7 @@ public class DSLMappingService {
 		LOG.info("-----ListValue--- {}", listValues);
 		IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 		
-		IRI parameterClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+		IRI parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 		
 		aadmBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 		aadmBuilder.add(list, RDF.TYPE, "tosca:List");

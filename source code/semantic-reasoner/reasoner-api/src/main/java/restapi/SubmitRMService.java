@@ -22,8 +22,8 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import httpclient.AuthConsts;
 import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -81,9 +81,9 @@ public class SubmitRMService extends AbstractService  {
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException {
 		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authForWriteRoleFromNamespace(!SharedUtil.IS_AADM, roles, namespace, token);
-			if (res != null)
-				return res;
+			AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(!SharedUtil.IS_AADM, namespace, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
 		}
 		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");

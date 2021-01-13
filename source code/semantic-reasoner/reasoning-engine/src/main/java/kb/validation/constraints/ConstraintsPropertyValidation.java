@@ -58,10 +58,10 @@ public class ConstraintsPropertyValidation {
 			BindingSet bindingSet = result.next();
 			String prop = MyUtils.getStringValue(bindingSet.getBinding("property").getValue());
 			String constr = MyUtils.getStringValue(bindingSet.getBinding("constraint").getValue());
-			String constr_type = MyUtils.getStringValue(bindingSet.getBinding("constr_type").getValue());
-			String type_value = bindingSet.getBinding("value").getValue().stringValue();
+			String constrType = MyUtils.getStringValue(bindingSet.getBinding("constr_type").getValue());
+			String typeValue = bindingSet.getBinding("value").getValue().stringValue();
 
-			ConstraintResult c = new ConstraintResult(prop, constr, constr_type, type_value);
+			ConstraintResult c = new ConstraintResult(prop, constr, constrType, typeValue);
 			results.add(c);
 		}
 		
@@ -73,13 +73,13 @@ public class ConstraintsPropertyValidation {
 					ConstraintsEnum constraint = ConstraintsEnum.valueOf(c.constraint.toUpperCase());
 					switch (constraint) {
 						case GREATER_OR_EQUAL:
-							if (!ConstraintsEnum.GREATER_OR_EQUAL.compare(templateValue, c.value, c.const_type)) {
+							if (!ConstraintsEnum.GREATER_OR_EQUAL.compare(templateValue, c.value, c.constType)) {
 								models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
 										c.property, "template value: " + templateValue + " not greater or equal than constraint definition: " + c.value));
 							}
 						break;
 						case LESS_OR_EQUAL:
-							if (!ConstraintsEnum.LESS_OR_EQUAL.compare(templateValue, c.value, c.const_type)) {
+							if (!ConstraintsEnum.LESS_OR_EQUAL.compare(templateValue, c.value, c.constType)) {
 								models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
 										c.property, "template value: " + templateValue + " not less or equal than constraint definition: " + c.value));	
 							}
@@ -97,13 +97,13 @@ public class ConstraintsPropertyValidation {
 	private class ConstraintResult {
 		private String property;
 		private String constraint;
-		private String const_type;
+		private String constType;
 		private String value;
 		
-		ConstraintResult(String property, String constraint, String const_type, String value) {
+		ConstraintResult(String property, String constraint, String constType, String value) {
 			this.property = property;
 			this.constraint = constraint;
-			this.const_type = const_type;
+			this.constType = constType;
 			this.value = value;
 		}
 	}

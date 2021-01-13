@@ -24,9 +24,9 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import httpclient.AuthConsts;
 import httpclient.AuthUtil;
 import httpclient.HttpClientRequest;
+import httpclient.dto.AuthResponse;
 import httpclient.dto.HttpRequestErrorModel;
 import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
@@ -91,11 +91,10 @@ public class SubmitService extends AbstractService {
 			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
-		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authForWriteRoleFromNamespace(SharedUtil.IS_AADM, roles, namespace, token);
-			if (res != null)
-				return res;
+			AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(SharedUtil.IS_AADM, namespace, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
 		}
 					
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");

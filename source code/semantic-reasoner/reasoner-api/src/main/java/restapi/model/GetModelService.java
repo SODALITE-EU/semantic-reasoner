@@ -2,8 +2,6 @@ package restapi.model;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Set;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -20,12 +18,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.SodaliteAbstractModel;
-import kb.repository.KB;
 import kb.utils.MyUtils;
 import restapi.AbstractService;
 import restapi.util.SharedUtil;
@@ -63,33 +61,34 @@ public class GetModelService extends AbstractService {
 		LOG.info( "getModel: resource= {}, namespace = {}, uri = {}",  resource, namespace, uri);
 		
 		SodaliteAbstractModel model = null;
-		Response res = null;
+		AuthResponse ares = null;
 		
 		KBApi api = new KBApi();
 		if (!"".equals(resource)) {
 			model = api.getModelForResource(resource, namespace);
-			if(model!=null && AuthUtil.authentication()) {
-				String _namespace = "global";
+			if(AuthUtil.authentication()) {
 				if (!"".equals(namespace)) {
-					_namespace = MyUtils.getNamespaceFromContext(namespace);
+					String shortNamespace = MyUtils.getNamespaceFromContext(namespace);
+					ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
+					LOG.info( "Model for Resource shortNamespace = {}",  shortNamespace);
 				}
-				LOG.info( "Model for Resource _namespace = {}",  _namespace);
-				res = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), _namespace, token);
 			}
 		} else if (!"".equals(uri)) {
 			model = api.getModelFromURI(uri);
-			if(model != null && AuthUtil.authentication()) {
-				String _namespace = model.getNamespace() == null ? "global" : MyUtils.getNamespaceFromContext(model.getNamespace());
-				LOG.info( "Model from URI _namespace = {}",  _namespace);
-				res = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), _namespace, token);
+			if(AuthUtil.authentication() && model != null && model.getNamespace() != null) {
+				String shortNamespace = MyUtils.getNamespaceFromContext(model.getNamespace());
+				ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
+				LOG.info( "Model from URI shortNamespace = {}",  shortNamespace);
 			}
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity("Resource or uri should be provided").build();
 		}
 		
 		//Error returned in auth
-		if (AuthUtil.authentication() && res != null)
-			return res;
+		if (AuthUtil.authentication()) {
+			if(ares.getResponse() != null)
+				return ares.getResponse();
+		}
 		
 		api.shutDown();
 		JsonObject _model = new JsonObject();

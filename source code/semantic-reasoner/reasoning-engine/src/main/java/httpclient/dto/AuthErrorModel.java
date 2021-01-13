@@ -7,14 +7,22 @@ import org.springframework.http.HttpStatus;
 
 public class AuthErrorModel extends AuthModel {
 
-	public LocalDateTime timestamp;
-	public String description;
-	public HttpStatus statusCode;
+	private LocalDateTime timestamp;
+	private String description;
+	private HttpStatus statusCode;
 	
 	public AuthErrorModel(LocalDateTime timestamp, String description, HttpStatus statusCode) {
 		this.timestamp = timestamp;
 		this.description = description;
 		this.statusCode = statusCode;
+	}
+	
+	public String getDescription() {
+		return this.description;
+	}
+	
+	public HttpStatus getStatusCode() {
+		return this.statusCode;
 	}
 	
 	@Override

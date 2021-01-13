@@ -12,11 +12,14 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -33,6 +36,8 @@ import restapi.util.SharedUtil;
 @Path("/namespaces")
 @Api()
 public class NamespaceService extends AbstractService {
+	private static final Logger LOG = LoggerFactory.getLogger(NamespaceService.class.getName());
+	
 	static ConfigsLoader configInstance;
 	static {
 		configInstance = ConfigsLoader.getInstance();
@@ -53,15 +58,18 @@ public class NamespaceService extends AbstractService {
 	public Response getNamespaces(@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 			throws IOException, URISyntaxException {
 		
-		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authWithoutRoles(token);
-			if (res != null)
-				return res;
-		}
-		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		List<Resource> cList = Iterations.asList(kb.connection.getContextIDs());
 		kb.shutDown();
+		
+		if(AuthUtil.authentication()) {
+			AuthResponse ares = SharedUtil.authWithoutRoles(token);
+			LOG.info("assigned roles={}", ares.getRoles());
+			if (ares.getResponse() != null)
+				return ares.getResponse();
+			
+			cList = SharedUtil.authorizedContexts(cList, ares.getRoles(), token);
+		}
 		
 		JsonObject _context = new JsonObject();
 		JsonArray array = new JsonArray();

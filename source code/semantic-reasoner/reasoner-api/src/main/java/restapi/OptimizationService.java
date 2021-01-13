@@ -29,6 +29,7 @@ import org.json.simple.parser.ParseException;
 import httpclient.AuthConsts;
 import httpclient.AuthUtil;
 import httpclient.HttpClientRequest;
+import httpclient.dto.AuthResponse;
 import httpclient.dto.HttpRequestErrorModel;
 import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
@@ -95,11 +96,10 @@ public class OptimizationService extends AbstractService {
 			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 					throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException  {
 		
-		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, AuthConsts.AADM_W), roles, token, true);
-			if (res != null)
-				return res;
+			AuthResponse ares = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, AuthConsts.AADM_W), token, true);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
 		}
 		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");

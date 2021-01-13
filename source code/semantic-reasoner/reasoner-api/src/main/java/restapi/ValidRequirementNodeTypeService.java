@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 
 import httpclient.AuthConsts;
 import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -66,9 +67,9 @@ public class ValidRequirementNodeTypeService extends AbstractService {
 			throws IOException, URISyntaxException {
 		
 		if(AuthUtil.authentication()) {
-		 	Response res = SharedUtil.authForImports(imports, AuthConsts.RM_R, token);
-		 	if (res != null)
-				return res;
+		 	AuthResponse ares = SharedUtil.authForImports(imports, AuthConsts.RM_R, token);
+		 	if (ares.getResponse() != null)
+				return ares.getResponse();
 		}
 		
 		KBApi api = new KBApi();

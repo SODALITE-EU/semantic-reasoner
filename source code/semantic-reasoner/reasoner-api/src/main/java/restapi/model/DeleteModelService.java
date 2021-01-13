@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -57,9 +58,11 @@ public class DeleteModelService extends AbstractService {
 		if (AuthUtil.authentication()) {
 			SodaliteAbstractModel model = api.getModelFromURI(uri);
 			if (model != null) {
-				String _namespace = model.getNamespace() == null ? "global" : MyUtils.getNamespaceFromContext(model.getNamespace());
-				LOG.info( "Model from URI _namespace = {}",  _namespace);
-				return SharedUtil.authForWriteRoleFromNamespace(model.getIsAADM(), null, _namespace, token);
+				String shortNamespace = model.getNamespace() == null ? "global" : MyUtils.getNamespaceFromContext(model.getNamespace());
+				LOG.info( "Model from URI shortNamespace = {}",  shortNamespace);
+				AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
+				if(ares.getResponse() != null)
+					return ares.getResponse();
 			}
 		}
 		

@@ -4,7 +4,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -13,10 +12,13 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.eclipse.rdf4j.model.Resource;
+
 import httpclient.AuthConsts;
 import httpclient.AuthUtil;
 import httpclient.HttpClientRequest;
 import httpclient.dto.AuthErrorModel;
+import httpclient.dto.AuthResponse;
 import httpclient.dto.HttpRequestErrorModel;
 import httpclient.exceptions.AuthException;
 import httpclient.exceptions.MyRestTemplateException;
@@ -32,25 +34,24 @@ public class SharedUtil {
 	
 	/**
 	 * Authorized the user
-	 * @param roles_input includes all the roles to be validated. e.g. [docker_rm_r, openstack_rm_r]
-	 * @param roles_output The roles assigned to the user will be saved
+	 * @param rolesInput includes all the roles to be validated. e.g. [docker_rm_r, openstack_rm_r]
 	 * @param token token
 	 * @param checkRole When enabled roles are checked. Some services such as NamespaceService do not need role validation
 	 * @return Response if error occurs
 	*/
-	public static Response authorization(ArrayList<String> roles_input, ArrayList<String> roles_output, String token, boolean checkRole) throws URISyntaxException {
+	public static AuthResponse authorization(List<String> rolesInput, String token, boolean checkRole) throws URISyntaxException {
+		AuthResponse amodel = new AuthResponse();
 		try {	
-			roles_output = HttpClientRequest.validateToKen(token);
+			List<String> rolesOutput = HttpClientRequest.validateToKen(token);
+			amodel.setRoles(rolesOutput);
 			if (checkRole) {
-				LOG.info("roles={}", roles_input);
-								
-				if (checkRole)
-					AuthUtil.checkRoles(roles_input, roles_output);
+				LOG.info("rolesInput={}", rolesInput);
+				AuthUtil.checkRoles(rolesInput, rolesOutput);
 			}
 		} catch (MyRestTemplateException e) {
 			HttpRequestErrorModel erm = e.error_model;
 			LOG.warn("rawStatus={}, api={}, statusCode={}, error={}", erm.rawStatus, erm.api, erm.statusCode, erm.error);
-		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
+		 	amodel.setResponse(Response.status(erm.rawStatus).entity(erm.toJson().toString()).build());
 		} catch (AuthException e) {
 			List<AuthErrorModel> roleErrorModels = e.roleModels;
 			JSONArray array = new JSONArray();
@@ -61,46 +62,57 @@ public class SharedUtil {
 			JSONObject errors = new JSONObject();
 			errors.put("autherrors", array);
 			LOG.warn("autherrors={}", errors.toString());
-			return Response.status(Status.FORBIDDEN).entity(errors.toString()).build();
+			amodel.setResponse(Response.status(Status.FORBIDDEN).entity(errors.toString()).build());
 		}
-		return null;
+		return amodel;
 	}
 
 	
-	public static Response authForReadRoleFromResource(boolean template, String resource, String token) throws URISyntaxException {
+	public static AuthResponse authForReadRoleFromResource(boolean template, String resource, String token) throws URISyntaxException {
 		String typeOfRole = template ? AuthConsts.AADM_R : AuthConsts.RM_R;
 
-		String _namespace =  MyUtils.getNamespaceFromReference(resource);
+		String namespaceInput =  MyUtils.getNamespaceFromReference(resource);
 
-		String namespace = _namespace == null ? "global":_namespace;
-		Response res = authorization(AuthUtil.createRoleFromNamespace(namespace, typeOfRole), null, token, true);
-		return res;
+		String namespace = namespaceInput == null ? AuthConsts.GLOBAL:namespaceInput;
+		AuthResponse ares = authorization(AuthUtil.createRoleFromNamespace(namespace, typeOfRole), token, true);
+		return ares;
 	}
 	
-	public static Response authForWriteRoleFromNamespace(boolean template, ArrayList<String> roles_output, String namespace, String token) throws URISyntaxException {
+	public static AuthResponse authForWriteRoleFromNamespace(boolean template, String namespace, String token) throws URISyntaxException {
 		String typeOfRole = template ? AuthConsts.AADM_W : AuthConsts.RM_W;
 
-		String _namespace = namespace == null ? "global":namespace;
-		Response res = authorization(AuthUtil.createRoleFromNamespace(_namespace, typeOfRole), roles_output, token, true);
+		String shortNamespace = namespace == null ? AuthConsts.GLOBAL:namespace;
+		AuthResponse res = authorization(AuthUtil.createRoleFromNamespace(shortNamespace, typeOfRole), token, true);
 		return res;
 	}
 	
-	public static Response authForReadRoleFromNamespace(boolean template, String namespace, String token) throws URISyntaxException {
+	public static AuthResponse authForReadRoleFromNamespace(boolean template, String namespace, String token) throws URISyntaxException {
 		String typeOfRole = template ? AuthConsts.AADM_R : AuthConsts.RM_R;
 
-		String _namespace = namespace == null ? "global":namespace;
-		Response res = authorization(AuthUtil.createRoleFromNamespace(_namespace, typeOfRole), null, token, true);
+		String shortNamespace = namespace == null ? AuthConsts.GLOBAL:namespace;
+		AuthResponse res = authorization(AuthUtil.createRoleFromNamespace(shortNamespace, typeOfRole), token, true);
 		return res;
 	}
 	
-	public static Response authForImports(List<String> imports, String typeOfRole, String token) throws URISyntaxException {
-		Response res = authorization(AuthUtil.createRolesFromNamespaces(imports, typeOfRole), null, token, true);
+	public static AuthResponse authForImports(List<String> imports, String typeOfRole, String token) throws URISyntaxException {
+		AuthResponse res = authorization(AuthUtil.createRolesFromNamespaces(imports, typeOfRole), token, true);
 		return res;
 	}
 	
-	public static Response authWithoutRoles(String token) throws URISyntaxException {
-		Response res = SharedUtil.authorization(null, null, token, false);
+	public static AuthResponse authWithoutRoles(String token) throws URISyntaxException {
+		AuthResponse res = SharedUtil.authorization(null, token, false);
 		return res;
+	}
+	
+	public static List<Resource> authorizedContexts(List<Resource> contexts, List<String> roles, String typeOfRole) {
+		List<Resource> authorizedContexts = new ArrayList<>();
+		for(Resource ctx : contexts) {
+			String ctxStr = ctx.toString();
+			String namespace = MyUtils.getNamespaceFromContext(ctxStr);
+			if (roles.contains(namespace + AuthConsts.AADM_R) || roles.contains(namespace + AuthConsts.RM_R))
+				authorizedContexts.add(ctx);
+		}
+		return authorizedContexts;
 	}
 	
 }

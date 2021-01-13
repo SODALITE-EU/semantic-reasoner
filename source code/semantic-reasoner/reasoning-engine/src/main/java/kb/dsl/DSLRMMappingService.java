@@ -427,7 +427,7 @@ public class DSLRMMappingService {
 			}		
 	
 			// create classifier
-			IRI parameterClassifierKB = factory.createIRI(namespace + "ParamClassifier_" + MyUtils.randomString());
+			IRI parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 			nodeBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 
 			parameterClassifiers.add(parameterClassifierKB);
@@ -558,15 +558,15 @@ public class DSLRMMappingService {
 		IRI interfaceClassifierKB = null;
 		switch (type) {
 			case "Interface":
-				interfaceClassifierKB = factory.createIRI(namespace + "InterfaceClassifer_" + MyUtils.randomString());
+				interfaceClassifierKB = factory.createIRI(namespace + "InterfaceClassifier_" + MyUtils.randomString());
 				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "tosca:Interface");
 				break;
 			case "Trigger":
-				interfaceClassifierKB = factory.createIRI(namespace + "TriggerClassifer_" + MyUtils.randomString());
+				interfaceClassifierKB = factory.createIRI(namespace + "TriggerClassifier_" + MyUtils.randomString());
 				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "tosca:Trigger");
 				break;
 			case "Parameter":
-				interfaceClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+				interfaceClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			default:
@@ -651,7 +651,7 @@ public class DSLRMMappingService {
 				nodeBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
 				break;
 			case "Parameter":
-				triggerClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+				triggerClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			default:
@@ -663,9 +663,9 @@ public class DSLRMMappingService {
 		
 		//description is added for triggers
 		Optional<String> description = Models.getPropertyString(rmModel, trigger,
-				factory.createIRI(KB.EXCHANGE + "description"));
+				factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
 		if (description.isPresent())
-					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
 
 		// check for direct values of parameters
 		Literal value = Models
@@ -740,7 +740,7 @@ public class DSLRMMappingService {
 				parameterName = _parameterName.get().getLabel();
 			
 			// create classifier
-			IRI parameterClassifierKB = factory.createIRI(namespace + "ParamClassifier_" + MyUtils.randomString());
+			IRI parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 			nodeBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 
 			parameterClassifiers.add(parameterClassifierKB);
@@ -845,15 +845,15 @@ public class DSLRMMappingService {
 		IRI propertyClassifierKB = null;
 		switch (parameterType) {
 			case "Attribute":
-				propertyClassifierKB = factory.createIRI(namespace + "AttrClassifer_" + MyUtils.randomString());
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PROP_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Attribute");
 				break;
 			case "Parameter":
-				propertyClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(propertyClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			case "Property" :
-				propertyClassifierKB = factory.createIRI(namespace + "PropClassifer_" + MyUtils.randomString());
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PROP_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
 				break;
 			default:
@@ -872,9 +872,9 @@ public class DSLRMMappingService {
 		}
 		
 		Optional<String> description = Models.getPropertyString(rmModel, exchangeParameter,
-		factory.createIRI(KB.EXCHANGE + "description"));
+		factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
 		if (description.isPresent())
-			nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+			nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
 		
 		// handle values
 		if (!_values.isEmpty()) {
@@ -950,7 +950,7 @@ public class DSLRMMappingService {
 		Set<Literal> listValues= Models.objectLiterals(rmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "listValue"), null));
 		LOG.info("-----ListValues----: {}", listValues);
 
-		IRI parameterClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+		IRI parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 		
 		IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 		nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
