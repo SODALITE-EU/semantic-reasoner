@@ -44,7 +44,7 @@ public class SharedUtil {
 		try {	
 			List<String> rolesOutput = HttpClientRequest.validateToKen(token);
 			amodel.setRoles(rolesOutput);
-			if (checkRole) {
+			if (checkRole && rolesInput!=null) {
 				LOG.info("rolesInput={}", rolesInput);
 				AuthUtil.checkRoles(rolesInput, rolesOutput);
 			}
@@ -88,9 +88,11 @@ public class SharedUtil {
 	
 	public static AuthResponse authForReadRoleFromNamespace(boolean template, String namespace, String token) throws URISyntaxException {
 		String typeOfRole = template ? AuthConsts.AADM_R : AuthConsts.RM_R;
-
-		String shortNamespace = namespace == null ? AuthConsts.GLOBAL:namespace;
-		AuthResponse res = authorization(AuthUtil.createRoleFromNamespace(shortNamespace, typeOfRole), token, true);
+		
+		String finalNamespace = null;
+		if(!"".equals(namespace))
+			finalNamespace = namespace;
+		AuthResponse res = authorization(AuthUtil.createRoleFromNamespace(finalNamespace, typeOfRole), token, true);
 		return res;
 	}
 	
