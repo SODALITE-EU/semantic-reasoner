@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import httpclient.dto.AuthErrorModel;
 import httpclient.exceptions.AuthException;
 import kb.configs.ConfigsLoader;
+import kb.utils.MyUtils;
 
 public class AuthUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(AuthUtil.class.getName());
@@ -52,8 +53,9 @@ public class AuthUtil {
 	/**
 	 * Some services have imports as parameter. Those imports which are the namespaces
 	 * are converted to roles
-	 * @param namespaces It contains the imports
+	 * @param namespaces It contains the imports e.g. docker, snow
 	 * @param typeOfRole e.g. _aadm_w
+	 * @return The created roles
 	 */
 	public static ArrayList<String> createRolesFromNamespaces(List<String> namespaces, String typeOfRole){
 		ArrayList<String> roles = new ArrayList<>();
@@ -68,6 +70,7 @@ public class AuthUtil {
 	 * Some services have not imports but only one namespace
 	 * @param namespace It contains the namespace
 	 * @param typeOfRole e.g. _aadm_w
+	 * @return The created role
 	 */
 	public static ArrayList<String> createRoleFromNamespace(String namespace, String typeOfRole) {
 		ArrayList<String> roles = new ArrayList<>();
@@ -81,4 +84,22 @@ public class AuthUtil {
 		LOG.info( "createRoleFromNamespace = {}",  roles);
 		return roles;
 	}
+	
+	/**
+	 * Create roles from resources by retrieving the namespaces of the resources
+	 * @param resources e.g. docker/dockerNode
+	 * @param typeOfRole e.g. _rm_r
+	 * @return the roles 
+	 */
+	public static ArrayList<String> createRolesFromResources(List<String> resources, String typeOfRole) {
+		ArrayList<String> roles = new ArrayList<>();
+		for (String resource: resources) {
+			String namespace = MyUtils.getNamespaceFromReference(resource);
+			if(namespace != null)
+				roles.add(namespace + typeOfRole);
+		}
+		LOG.info( "createRolesFromResources = {}",  roles);
+		return roles;
+	}
+	
 }

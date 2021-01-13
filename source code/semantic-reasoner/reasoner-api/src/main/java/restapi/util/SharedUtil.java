@@ -104,6 +104,11 @@ public class SharedUtil {
 		return res;
 	}
 	
+	public static AuthResponse authForResources(List<String> resources, String typeOfRole, String token) throws URISyntaxException {
+		AuthResponse res = authorization(AuthUtil.createRolesFromResources(resources, typeOfRole), token, true);
+		return res;
+	}
+	
 	public static List<Resource> authorizedContexts(List<Resource> contexts, List<String> roles, String typeOfRole) {
 		List<Resource> authorizedContexts = new ArrayList<>();
 		for(Resource ctx : contexts) {
