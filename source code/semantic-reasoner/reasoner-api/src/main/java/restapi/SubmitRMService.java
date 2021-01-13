@@ -79,7 +79,6 @@ public class SubmitRMService extends AbstractService  {
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
 			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException {
-		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
 			AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(!SharedUtil.IS_AADM, namespace, token);
 			if (ares.getResponse() != null)
