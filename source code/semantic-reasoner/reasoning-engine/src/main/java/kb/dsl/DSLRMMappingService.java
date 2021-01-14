@@ -167,7 +167,7 @@ public class DSLRMMappingService {
 			throw new MappingException(mappingModels);
 		
 		try {
-			VerifySingularity.removeExistingDefinitions(kb, nodeNames, namespace.toString());
+			VerifySingularity.removeExistingDefinitions(kb, nodeNames, namespace.toString(), rmKB);
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		}

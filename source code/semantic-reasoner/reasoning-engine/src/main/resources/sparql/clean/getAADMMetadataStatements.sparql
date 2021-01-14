@@ -1,0 +1,14 @@
+CONSTRUCT { ?s soda:createdAt ?t .
+    ?s soda:createdBy ?user .
+    ?s soda:hasDSL ?dsl .
+    ?s soda:hasNamespace ?namespace .
+}
+WHERE
+{
+    ?s a ?modelType .
+        FILTER (?modelType  IN (soda:AbstractApplicationDeployment, soda:ResourceModel))  .
+    ?s soda:createdAt ?t .
+    ?s soda:createdBy ?user .
+    ?s soda:hasDSL ?dsl .
+    ?s soda:hasNamespace ?namespace
+}

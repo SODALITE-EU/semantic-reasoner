@@ -10,11 +10,13 @@ public class AuthErrorModel extends AuthModel {
 	private LocalDateTime timestamp;
 	private String description;
 	private HttpStatus statusCode;
+	private int rawStatus;
 	
-	public AuthErrorModel(LocalDateTime timestamp, String description, HttpStatus statusCode) {
+	public AuthErrorModel(LocalDateTime timestamp, String description, HttpStatus statusCode, int rawStatus) {
 		this.timestamp = timestamp;
 		this.description = description;
 		this.statusCode = statusCode;
+		this.rawStatus = rawStatus;
 	}
 	
 	public String getDescription() {
@@ -23,6 +25,10 @@ public class AuthErrorModel extends AuthModel {
 	
 	public HttpStatus getStatusCode() {
 		return this.statusCode;
+	}
+	
+	public int getRawStatus() {
+		return this.rawStatus;
 	}
 	
 	@Override

@@ -55,14 +55,16 @@ public class SharedUtil {
 		} catch (AuthException e) {
 			List<AuthErrorModel> roleErrorModels = e.roleModels;
 			JSONArray array = new JSONArray();
-			for (AuthErrorModel rm : roleErrorModels) {
-				array.add(rm.toJson());
-			}
+			//Probably no for is needed, but add all missing roles in one description
+			//If no array is needed, then change array in AuthException to AuthErrorModel
+			//for (AuthErrorModel rm : roleErrorModels) {
+				array.add(roleErrorModels.get(0).toJson());
+			//}
 			
 			JSONObject errors = new JSONObject();
 			errors.put("autherrors", array);
 			LOG.warn("autherrors={}", errors.toString());
-			amodel.setResponse(Response.status(Status.FORBIDDEN).entity(errors.toString()).build());
+			amodel.setResponse(Response.status(roleErrorModels.get(0).getRawStatus()).entity(errors.toString()).build());
 		}
 		return amodel;
 	}
@@ -73,8 +75,10 @@ public class SharedUtil {
 
 		String namespaceInput =  MyUtils.getNamespaceFromReference(resource);
 
-		String namespace = namespaceInput == null ? AuthConsts.GLOBAL:namespaceInput;
-		AuthResponse ares = authorization(AuthUtil.createRoleFromNamespace(namespace, typeOfRole), token, true);
+		List<String> roles = null;
+		if(namespaceInput != null)
+			roles = AuthUtil.createRoleFromNamespace(namespaceInput, typeOfRole);
+		AuthResponse ares = authorization(roles, token, true);
 		return ares;
 	}
 	
@@ -89,10 +93,10 @@ public class SharedUtil {
 	public static AuthResponse authForReadRoleFromNamespace(boolean template, String namespace, String token) throws URISyntaxException {
 		String typeOfRole = template ? AuthConsts.AADM_R : AuthConsts.RM_R;
 		
-		String finalNamespace = null;
+		List<String> roles = null;
 		if(!"".equals(namespace))
-			finalNamespace = namespace;
-		AuthResponse res = authorization(AuthUtil.createRoleFromNamespace(finalNamespace, typeOfRole), token, true);
+			roles = AuthUtil.createRoleFromNamespace(namespace, typeOfRole);
+		AuthResponse res = authorization(roles, token, true);
 		return res;
 	}
 	

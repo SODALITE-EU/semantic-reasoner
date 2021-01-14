@@ -1,5 +1,6 @@
 package kb.clean;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +47,8 @@ public class ModifyKB {
 					"{?s ?p ?o }";
 
 	public static final List<String> propertyList = Arrays.asList(new String [] {
-		        KB.TOSCA + "properties", KB.TOSCA + "requirements", KB.TOSCA + "interfaces", KB.TOSCA + "attributes", KB.TOSCA + "input"});
+		        KB.TOSCA + "properties", KB.TOSCA + "requirements", KB.TOSCA + "interfaces", KB.TOSCA + "attributes", KB.TOSCA + "input",  KB.TOSCA + "capabilities"
+		        , KB.TOSCA + "triggers", KB.TOSCA + "targets"});
 	
 	public ModifyKB(KB kb) {
 		model = new LinkedHashModel();
@@ -126,7 +128,6 @@ public class ModifyKB {
 		
 		deleteEmptyModels(models);
 	}
-		
 		
 		
 	public void addModel(Model result) {
@@ -224,6 +225,21 @@ public class ModifyKB {
 		
 		result.close();
 		return true;
+	}
+	
+	//Delete some modelMetadata such as createdAt, so as to be refereshed with new data
+	public void deleteModelMetadata(IRI modelIRI) throws IOException {
+		LOG.info("deleteModelMetadata {}", modelIRI);
+		
+		String sparql = MyUtils.fileToString("sparql/clean/getAADMMetadataStatements.sparql");
+		String query = KB.PREFIXES + sparql;
+		GraphQueryResult gresultM = QueryUtil.evaluateConstructQuery(kb.getConnection(), query,
+				new SimpleBinding("s", modelIRI));
+		
+		Model mresult = QueryResults.asModel(gresultM);
+		kb.connection.remove(mresult);
+		gresultM.close();
+			
 	}
 		
 	public static void main(String[] args) {

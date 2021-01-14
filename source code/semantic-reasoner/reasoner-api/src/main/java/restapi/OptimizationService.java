@@ -138,7 +138,7 @@ public class OptimizationService extends AbstractService {
 			
 		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(), e);
 		} finally {
 			m.shutDown();
 		}

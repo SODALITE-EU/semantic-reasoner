@@ -128,8 +128,8 @@ public class HttpClientRequest {
 		
 		if(!active) {
 			List<AuthErrorModel> errors = new ArrayList<>();
-			errors.add(new AuthErrorModel(LocalDateTime.now(),  "Access Token not active", HttpStatus.UNAUTHORIZED));
-			throw new AuthException(errors);	
+			errors.add(new AuthErrorModel(LocalDateTime.now(),  "Access Token not active", HttpStatus.UNAUTHORIZED, 401));
+			throw new AuthException(errors);
 		}
 		
 		JsonArray roles = jsonObject.getAsJsonObject("resource_access").getAsJsonObject(keycloakClientId).getAsJsonArray("roles");

@@ -44,7 +44,7 @@ public class AuthUtil {
 	
 		if (!notAssignedRoles.isEmpty()) {
 			List<AuthErrorModel> errors = new ArrayList<>();
-			errors.add(new AuthErrorModel(LocalDateTime.now(), notAssignedRoles.toString() + " role(s) not assigned", HttpStatus.FORBIDDEN));
+			errors.add(new AuthErrorModel(LocalDateTime.now(), notAssignedRoles.toString() + " role(s) not assigned", HttpStatus.FORBIDDEN, 403));
 			throw new AuthException(errors);
 		}
 		

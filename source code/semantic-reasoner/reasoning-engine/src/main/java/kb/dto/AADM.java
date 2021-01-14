@@ -22,6 +22,7 @@ public class AADM extends Resource {
 
 	IRI user;
 	ZonedDateTime createdAt;
+	String namespace;
 	String version;
 
 	Set<NodeFull> templates;
@@ -52,6 +53,14 @@ public class AADM extends Resource {
 	public void setCreatedAt(ZonedDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
+	
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
 
 	public String getVersion() {
 		return version;
@@ -74,10 +83,13 @@ public class AADM extends Resource {
 		JsonObject aadm = new JsonObject();
 
 		JsonObject data = new JsonObject();
+		data.addProperty("id", this.uri);
+		data.addProperty("namespace", namespace);
 		data.addProperty("type", "AbstractApplicationDeploymentModel");
 		data.addProperty("createdBy", user.toString());
 		data.addProperty("createdAt", createdAt.toString());
 		data.addProperty("version", "1");
+		
 
 		JsonArray participants = new JsonArray();
 		for (NodeFull nodeFull : templates) {

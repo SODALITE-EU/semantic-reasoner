@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.SodaliteAbstractModel;
+import kb.utils.MyUtils;
 import restapi.AbstractService;
 import restapi.util.SharedUtil;
 
@@ -56,7 +57,8 @@ public class GetModelsService extends AbstractService {
 		
 		if(AuthUtil.authentication() && !"".equals(namespace)) {
 			boolean template = type.equals(SharedUtil.AADM);
-			AuthResponse ares = SharedUtil.authForReadRoleFromNamespace(template, namespace, token);
+			String shortNamespace = MyUtils.getNamespaceFromContext(namespace);
+			AuthResponse ares = SharedUtil.authForReadRoleFromNamespace(template, shortNamespace, token);
 			if (ares.getResponse() != null)
 				return ares.getResponse();
 		}

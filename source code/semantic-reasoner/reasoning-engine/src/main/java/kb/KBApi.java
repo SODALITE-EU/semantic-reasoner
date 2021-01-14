@@ -1138,12 +1138,14 @@ public class KBApi {
 			BindingSet bindingSet = result.next();
 			Value createdAt = bindingSet.getBinding("createdAt").getValue();
 			IRI user = (IRI) bindingSet.getBinding("user").getValue();
+			String namespace = bindingSet.getBinding("namespace").getValue().stringValue();
 			String templates = bindingSet.getBinding("templates").getValue().stringValue();
 			String inputs = bindingSet.getBinding("inputs").getValue().stringValue();
 
 			aadm = new AADM(kb.getFactory().createIRI(aadmId));
 			aadm.setUser(user);
 			aadm.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
+			aadm.setNamespace(namespace);
 
 			String[] split = templates.split(" ");
 			for (String s : split) {

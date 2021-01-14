@@ -190,6 +190,7 @@ public class DSLMappingService {
 			}
 			
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasName"), name);
+			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasNamespace"), MyUtils.getNamespaceFromContext(namespace.toString()));
 			
 		}
 
@@ -420,11 +421,12 @@ public class DSLMappingService {
 		}
 		
 		try {
-			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString());
+			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString(), aadmKB);
 			if (!aadmURI.isEmpty())
 				VerifySingularity.removeInputs(kb, aadmURI);
 		} catch (IOException e) {
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(),e);
+			e.printStackTrace();
 		}
 		
 		return aadmKB;
