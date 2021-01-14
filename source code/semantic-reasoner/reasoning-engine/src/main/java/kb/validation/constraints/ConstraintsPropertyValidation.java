@@ -24,9 +24,9 @@ public class ConstraintsPropertyValidation {
 	private Map<String, String> exchangePropertyValues;
 	private KB kb;
 	
-	private List<ConstraintPropertyModel> models = new ArrayList<ConstraintPropertyModel>();
+	private List<ConstraintPropertyModel> models = new ArrayList<>();
 	
-	private List<ConstraintResult> results = new ArrayList<ConstraintResult>();
+	private List<ConstraintResult> results = new ArrayList<>();
 	
 	private String constraintsQuery = "select distinct ?property ?constraint ?constr_type ?value\r\n" + 
 			"where {\r\n" + 

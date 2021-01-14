@@ -25,11 +25,11 @@ import org.slf4j.LoggerFactory;
 public class KB {
 	private static final Logger LOG = LoggerFactory.getLogger(KB.class.getName());
 	
-    public static String SERVER_URL = "http://localhost:7200";
-    public static String ANSIBLE = "http://160.40.52.200:8084/Ansibles/";
-    public static String REPOSITORY = "TOSCA";
+    public static final String SERVER_URL = "http://localhost:7200";
+    public static final String ANSIBLE = "http://160.40.52.200:8084/Ansibles/";
+    public static final String REPOSITORY = "TOSCA";
 
-    public static String PREFIXES = "PREFIX tosca: <https://www.sodalite.eu/ontologies/tosca/> \r\n" +
+    public static final String PREFIXES = "PREFIX tosca: <https://www.sodalite.eu/ontologies/tosca/> \r\n" +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \r\n" +
             "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/> \r\n" +
             "PREFIX DUL: <http://www.loa-cnr.it/ontologies/DUL.owl#> \r\n" +
@@ -37,23 +37,23 @@ public class KB {
             "PREFIX owl: <http://www.w3.org/2002/07/owl#> \r\n" +
             "PREFIX exchange: <https://www.sodalite.eu/ontologies/exchange/> \r\n";
 
-    public static String OPT_PREFIXES = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \r\n" +
+    public static final String OPT_PREFIXES = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \r\n" +
             "PREFIX opt: <https://www.sodalite.eu/ontologies/optimizations#> \r\n" +
             "PREFIX owl: <http://www.w3.org/2002/07/owl#> \r\n" +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \r\n" +
             "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \r\n";
 
-    public static String SODA_DUL_PREFIXES = "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/> \r\n" +
+    public static final String SODA_DUL_PREFIXES = "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/> \r\n" +
 			"PREFIX DUL: <http://www.loa-cnr.it/ontologies/DUL.owl#> \r\n";
     
-    public static String DCTERMS = "http://purl.org/dc/terms/";
-    public static String DUL = "http://www.loa-cnr.it/ontologies/DUL.owl#";
-    public static String TOSCA = "https://www.sodalite.eu/ontologies/tosca/";
-    public static String SODA = "https://www.sodalite.eu/ontologies/sodalite-metamodel/";
-    public static String EXCHANGE = "https://www.sodalite.eu/ontologies/exchange/";
-    public static String GLOBAL = "https://www.sodalite.eu/ontologies/global/";
+    public static final String DCTERMS = "http://purl.org/dc/terms/";
+    public static final String DUL = "http://www.loa-cnr.it/ontologies/DUL.owl#";
+    public static final String TOSCA = "https://www.sodalite.eu/ontologies/tosca/";
+    public static final String SODA = "https://www.sodalite.eu/ontologies/sodalite-metamodel/";
+    public static final String EXCHANGE = "https://www.sodalite.eu/ontologies/exchange/";
+    public static final String GLOBAL = "https://www.sodalite.eu/ontologies/global/";
     
-    public static String BASE_NAMESPACE = "https://www.sodalite.eu/ontologies/workspace/1/";
+    public static final String BASE_NAMESPACE = "https://www.sodalite.eu/ontologies/workspace/1/";
 
 
     SodaliteRepository manager;

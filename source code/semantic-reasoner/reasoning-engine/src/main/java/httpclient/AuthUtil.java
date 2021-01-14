@@ -91,8 +91,8 @@ public class AuthUtil {
 	 * @param typeOfRole e.g. _rm_r
 	 * @return the roles 
 	 */
-	public static ArrayList<String> createRolesFromResources(List<String> resources, String typeOfRole) {
-		ArrayList<String> roles = new ArrayList<>();
+	public static List<String> createRolesFromResources(List<String> resources, String typeOfRole) {
+		List<String> roles = new ArrayList<>();
 		for (String resource: resources) {
 			String namespace = MyUtils.getNamespaceFromReference(resource);
 			if(namespace != null)

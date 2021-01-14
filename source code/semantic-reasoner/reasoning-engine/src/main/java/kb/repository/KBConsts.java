@@ -10,6 +10,11 @@ public final class KBConsts {
 	public static final String ATTR_CLASSIFIER = "AttrClassifier_";
 	public static final String PROP_CLASSIFIER = "PropClassifier_";
 	public static final String DESCRIPTION = "description";
+	public static final String PARAMETER = "Parameter";
+	public static final String TRIGGER = "Trigger";
+	public static final String PROPERTY = "Property";
+	public static final String ATTRIBUTE = "Attribute";
+	public static final String INTERFACE = "Interface";
 	
 	private KBConsts() {
 		throw new IllegalStateException("KBConsts class");

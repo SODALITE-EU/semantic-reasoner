@@ -557,15 +557,15 @@ public class DSLRMMappingService {
 		
 		IRI interfaceClassifierKB = null;
 		switch (type) {
-			case "Interface":
+			case KBConsts.INTERFACE:
 				interfaceClassifierKB = factory.createIRI(namespace + "InterfaceClassifier_" + MyUtils.randomString());
 				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "tosca:Interface");
 				break;
-			case "Trigger":
+			case KBConsts.TRIGGER:
 				interfaceClassifierKB = factory.createIRI(namespace + "TriggerClassifier_" + MyUtils.randomString());
 				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "tosca:Trigger");
 				break;
-			case "Parameter":
+			case KBConsts.PARAMETER:
 				interfaceClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(interfaceClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
@@ -646,11 +646,11 @@ public class DSLRMMappingService {
 		
 		IRI triggerClassifierKB = null;
 		switch (type) {
-			case "Trigger":
+			case KBConsts.TRIGGER:
 				triggerClassifierKB = factory.createIRI(namespace + "TriggerClassifer_" + MyUtils.randomString());
 				nodeBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
 				break;
-			case "Parameter":
+			case KBConsts.PARAMETER:
 				triggerClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
@@ -844,15 +844,15 @@ public class DSLRMMappingService {
 		
 		IRI propertyClassifierKB = null;
 		switch (parameterType) {
-			case "Attribute":
-				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PROP_CLASSIFIER + MyUtils.randomString());
+			case KBConsts.ATTRIBUTE:
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.ATTRIBUTE + MyUtils.randomString());
 				nodeBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Attribute");
 				break;
-			case "Parameter":
+			case KBConsts.PARAMETER:
 				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(propertyClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
-			case "Property" :
+			case KBConsts.PROPERTY:
 				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PROP_CLASSIFIER + MyUtils.randomString());
 				nodeBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
 				break;

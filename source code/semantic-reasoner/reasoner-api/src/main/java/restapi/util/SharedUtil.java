@@ -97,18 +97,15 @@ public class SharedUtil {
 	}
 	
 	public static AuthResponse authForImports(List<String> imports, String typeOfRole, String token) throws URISyntaxException {
-		AuthResponse res = authorization(AuthUtil.createRolesFromNamespaces(imports, typeOfRole), token, true);
-		return res;
+		return authorization(AuthUtil.createRolesFromNamespaces(imports, typeOfRole), token, true);
 	}
 	
 	public static AuthResponse authWithoutRoles(String token) throws URISyntaxException {
-		AuthResponse res = SharedUtil.authorization(null, token, false);
-		return res;
+		return SharedUtil.authorization(null, token, false);
 	}
 	
 	public static AuthResponse authForResources(List<String> resources, String typeOfRole, String token) throws URISyntaxException {
-		AuthResponse res = authorization(AuthUtil.createRolesFromResources(resources, typeOfRole), token, true);
-		return res;
+		return authorization(AuthUtil.createRolesFromResources(resources, typeOfRole), token, true);
 	}
 	
 	public static List<Resource> authorizedContexts(List<Resource> contexts, List<String> roles) {

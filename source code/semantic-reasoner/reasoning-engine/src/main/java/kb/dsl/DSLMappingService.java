@@ -90,7 +90,7 @@ public class DSLMappingService {
 	boolean complete;
 	
 	private String currentTemplate;
-	public List<String> namespacesOfType = new ArrayList<String>();
+	public List<String> namespacesOfType = new ArrayList<>();
 	
 
 	// Validation
@@ -581,15 +581,15 @@ public class DSLMappingService {
 		
 		IRI propertyClassifierKB = null;
 		switch (parameterType) {
-			case "Attribute":
+			case KBConsts.ATTRIBUTE:
 				propertyClassifierKB = factory.createIRI(namespace + KBConsts.ATTR_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Attribute");
 				break;
-			case "Parameter":
+			case KBConsts.PARAMETER:
 				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
-			case "Property" :
+			case KBConsts.PROPERTY :
 				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PROP_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
 				break;
@@ -739,11 +739,11 @@ public class DSLMappingService {
 		
 		IRI triggerClassifierKB = null;
 		switch (type) {
-			case "Trigger":
+			case KBConsts.TRIGGER:
 				triggerClassifierKB = factory.createIRI(namespace + "TriggerClassifer_" + MyUtils.randomString());
 				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
 				break;
-			case "Parameter":
+			case KBConsts.PARAMETER:
 				triggerClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
