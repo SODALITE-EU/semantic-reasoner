@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -78,16 +77,14 @@ public class SharedUtil {
 		List<String> roles = null;
 		if(namespaceInput != null)
 			roles = AuthUtil.createRoleFromNamespace(namespaceInput, typeOfRole);
-		AuthResponse ares = authorization(roles, token, true);
-		return ares;
+		return authorization(roles, token, true);
 	}
 	
 	public static AuthResponse authForWriteRoleFromNamespace(boolean template, String namespace, String token) throws URISyntaxException {
 		String typeOfRole = template ? AuthConsts.AADM_W : AuthConsts.RM_W;
 
 		String shortNamespace = namespace == null ? AuthConsts.GLOBAL:namespace;
-		AuthResponse res = authorization(AuthUtil.createRoleFromNamespace(shortNamespace, typeOfRole), token, true);
-		return res;
+		return authorization(AuthUtil.createRoleFromNamespace(shortNamespace, typeOfRole), token, true);
 	}
 	
 	public static AuthResponse authForReadRoleFromNamespace(boolean template, String namespace, String token) throws URISyntaxException {
@@ -96,8 +93,7 @@ public class SharedUtil {
 		List<String> roles = null;
 		if(!"".equals(namespace))
 			roles = AuthUtil.createRoleFromNamespace(namespace, typeOfRole);
-		AuthResponse res = authorization(roles, token, true);
-		return res;
+		return authorization(roles, token, true);
 	}
 	
 	public static AuthResponse authForImports(List<String> imports, String typeOfRole, String token) throws URISyntaxException {
@@ -115,7 +111,7 @@ public class SharedUtil {
 		return res;
 	}
 	
-	public static List<Resource> authorizedContexts(List<Resource> contexts, List<String> roles, String typeOfRole) {
+	public static List<Resource> authorizedContexts(List<Resource> contexts, List<String> roles) {
 		List<Resource> authorizedContexts = new ArrayList<>();
 		for(Resource ctx : contexts) {
 			String ctxStr = ctx.toString();

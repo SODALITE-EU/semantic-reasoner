@@ -68,7 +68,7 @@ public class NamespaceService extends AbstractService {
 			if (ares.getResponse() != null)
 				return ares.getResponse();
 			
-			cList = SharedUtil.authorizedContexts(cList, ares.getRoles(), token);
+			cList = SharedUtil.authorizedContexts(cList, ares.getRoles());
 		}
 		
 		JsonObject _context = new JsonObject();

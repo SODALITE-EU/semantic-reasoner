@@ -35,7 +35,7 @@ public class AuthUtil {
 	 * @param roles The assigned roles
 	 */
 	public static void checkRoles(List<String> rolesInput , List<String> roles) throws AuthException {
-		ArrayList<String> notAssignedRoles = new ArrayList<>();
+		List<String> notAssignedRoles = new ArrayList<>();
 		for (String role : rolesInput) {
 			if (!roles.contains(role)) {
 				notAssignedRoles.add(role);
@@ -57,8 +57,8 @@ public class AuthUtil {
 	 * @param typeOfRole e.g. _aadm_w
 	 * @return The created roles
 	 */
-	public static ArrayList<String> createRolesFromNamespaces(List<String> namespaces, String typeOfRole){
-		ArrayList<String> roles = new ArrayList<>();
+	public static List<String> createRolesFromNamespaces(List<String> namespaces, String typeOfRole){
+		List<String> roles = new ArrayList<>();
 		for (String role: namespaces) {
 			roles.add(role + typeOfRole);
 		}
@@ -72,8 +72,8 @@ public class AuthUtil {
 	 * @param typeOfRole e.g. _aadm_w
 	 * @return The created role
 	 */
-	public static ArrayList<String> createRoleFromNamespace(String namespace, String typeOfRole) {
-		ArrayList<String> roles = new ArrayList<>();
+	public static List<String> createRoleFromNamespace(String namespace, String typeOfRole) {
+		List<String> roles = new ArrayList<>();
 		String role;
 		if(typeOfRole.equals(AuthConsts.AADM_W) || typeOfRole.equals(AuthConsts.RM_W))
 			role = namespace.isEmpty() ? AuthConsts.GLOBAL + typeOfRole : namespace + typeOfRole;

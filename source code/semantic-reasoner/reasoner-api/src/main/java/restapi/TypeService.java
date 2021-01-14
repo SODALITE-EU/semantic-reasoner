@@ -65,7 +65,7 @@ public class TypeService extends AbstractService {
 		if(AuthUtil.authentication()) {
 		 	AuthResponse ares = SharedUtil.authForImports(imports, AuthConsts.RM_R, token);
 		 	if (ares.getResponse() != null)
-				return ares.getResponse();
+		 			return ares.getResponse();
 		}	
 		 
 		KBApi api = new KBApi();

@@ -61,17 +61,15 @@ public class GetModelService extends AbstractService {
 		LOG.info( "getModel: resource= {}, namespace = {}, uri = {}",  resource, namespace, uri);
 		
 		SodaliteAbstractModel model = null;
-		AuthResponse ares = null;
+		AuthResponse ares = new AuthResponse();
 		
 		KBApi api = new KBApi();
 		if (!"".equals(resource)) {
 			model = api.getModelForResource(resource, namespace);
-			if(AuthUtil.authentication()) {
-				if (!"".equals(namespace)) {
-					String shortNamespace = MyUtils.getNamespaceFromContext(namespace);
-					ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
-					LOG.info( "Model for Resource shortNamespace = {}",  shortNamespace);
-				}
+			if(AuthUtil.authentication() && !"".equals(namespace)) {
+				String shortNamespace = MyUtils.getNamespaceFromContext(namespace);
+				ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
+				LOG.info( "Model for Resource shortNamespace = {}",  shortNamespace);
 			}
 		} else if (!"".equals(uri)) {
 			model = api.getModelFromURI(uri);
@@ -85,10 +83,9 @@ public class GetModelService extends AbstractService {
 		}
 		
 		//Error returned in auth
-		if (AuthUtil.authentication()) {
-			if(ares.getResponse() != null)
-				return ares.getResponse();
-		}
+		if (AuthUtil.authentication() &&ares.getResponse() != null)
+					return ares.getResponse();
+		
 		
 		api.shutDown();
 		JsonObject _model = new JsonObject();

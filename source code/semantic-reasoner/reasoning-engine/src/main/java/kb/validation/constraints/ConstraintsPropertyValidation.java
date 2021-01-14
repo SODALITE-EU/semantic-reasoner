@@ -30,11 +30,11 @@ public class ConstraintsPropertyValidation {
 	
 	private String constraintsQuery = "select distinct ?property ?constraint ?constr_type ?value\r\n" + 
 			"where {\r\n" + 
-			"   ?var soda:hasInferredContext ?context .\r\n" + 
-			"	?context tosca:properties ?concept .\r\n" + 
-			"	?concept DUL:classifies ?property .\r\n" + 
-			"	?concept DUL:hasParameter [DUL:classifies tosca:constraints; DUL:hasParameter [DUL:classifies ?constraint; tosca:hasDataValue ?value]].\r\n" + 
-			"   ?concept DUL:hasParameter [DUL:classifies tosca:type; tosca:hasValue ?constr_type].\r\n" + 
+			"\t\t?var soda:hasInferredContext ?context .\r\n" + 
+			"\t\t?context tosca:properties ?concept .\r\n" + 
+			"\t\t?concept DUL:classifies ?property .\r\n" + 
+			"\t\t?concept DUL:hasParameter [DUL:classifies tosca:constraints; DUL:hasParameter [DUL:classifies ?constraint; tosca:hasDataValue ?value]].\r\n" + 
+			"\t\t?concept DUL:hasParameter [DUL:classifies tosca:type; tosca:hasValue ?constr_type].\r\n" + 
 			"}";
 	
 	public ConstraintsPropertyValidation(String templateName, NamedResource templateType, Map<String, String> exchangePropertyValues, KB kb) {

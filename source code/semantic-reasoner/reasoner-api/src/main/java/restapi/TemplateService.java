@@ -61,7 +61,7 @@ public class TemplateService extends AbstractService {
 		 if(AuthUtil.authentication()) {
 			 AuthResponse ares = SharedUtil.authForImports(imports, AuthConsts.AADM_R, token);
 			 if (ares.getResponse() != null)
-				return ares.getResponse();
+				 return ares.getResponse();
 		 }		
 		 
 		 KBApi api = new KBApi();

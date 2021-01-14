@@ -232,8 +232,8 @@ public class ModifyKB {
 		LOG.info("deleteModelMetadata {}", modelIRI);
 		
 		String sparql = MyUtils.fileToString("sparql/clean/getAADMMetadataStatements.sparql");
-		String query = KB.PREFIXES + sparql;
-		GraphQueryResult gresultM = QueryUtil.evaluateConstructQuery(kb.getConnection(), query,
+		String queryd = KB.PREFIXES + sparql;
+		GraphQueryResult gresultM = QueryUtil.evaluateConstructQuery(kb.getConnection(), queryd,
 				new SimpleBinding("s", modelIRI));
 		
 		Model mresult = QueryResults.asModel(gresultM);

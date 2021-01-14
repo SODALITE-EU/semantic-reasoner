@@ -2,7 +2,6 @@ package restapi;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +68,7 @@ public class ValidRequirementNodeTypeService extends AbstractService {
 		if(AuthUtil.authentication()) {
 		 	AuthResponse ares = SharedUtil.authForImports(imports, AuthConsts.RM_R, token);
 		 	if (ares.getResponse() != null)
-				return ares.getResponse();
+		 			return ares.getResponse();
 		}
 		
 		KBApi api = new KBApi();
