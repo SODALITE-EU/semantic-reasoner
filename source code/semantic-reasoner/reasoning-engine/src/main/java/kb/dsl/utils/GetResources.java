@@ -24,22 +24,22 @@ public class GetResources {
 		String namespace = n.getNamespace();
 		String resource = n.getResource();
 		
-		String sparql = "select ?x { \r\n" +
-				"  {\r\n " +
-				"    ?x rdf:type owl:Class .\r\n" +
-				"   FILTER NOT EXISTS\r\n" +
-				"   {\r\n" +
-				"     GRAPH ?g { ?x ?p ?o } \r\n" +
-				"   }\r\n" +
-				"  }\r\n";
+		String sparql = "select ?x {\r\n" +
+				"\t{\r\n " +
+				"\t\t?x rdf:type owl:Class .\r\n" +
+				"\tFILTER NOT EXISTS\r\n" +
+				"\t{\r\n" +
+				"\t\tGRAPH ?g { ?x ?p ?o } \r\n" +
+				"\t}\r\n" +
+				"}\r\n";
 
 		if (namespace != null && !namespace.contains("global"))
-			sparql += 	" UNION {\r\n" +
-						"     GRAPH " + "<"+ namespace + ">\r\n" +
-						"     {\r\n" +
-						"	     ?x rdf:type owl:Class . \r\n" +
-						"     }\r\n" +
-						" }\r\n";
+			sparql += 	"UNION {\r\n" +
+						"\t\tGRAPH " + "<"+ namespace + ">\r\n" +
+						"\t\t{\r\n" +
+						"\t\t\t?x rdf:type owl:Class . \r\n" +
+						"\t\t}\r\n" +
+						"\t}\r\n";
 
 		sparql += 	" ?x rdfs:subClassOf " + type + " .\r\n" +
 					" FILTER (strends(str(?x), \"" + resource + "\")). \r\n" +
@@ -72,17 +72,17 @@ public class GetResources {
 		}
 		
 		sparql += "{  " +
-					"  {\r\n" +
-					"     ?x a rdf:Property . " +
-					"     FILTER (strends(str(?x), \"/" + label + "\")). \r\n" +
-					"  }";
+					"\t{\r\n" +
+					"\t\t?x a rdf:Property . " +
+					" \t\tFILTER (strends(str(?x), \"/" + label + "\")). \r\n" +
+					"\t}";
 		
 		if (namespaces.size() != 0)
-			sparql +=   "  UNION {\r\n" +
-					    "    	 GRAPH " + "?g\r\n" +
-					    "    	 { ?x a rdf:Property . FILTER (strends(str(?x), \"/" + label + "\")). " +
-					    "    	 }\r\n" +
-					    "  }\r\n";
+			sparql +=   " UNION {\r\n" +
+					    "\t\tGRAPH " + "?g\r\n" +
+					    "\t\t{ ?x a rdf:Property . FILTER (strends(str(?x), \"/" + label + "\")). " +
+					    "}\r\n" +
+					    "\t}\r\n";
 		sparql += 	"}";
 			
 		LOG.info(sparql);
@@ -128,13 +128,13 @@ public class GetResources {
 		LOG.info("getInheritedNamespacesFromType type  = {}\n", type);
 		List<String> namespacesOfType = new ArrayList<String>();
 		String query = KB.PREFIXES +
-						" select ?g { \r\n" + 
-						"	?x rdfs:subClassOf tosca:tosca.entity.Root .\r\n" + 
-						"	?x rdfs:subClassOf ?superclass .\r\n" + 
-						"    \r\n" + 
-						"	GRAPH ?g {\r\n" + 
-						"		?superclass soda:hasContext ?c .\r\n" + 
-						"	}\r\n" + 
+						"select ?g { \r\n" + 
+						"\t\t?x rdfs:subClassOf tosca:tosca.entity.Root .\r\n" + 
+						"\t\t?x rdfs:subClassOf ?superclass .\r\n" + 
+						"\t\t\r\n" + 
+						"\tGRAPH ?g {\r\n" + 
+						"\t\t?superclass soda:hasContext ?c .\r\n" + 
+						"\t}\r\n" + 
 						"}";
 		LOG.info(query);
 		
@@ -172,12 +172,12 @@ public class GetResources {
 		
 		LOG.info("req_cap = {}, resource = {}, resource_iri = {}\n", req_cap, resource, resource_iri);
 		
-		String sparql = "select ?requirement \r\n" + 
+		String sparql = "select ?requirement\r\n" + 
 				"where {\r\n" + 
-				"	?resource soda:hasContext ?context .\r\n" + 
-				"	?context tosca:requirements|tosca:capabilities ?classifier.\r\n" + 
-				"	?classifier DUL:classifies ?requirement .\r\n" + 
-				"    filter(regex(str(?requirement), \"" + req_cap  + "$\", \"i\")) .\r\n" + 
+				"\t\t?resource soda:hasContext ?context .\r\n" + 
+				"\t\t?context tosca:requirements|tosca:capabilities ?classifier.\r\n" + 
+				"\t\t?classifier DUL:classifies ?requirement .\r\n" + 
+				"\t\tfilter(regex(str(?requirement), \"" + req_cap  + "$\", \"i\")) .\r\n" + 
 				"}";
 		
 		String query = KB.PREFIXES + sparql;

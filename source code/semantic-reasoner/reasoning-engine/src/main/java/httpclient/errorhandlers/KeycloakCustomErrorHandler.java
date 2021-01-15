@@ -1,4 +1,4 @@
-package httpclient;
+package httpclient.errorhandlers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,8 +15,7 @@ import httpclient.dto.AuthModel.DownstreamApi;
 import httpclient.dto.HttpRequestErrorModel;
 import httpclient.exceptions.MyRestTemplateException;
 
-public class BugCustomErrorHandler implements ResponseErrorHandler {
-
+public class KeycloakCustomErrorHandler implements ResponseErrorHandler {
 	@Override
 	public boolean hasError(ClientHttpResponse httpResponse) throws IOException {
 		return (
@@ -31,7 +30,7 @@ public class BugCustomErrorHandler implements ResponseErrorHandler {
 		        String httpBodyResponse = reader.lines().collect(Collectors.joining(""));
 		        String errorMessage = httpBodyResponse;
 
-		        HttpRequestErrorModel e = new HttpRequestErrorModel(LocalDateTime.now(), DownstreamApi.BUG_PREDICTOR_API, httpResponse.getStatusCode(), httpResponse.getRawStatusCode(), errorMessage, "Error to defect predictor request");
+		        HttpRequestErrorModel e = new HttpRequestErrorModel(LocalDateTime.now(), DownstreamApi.KEYCLOAK_API, httpResponse.getStatusCode(), httpResponse.getRawStatusCode(), errorMessage, "Error in keycloak request");
 		        throw new MyRestTemplateException(e);
 		      }
 		    }

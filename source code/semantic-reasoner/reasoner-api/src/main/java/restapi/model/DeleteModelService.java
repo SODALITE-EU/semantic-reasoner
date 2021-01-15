@@ -1,6 +1,7 @@
 package restapi.model;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
@@ -8,14 +9,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.JsonObject;
 
+import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
-
+import kb.dto.SodaliteAbstractModel;
+import kb.utils.MyUtils;
 import restapi.AbstractService;
+import restapi.util.SharedUtil;
 
 /** A service that deletes a model 
  * @author George Meditskos
@@ -26,22 +34,38 @@ import restapi.AbstractService;
 @Path("/delete")
 @Api()
 public class DeleteModelService extends AbstractService {
+	private static final Logger LOG = LoggerFactory.getLogger(DeleteModelService.class.getName());
 	/**
 	  * Delete a model in KB
 	  * Internal Note: Check for changing the operation from GET to DELETE
 	  * @param uri The uri of the model
 	  * @throws IOException If your input format is invalid
 	  * @return Success or not
+	 * @throws URISyntaxException 
 	 */
 	@DELETE
 	@Produces("application/json")
 	@ApiOperation(
 			value = "Delete a model in Knowledge Base")
 //			response = String.class)
-	public Response deleteModel(@ApiParam(value = "uri", required = true) @QueryParam("uri") String uri)
-			throws IOException {
+	public Response deleteModel(@ApiParam(value = "uri", required = true) @QueryParam("uri") String uri,
+			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
+			throws IOException, URISyntaxException {
+		LOG.info( "Delete model uri={}",  uri);
 
 		KBApi api = new KBApi();
+		
+		if (AuthUtil.authentication()) {
+			SodaliteAbstractModel model = api.getModelFromURI(uri);
+			if (model != null) {
+				String shortNamespace = model.getNamespace() == null ? "global" : MyUtils.getNamespaceFromContext(model.getNamespace());
+				LOG.info( "Model from URI shortNamespace = {}",  shortNamespace);
+				AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
+				if(ares.getResponse() != null)
+					return ares.getResponse();
+			}
+		}
+		
 		boolean res = api.deleteModel(uri);
 		api.shutDown();
 

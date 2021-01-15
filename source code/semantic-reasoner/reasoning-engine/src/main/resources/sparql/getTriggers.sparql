@@ -1,0 +1,19 @@
+select distinct ?concept ?trigger ?value
+where {
+	?resource soda:hasInferredContext ?context .
+	?context tosca:triggers ?concept .
+	?concept DUL:classifies ?trigger .
+	OPTIONAL {?concept tosca:hasValue ?value .} 
+	
+	FILTER NOT EXISTS {
+			?resource soda:hasInferredContext ?context2 .
+			FILTER(?context != ?context2).
+			?context2 tosca:triggers ?classifier2.
+			?classifier2 DUL:classifies ?trigger .
+			
+			?resource2 soda:hasContext ?context2 .
+			#FILTER(?resource != ?resource2).	
+			FILTER(?resource2 != owl:Nothing).
+			?resource2 rdfs:subClassOf ?resource.	
+	}
+}

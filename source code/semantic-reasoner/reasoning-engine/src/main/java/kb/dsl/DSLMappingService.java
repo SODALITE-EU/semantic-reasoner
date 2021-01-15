@@ -76,8 +76,8 @@ public class DSLMappingService {
 	String base = "https://www.sodalite.eu/ontologies/";
 //	String ws = base + "workspace/woq2a8g0gscuqos88bn2p7rvlq3/";
 //	String ws = "http://";
-	String ws = base + "workspace/1/";
-	String namespacews = base + "workspace/1/";
+	String aadmws = KB.BASE_NAMESPACE;
+	String templatews = KB.BASE_NAMESPACE;
 	
 	public IRI aadmKB;
 	public String aadmURI;
@@ -90,7 +90,7 @@ public class DSLMappingService {
 	boolean complete;
 	
 	private String currentTemplate;
-	public List<String> namespacesOfType = new ArrayList<String>();
+	public List<String> namespacesOfType = new ArrayList<>();
 	
 
 	// Validation
@@ -131,9 +131,9 @@ public class DSLMappingService {
 		this.complete = complete;
 		
 		if (!"".equals(namespace))
-			this.namespace = factory.createIRI(ws + namespace + "/");
+			this.namespace = factory.createIRI(templatews + namespace + "/");
 		else
-			this.namespace = factory.createIRI(ws + "global/");
+			this.namespace = factory.createIRI(templatews + "global/");
 		
 		this.aadmDSL = aadmDSL;
 		this.name = name;
@@ -168,16 +168,16 @@ public class DSLMappingService {
 			else
 				userId = _userId.get().getLabel();
 					
-			ws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
-			LOG.info("namespace = {}", ws);
-			aadmBuilder.setNamespace("ws", ws);
+			aadmws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
+			LOG.info("namespace = {}", aadmws);
+			aadmBuilder.setNamespace("ws", aadmws);
 
-			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(ws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
+			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(aadmws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
 			//context = aadmKB;
 			aadmBuilder.add(aadmKB, RDF.TYPE, "soda:AbstractApplicationDeployment");
 
 			if (userId != null) {
-				IRI user = factory.createIRI(ws + userId);
+				IRI user = factory.createIRI(aadmws + userId);
 				aadmBuilder.add(user, RDF.TYPE, "soda:User");
 				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "createdBy"), user);
 			}
@@ -190,6 +190,7 @@ public class DSLMappingService {
 			}
 			
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasName"), name);
+			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasNamespace"), MyUtils.getNamespaceFromContext(namespace.toString()));
 			
 		}
 
@@ -229,7 +230,7 @@ public class DSLMappingService {
 			
 			LOG.info("Name: {}, type: {}", templateName, templateType);
 			
-			NamedResource fullTemplateType = GetResources.setNamedResource(namespacews, templateType);
+			NamedResource fullTemplateType = GetResources.setNamedResource(templatews, templateType);
 			//this.namespaceOfType = n.getNamespace();
 			
 			templateType = fullTemplateType.getResource();
@@ -420,11 +421,12 @@ public class DSLMappingService {
 		}
 		
 		try {
-			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString());
+			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString(), aadmKB);
 			if (!aadmURI.isEmpty())
 				VerifySingularity.removeInputs(kb, aadmURI);
 		} catch (IOException e) {
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(),e);
+			e.printStackTrace();
 		}
 		
 		return aadmKB;
@@ -462,7 +464,7 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());			
+			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());			
 			IRI kbTemplate = getKBTemplate(n);
 			if (kbTemplate == null) {
 				if (templateNames.contains(n.getResource()))
@@ -505,7 +507,7 @@ public class DSLMappingService {
 			}
 		
 			// create classifier
-			parameterClassifierKB = factory.createIRI(namespace + "ParamClassifier_" + MyUtils.randomString());
+			parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 			templateBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 			if (parameterName != null) {
 				IRI paramProperty = GetResources.getKBProperty(parameterName, this.namespacesOfType, kb);
@@ -521,7 +523,7 @@ public class DSLMappingService {
 					.orElse(null);
 
 			if (value != null) { // this means there is no parameters
-				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
 				IRI kbTemplate = getKBTemplate(n);
 				if (kbTemplate == null) {
 					if (templateNames.contains(n.getResource()))
@@ -579,16 +581,16 @@ public class DSLMappingService {
 		
 		IRI propertyClassifierKB = null;
 		switch (parameterType) {
-			case "Attribute":
-				propertyClassifierKB = factory.createIRI(namespace + "AttrClassifer_" + MyUtils.randomString());
+			case KBConsts.ATTRIBUTE:
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.ATTR_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Attribute");
 				break;
-			case "Parameter":
-				propertyClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+			case KBConsts.PARAMETER:
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
-			case "Property" :
-				propertyClassifierKB = factory.createIRI(namespace + "PropClassifer_" + MyUtils.randomString());
+			case KBConsts.PROPERTY :
+				propertyClassifierKB = factory.createIRI(namespace + KBConsts.PROP_CLASSIFIER + MyUtils.randomString());
 				templateBuilder.add(propertyClassifierKB, RDF.TYPE, "tosca:Property");
 				break;
 			default:
@@ -686,7 +688,7 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
 			IRI kbTemplate = getKBTemplate(n);
 			if (kbTemplate == null) {
 				if (templateNames.contains(n.getResource()))
@@ -737,12 +739,12 @@ public class DSLMappingService {
 		
 		IRI triggerClassifierKB = null;
 		switch (type) {
-			case "Trigger":
+			case KBConsts.TRIGGER:
 				triggerClassifierKB = factory.createIRI(namespace + "TriggerClassifer_" + MyUtils.randomString());
 				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
 				break;
-			case "Parameter":
-				triggerClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+			case KBConsts.PARAMETER:
+				triggerClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			default:
@@ -753,9 +755,9 @@ public class DSLMappingService {
 			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "classifies"), triggerProperty);
 		
 		Optional<String> description = Models.getPropertyString(aadmModel, trigger,
-				factory.createIRI(KB.EXCHANGE + "description"));
+				factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
 		if (description.isPresent())
-			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
 
 		// check for direct values of parameters
 		Literal value = Models
@@ -764,7 +766,7 @@ public class DSLMappingService {
 
 		if (value != null) { // this means there is no parameters
 			if (triggerName.equals("node")) {
-				NamedResource n = GetResources.setNamedResource(namespacews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
 				IRI kbNode = getKBTemplate(n);
 				if (kbNode == null) {
 					if (templateNames.contains(n.getResource()))
@@ -820,7 +822,7 @@ public class DSLMappingService {
 		LOG.info("-----ListValue--- {}", listValues);
 		IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 		
-		IRI parameterClassifierKB = factory.createIRI(namespace + "ParamClassifer_" + MyUtils.randomString());
+		IRI parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 		
 		aadmBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 		aadmBuilder.add(list, RDF.TYPE, "tosca:List");
@@ -830,7 +832,7 @@ public class DSLMappingService {
 			aadmBuilder.add(list, RDF.TYPE, "tosca:List");
 			
 			
-			NamedResource n = GetResources.setNamedResource(namespacews, l.getLabel());
+			NamedResource n = GetResources.setNamedResource(templatews, l.getLabel());
 			IRI kbNode = getKBTemplate(n);
 			if (kbNode == null) {
 				if (templateNames.contains(n.getResource()))

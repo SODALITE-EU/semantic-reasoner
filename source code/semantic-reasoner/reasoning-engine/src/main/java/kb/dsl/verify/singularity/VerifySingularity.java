@@ -20,7 +20,7 @@ public class VerifySingularity {
 	private VerifySingularity() {
 	}
 	
-	public static void removeExistingDefinitions (KB kb, Set<String> nodeTypes, String namespace) throws IOException {
+	public static void removeExistingDefinitions (KB kb, Set<String> nodeTypes, String namespace, IRI modelIRI) throws IOException {
 		LOG.info("removeExistingTypes = {}", QueryUtil.convertToSPARQLList(nodeTypes));
 		
 		String sparql = "select ?m (group_concat(?x) AS ?nodes) { \r\n" + 
@@ -52,6 +52,10 @@ public class VerifySingularity {
 		String query = KB.PREFIXES + sparql;
 		LOG.info("removeExistingTypes query = {}", query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
+		
+		//Refresh model metadata such as time, user
+		if(result.hasNext())
+			new ModifyKB(kb).deleteModelMetadata(modelIRI);
 		
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
@@ -91,7 +95,8 @@ public class VerifySingularity {
 			
 			new ModifyKB(kb).deleteNode(input);
 		}
-		
+
+		result.close();
 	}
 
 }

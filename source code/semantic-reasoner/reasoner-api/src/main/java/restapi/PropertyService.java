@@ -1,9 +1,8 @@
 package restapi;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,11 +13,14 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Property;
+import restapi.util.SharedUtil;
 
 /** A service that returns the properties of a single TOSCA node
  * @author George Meditskos
@@ -29,13 +31,13 @@ import kb.dto.Property;
 @Path("/properties")
 @Api()
 public class PropertyService extends AbstractService {
-	private static final Logger LOG = LoggerFactory.getLogger(PropertyService.class.getName());
 	/**
 	 * Getting the properties of a single TOSCA resource.
 	 * @param resource The resource name
 	 * @param template Flag that represents if it is template or type
 	 * @throws IOException If your input format is invalid
 	 * @return The requirements in JSON format
+	 * @throws URISyntaxException 
 	*/
 	@GET
 	@Produces("application/json")
@@ -51,8 +53,15 @@ public class PropertyService extends AbstractService {
 			@ApiParam(
 					value = "For template, it is true. For type, it is false",
 					required = true,
-					defaultValue = "false") @QueryParam("template") boolean template)
-		throws IOException {
+					defaultValue = "false") @QueryParam("template") boolean template,
+			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
+		throws IOException, URISyntaxException {
+		
+		if(AuthUtil.authentication()) {
+			AuthResponse ares = SharedUtil.authForReadRoleFromResource(template, resource, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
+		}
 		
 		KBApi api = new KBApi();
 
@@ -70,11 +79,5 @@ public class PropertyService extends AbstractService {
 		_properties.add("data", array);
 
 		return Response.ok(_properties.toString()).build();
-	}
-
-	public static void main(String[] args) throws IOException {
-		PropertyService s = new PropertyService();
-		Response property = s.getProperty("tosca.capabilities.Compute", true);
-		LOG.info("property={}", property);
 	}
 }

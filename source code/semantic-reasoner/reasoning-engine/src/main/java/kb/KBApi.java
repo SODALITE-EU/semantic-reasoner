@@ -41,6 +41,7 @@ import kb.dto.Parameter;
 import kb.dto.Property;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
+import kb.dto.Trigger;
 import kb.repository.KB;
 import kb.repository.KBConsts;
 import kb.utils.InferencesUtil;
@@ -143,6 +144,39 @@ public class KBApi {
 		}
 
 		return properties;
+	}
+	
+	public Set<Trigger> getTriggers(String resource, boolean isTemplate) throws IOException {
+		LOG.info("getTrigger: {}", resource);
+
+		Set<Trigger> triggers = new HashSet<>();
+		String sparql = MyUtils
+				.fileToString(!isTemplate ? "sparql/getTriggers.sparql" : "sparql/getTriggersTemplate.sparql");
+
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
+
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI trig = (IRI) bindingSet.getBinding("trigger").getValue();
+			IRI concept = (IRI) bindingSet.getBinding("concept").getValue();
+			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
+
+			Trigger tr = new Trigger(trig);
+			tr.setClassifiedBy(concept);
+
+			if (_value != null)
+				tr.setValue(_value, kb);
+
+			triggers.add(tr);
+		}
+		result.close();
+		for (Trigger t : triggers) {
+			t.build(this);
+		}
+		return triggers;
 	}
 	
 	public Set<String> getPropAttrNames(String resource, String elem) throws IOException {
@@ -840,6 +874,25 @@ public class KBApi {
 		result.close();
 		return results;
 	}
+	
+	public Set<IRI> getTargets(String resource, boolean isTemplate) throws IOException {
+		LOG.info("getTargets: {}", resource);
+
+		Set<IRI> results = new HashSet<>();
+		String sparql = MyUtils.fileToString(
+				!isTemplate ? "sparql/getTargets.sparql" : "sparql/getTargetsTemplate.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI value = (IRI) bindingSet.getBinding("value").getValue();
+			results.add(value);
+		}
+		result.close();
+		return results;
+	}
 
 	public Set<Operation> getOperations(String resource, boolean isTemplate) throws IOException {
 		LOG.info("getOperations: {}", resource);
@@ -1085,12 +1138,14 @@ public class KBApi {
 			BindingSet bindingSet = result.next();
 			Value createdAt = bindingSet.getBinding("createdAt").getValue();
 			IRI user = (IRI) bindingSet.getBinding("user").getValue();
+			String namespace = bindingSet.getBinding("namespace").getValue().stringValue();
 			String templates = bindingSet.getBinding("templates").getValue().stringValue();
 			String inputs = bindingSet.getBinding("inputs").getValue().stringValue();
 
 			aadm = new AADM(kb.getFactory().createIRI(aadmId));
 			aadm.setUser(user);
 			aadm.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
+			aadm.setNamespace(namespace);
 
 			String[] split = templates.split(" ");
 			for (String s : split) {
@@ -1182,13 +1237,13 @@ public class KBApi {
 			query = KB.SODA_DUL_PREFIXES + sparql;
 			LOG.info(query);
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-														new SimpleBinding("name", kb.getFactory().createLiteral(resource)));
+														new SimpleBinding("res_name", kb.getFactory().createLiteral(resource)));
 		} else {
 			sparql += MyUtils.fileToString("sparql/models/getModelFromNamedResource.sparql");
 			query = KB.SODA_DUL_PREFIXES + sparql;
 			LOG.info(query);
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("g", kb.getFactory().createIRI(namespace)),
-					new SimpleBinding("name", kb.getFactory().createLiteral(resource))});
+					new SimpleBinding("res_name", kb.getFactory().createLiteral(resource))});
 			
 		}
 			
@@ -1199,12 +1254,16 @@ public class KBApi {
 			IRI user = (IRI) bindingSet.getBinding("user").getValue();
 			Value dsl = bindingSet.getBinding("dsl").getValue();
 			Value name = bindingSet.getBinding("name").getValue();
+			String isAADM = bindingSet.getBinding("isAADM").getValue().stringValue();
+			
 			
 			a = new SodaliteAbstractModel(model);
 			a.setUser(user);
 			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			a.setDsl(dsl.stringValue());
 			a.setName(name.stringValue());
+			a.setIsAADM(Boolean.parseBoolean(isAADM));
+			LOG.info( "isAADM = {}",  isAADM);
 		}
 		
 		return a;
@@ -1228,12 +1287,15 @@ public class KBApi {
 			IRI user = (IRI) bindingSet.getBinding("user").getValue();
 			Value dsl = bindingSet.getBinding("dsl").getValue();
 			Value name = bindingSet.getBinding("name").getValue();
+			IRI namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
 			
 			a = new SodaliteAbstractModel(model);
 			a.setUser(user);
 			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			a.setDsl(dsl.stringValue());
 			a.setName(name.stringValue());
+			if(namespace != null)
+				a.setNamespace(namespace.toString());
 		}
 		
 		return a;

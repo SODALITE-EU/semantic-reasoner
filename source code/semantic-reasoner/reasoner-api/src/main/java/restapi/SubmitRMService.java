@@ -2,7 +2,6 @@ package restapi;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +21,8 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import httpclient.AuthConsts;
 import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -79,11 +78,11 @@ public class SubmitRMService extends AbstractService  {
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
 			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException {
-		ArrayList<String> roles = null;
+	
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(namespace, roles, token, AuthConsts.RM_W);
-			if (res != null)
-				return res;
+			AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(!SharedUtil.IS_AADM, namespace, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
 		}
 		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
@@ -95,7 +94,7 @@ public class SubmitRMService extends AbstractService  {
 		JSONObject response = new JSONObject();
 		try {
 			rmUri = m.start();
-			String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(RM_.*).*");
+			String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
 			/*if(!HttpClientRequest.getWarnings(response, rmid)) {
 				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getNodeNames()));

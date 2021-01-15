@@ -1,6 +1,7 @@
 package restapi;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -23,7 +25,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import httpclient.AuthConsts;
+import httpclient.AuthUtil;
 import httpclient.HttpClientRequest;
+import httpclient.dto.AuthResponse;
 import httpclient.dto.HttpRequestErrorModel;
 import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
@@ -39,6 +44,7 @@ import kb.repository.KB;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
+import restapi.util.SharedUtil;
 
 
 /** A service that submits the abstract application deployment model to the Knowledge Base and
@@ -66,11 +72,13 @@ public class OptimizationService extends AbstractService {
 	 * @param complete
 	 * @param namespace The namespace of the model e.g. docker
 	 * @param name The file name of the model
+	 * @param token token
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid
 	 * @throws MappingException Unknown entity issue
 	 * @return The AADM URI along with potential optimizations
+	 * @throws URISyntaxException 
 	*/
 	@POST
 	//@Produces("text/plain")
@@ -83,8 +91,15 @@ public class OptimizationService extends AbstractService {
 			@ApiParam(value = "The aadm in DSL", required = false) @FormParam("aadmDSL") String aadmDSL,
 			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
-			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name)
-					throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException  {
+			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
+			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
+					throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException  {
+		
+		if(AuthUtil.authentication()) {
+			AuthResponse ares = SharedUtil.authorization(AuthUtil.createRoleFromNamespace(namespace, AuthConsts.AADM_W), token, true);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
+		}
 		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
@@ -122,7 +137,7 @@ public class OptimizationService extends AbstractService {
 			
 		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(), e);
 		} finally {
 			m.shutDown();
 		}

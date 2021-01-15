@@ -31,7 +31,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import httpclient.dto.AuthErrorModel;
-
+import httpclient.errorhandlers.BugCustomErrorHandler;
+import httpclient.errorhandlers.KeycloakCustomErrorHandler;
 import httpclient.exceptions.AuthException;
 import httpclient.exceptions.MyRestTemplateException;
 import kb.configs.ConfigsLoader;
@@ -111,7 +112,7 @@ public class HttpClientRequest {
 		return response.getBody();
 	}
 	
-	public static ArrayList<String> validateToKen(String token) throws URISyntaxException, MyRestTemplateException, AuthException {
+	public static List<String> validateToKen(String token) throws URISyntaxException, MyRestTemplateException, AuthException {
 		LOG.info("validateToKen:");
 		String url = keycloak + INTROSPECT_SERVICE;
 		
@@ -126,14 +127,14 @@ public class HttpClientRequest {
 		boolean active = jsonObject.get("active").getAsBoolean();
 		
 		if(!active) {
-			List<AuthErrorModel> errors = new ArrayList<AuthErrorModel>();
-			errors.add(new AuthErrorModel(LocalDateTime.now(),  "Access Token not active", HttpStatus.UNAUTHORIZED));
-			throw new AuthException(errors);	
+			List<AuthErrorModel> errors = new ArrayList<>();
+			errors.add(new AuthErrorModel(LocalDateTime.now(),  "Access Token not active", HttpStatus.UNAUTHORIZED, 401));
+			throw new AuthException(errors);
 		}
 		
 		JsonArray roles = jsonObject.getAsJsonObject("resource_access").getAsJsonObject(keycloakClientId).getAsJsonArray("roles");
 
-		ArrayList<String> rolesList = new ArrayList<String>();
+		ArrayList<String> rolesList = new ArrayList<>();
 		for (JsonElement r : roles) {
 			 rolesList.add(r.getAsString());
 		}

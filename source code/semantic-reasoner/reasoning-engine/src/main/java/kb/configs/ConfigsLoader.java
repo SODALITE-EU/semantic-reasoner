@@ -51,7 +51,7 @@ public class ConfigsLoader {
 		LOG.info("environment = {}", environment);
 
 		if (environment == null) {
-			environment = "dev";
+			environment = "qa";
 
 			String configPath = "/envs/" + environment + "/config.properties";
 
@@ -61,7 +61,7 @@ public class ConfigsLoader {
 			} catch (IOException e) {
 
 				LOG.warn("Property file not found");
-				LOG.error(e.getMessage());
+				LOG.error(e.getMessage(), e);
 			}
 
 			// Read properties

@@ -1,6 +1,7 @@
 package restapi;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -16,11 +17,15 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import httpclient.AuthConsts;
+import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Node;
+import restapi.util.SharedUtil;
 
 /** A service that returns all the known TOSCA nodes in the KB
  * @author George Meditskos
@@ -38,8 +43,10 @@ public class TypeService extends AbstractService {
 	  * Getting all the known TOSCA nodes in the KB
 	  * @param imports The namespaces to be searched e.g. docker, snow
 	  * @param type Represents the kinf of the type: capability, data, node, relationship, interface
+	  * @param token token
 	  * @throws IOException if your input format is invalid
 	  * @return All the TOSCA nodes in JSON format
+	 * @throws URISyntaxException 
 	 */
 	@GET
 	@Produces("application/json")
@@ -50,9 +57,16 @@ public class TypeService extends AbstractService {
 			defaultValue = "") @MatrixParam("imports") List<String> imports, @ApiParam(
 					value = "the type e.g. data, node",
 					required = true,
-					defaultValue = "") @MatrixParam("type") String type ) throws IOException {
+					defaultValue = "") @MatrixParam("type") String type,
+			@ApiParam(value = "token", required = false) @MatrixParam("token") String token) throws IOException, URISyntaxException {
 		
 		LOG.info("imports are {}, type is {}", Arrays.toString(imports.toArray()), type);
+		
+		if(AuthUtil.authentication()) {
+		 	AuthResponse ares = SharedUtil.authForImports(imports, AuthConsts.RM_R, token);
+		 	if (ares.getResponse() != null)
+		 			return ares.getResponse();
+		}	
 		 
 		KBApi api = new KBApi();
 		Set<Node> nodes = api.getNodes(imports, type);

@@ -80,8 +80,8 @@ public class HttpClientRequestTest {
 		} catch (AuthException e) {
 			List<AuthErrorModel> models = e.roleModels;
 			for (AuthErrorModel r : models) {
-				assertEquals(r.statusCode, HttpStatus.UNAUTHORIZED);
-				assertEquals(r.description,"Access Token not active");
+				assertEquals(r.getStatusCode(), HttpStatus.UNAUTHORIZED);
+				assertEquals(r.getDescription(),"Access Token not active");
 			}
 			
 			LOG.info("Test Passed: testValidateToKenFalse");

@@ -2,7 +2,6 @@ package restapi;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +23,9 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import httpclient.AuthConsts;
 import httpclient.AuthUtil;
 import httpclient.HttpClientRequest;
+import httpclient.dto.AuthResponse;
 import httpclient.dto.HttpRequestErrorModel;
 import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
@@ -91,11 +90,10 @@ public class SubmitService extends AbstractService {
 			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
-		ArrayList<String> roles = null;
 		if(AuthUtil.authentication()) {
-			Response res = SharedUtil.authorization(namespace, roles, token, AuthConsts.AADM_W);
-			if (res != null)
-				return res;
+			AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(SharedUtil.IS_AADM, namespace, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
 		}
 					
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
@@ -141,7 +139,7 @@ public class SubmitService extends AbstractService {
 			LOG.error("rawStatus={}, api={}, statusCode={}, error={}", erm.rawStatus, erm.api, erm.statusCode, erm.error);
 		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
-			LOG.error(e.getMessage());
+			LOG.error(e.getMessage(), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("There was an internal server error").build();
 		} finally {
 			m.shutDown();

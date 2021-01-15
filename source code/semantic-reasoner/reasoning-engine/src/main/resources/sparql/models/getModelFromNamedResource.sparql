@@ -1,4 +1,4 @@
-SELECT ?m ?time ?user ?dsl ?name {
+SELECT ?m ?time ?user ?dsl ?name ?isAADM {
 		?m a ?modelType .
 		FILTER (?modelType  IN (soda:AbstractApplicationDeployment, soda:ResourceModel)) 
 		?m soda:createdAt ?time .
@@ -7,10 +7,11 @@ SELECT ?m ?time ?user ?dsl ?name {
 		?m soda:hasName ?name .
         
 		?m DUL:isSettingFor ?n .
+		BIND (xsd:boolean(exists{?m a soda:AbstractApplicationDeployment}) AS ?isAADM)
         
-        GRAPH ?g {
+		GRAPH ?g {
 			?n soda:hasContext ?c .
-        	?n soda:hasName ?name
+			?n soda:hasName ?res_name
 		}
     	
 }

@@ -1,6 +1,7 @@
 package restapi;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -12,11 +13,14 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Interface;
+import restapi.util.SharedUtil;
 
 /** A service that returns the interfaces of a single TOSCA node
  * @author George Meditskos
@@ -33,6 +37,7 @@ public class InterfaceService extends AbstractService {
 	  * @param template Flag that represents if it is template or type
 	  * @throws IOException If your input format is invalid
 	  * @return The interfaces in JSON format
+	 * @throws URISyntaxException 
 	 */
 	@GET
 	@Produces("application/json")
@@ -48,8 +53,16 @@ public class InterfaceService extends AbstractService {
 			@ApiParam(
 					value = "For template, it is true. For type, it is false",
 					required = true,
-					defaultValue = "false") @QueryParam("template") boolean template)
-			throws IOException {
+					defaultValue = "false") @QueryParam("template") boolean template,
+			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
+			throws IOException, URISyntaxException {
+			
+		if(AuthUtil.authentication()) {
+			AuthResponse ares = SharedUtil.authForReadRoleFromResource(template, resource, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
+		}
+
 
 		KBApi api = new KBApi();
 		Set<Interface> interfaces = api.getInterfaces(api.getResourceIRI(resource), template);

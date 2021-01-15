@@ -1,0 +1,5 @@
+select distinct ?value 
+where {
+		?resource soda:hasInferredContext ?context .
+		?context tosca:targets [tosca:hasValue [tosca:hasValue ?value]] .		
+}

@@ -39,4 +39,11 @@
 	<appender-ref ref="roll-by-time"/>
 </root>
 
+<stackTrace>
+    <fieldName>stacktrace</fieldName>
+       <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+          <pattern>[%thread] - %msg%n%stack{1,1024,10,rootFirst}</pattern>
+    </throwableConverter>
+</stackTrace>
+
 </configuration>

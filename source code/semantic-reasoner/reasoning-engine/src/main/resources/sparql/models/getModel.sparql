@@ -1,7 +1,16 @@
-SELECT ?m ?time ?user ?dsl ?name {
-		?m a soda:ResourceModel .
+SELECT distinct ?m ?time ?user ?dsl ?name ?isAADM ?g {
+		?m a ?modelType .
+        FILTER (?modelType  IN (soda:AbstractApplicationDeployment, soda:ResourceModel))  .
 		?m soda:createdAt ?time .
 		?m soda:createdBy ?user .
 		?m soda:hasDSL ?dsl .
 		?m soda:hasName ?name .
-}
+		BIND (xsd:boolean(exists{?m a soda:AbstractApplicationDeployment}) AS ?isAADM)
+		
+		?m DUL:isSettingFor ?resource
+		OPTIONAL{
+		GRAPH ?g {
+			?resource soda:hasContext ?ctx .
+		}
+	}
+} order by (!bound(?g)) asc(str(?g))
