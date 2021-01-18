@@ -42,7 +42,7 @@ import restapi.util.SharedUtil;
 		},
 		schemes = { SwaggerDefinition.Scheme.HTTP },
 		basePath = "reasoner-api/v0.6",
-		host = "http://160.40.52.200:8084")
+		host = "CERTH HOST IP")
 
 @Path("/attributes")
 @Api()
