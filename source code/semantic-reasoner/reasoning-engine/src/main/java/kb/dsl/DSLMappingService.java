@@ -426,7 +426,6 @@ public class DSLMappingService {
 				VerifySingularity.removeInputs(kb, aadmURI);
 		} catch (IOException e) {
 			LOG.error(e.getMessage(),e);
-			e.printStackTrace();
 		}
 		
 		return aadmKB;
