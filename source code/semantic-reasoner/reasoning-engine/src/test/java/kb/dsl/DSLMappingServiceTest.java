@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestInstance;
 import kb.KBApi;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
+import kb.dsl.util.RepositoryTestUtils;
 import kb.dto.Attribute;
 import kb.dto.Capability;
 import kb.dto.Interface;
@@ -56,8 +57,8 @@ class DSLMappingServiceTest {
 	static DSLRMMappingService rm4; 
 
 	@BeforeAll
-	 static void loadRepository() {
-		LOG.info("loadRepository");
+	 static void loadResourceModels() {
+		LOG.info("loadResourceModels");
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
 		kb = new KB(repositoryManager, SEMANTIC_REASONER_TEST);
 		api = new KBApi(kb);
@@ -65,31 +66,15 @@ class DSLMappingServiceTest {
 		repository = repositoryManager.getRepository(SEMANTIC_REASONER_TEST);
 		
 		RepositoryConnection repositoryConnection = repository.getConnection();
-		try {
-			InputStream input1 =
-				DSLMappingServiceTest.class.getResourceAsStream("/import/DUL.rdf");
-			repositoryConnection.add(input1, "", RDFFormat.RDFXML);
-	
-			InputStream input2 =
-					DSLMappingServiceTest.class.getResourceAsStream("/core/sodalite-metamodel.ttl");
-			repositoryConnection.add(input2, "", RDFFormat.TURTLE);
-
-			InputStream input3 =
-				DSLMappingServiceTest.class.getResourceAsStream("/core/tosca-builtins.ttl");
-			repositoryConnection.add(input3, "", RDFFormat.TURTLE);
-		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		
-		
+		RepositoryTestUtils.loadCoreOntologies(repositoryConnection);		
 	
 		IRI rmIRI3, rmIRI4 = null;
 		try {
 			LOG.info("Loading resource models");			
-			//String rmTTL1 = fileToString("snow/modules.docker_registry.rm.ttl");
-			//String rmTTL2 = fileToString("snow/modules.docker_component.rm.ttl");
-			String rmTTL3 = fileToString("snow/modules.openstack_security_rule.rm.ttl");
-			String rmTTL4 = fileToString("snow/modules.openstack_vm.rm.ttl");
+			//String rmTTL1 = RepositoryTestUtils.fileToString("resource_models/modules.docker_registry.rm.ttl");
+			//String rmTTL2 = RepositoryTestUtils.fileToString("resource_models/modules.docker_component.rm.ttl");
+			String rmTTL3 = RepositoryTestUtils.fileToString("resource_models/modules.openstack_security_rule.rm.ttl");
+			String rmTTL4 = RepositoryTestUtils.fileToString("resource_models/modules.openstack_vm.rm.ttl");
 			
 			
 			/*rm1  = new DSLRMMappingService(kb, rmTTL1,"", "docker","DSL","");
@@ -140,7 +125,7 @@ class DSLMappingServiceTest {
 		IRI aadmIRI = null;
 		DSLMappingService m = null;
 		try {
-			String aadmTTL = fileToString("dsl/ide_snow_v3.ttl");
+			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3.ttl");
 			m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				aadmIRI = m.start();
@@ -175,7 +160,7 @@ class DSLMappingServiceTest {
 		LOG.info("testMissingRequiredProperty");
 		DSLMappingService m = null;
 		try {
-			String aadmTTL = fileToString("dsl/ide_snow_v3_required_property_missing.ttl");
+			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_required_property_missing.ttl");
 			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
@@ -207,7 +192,7 @@ class DSLMappingServiceTest {
 		LOG.info("testMappingException");
 		DSLMappingService m = null;
 		try {
-			String aadmTTL = fileToString("dsl/ide_snow_v3_mapping_exception.ttl");
+			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_mapping_exception.ttl");
 			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
@@ -292,10 +277,7 @@ class DSLMappingServiceTest {
 		LOG.info("Test Passed: getAttributes of a node type");
 	}
 	
-	public static String fileToString(String file) throws IOException {
-		InputStream resourceAsStream = DSLMappingServiceTest.class.getClassLoader().getResourceAsStream(file);
-		return IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8.name());
-	}
+
 	
 	@AfterAll
 	public static void cleanUp() {
