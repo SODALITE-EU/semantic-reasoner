@@ -16,6 +16,7 @@ import org.eclipse.rdf4j.rio.*;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 
 import kb.configs.ConfigsLoader;
+import kb.utils.MyFileUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,7 @@ public class KB {
 	private static final Logger LOG = LoggerFactory.getLogger(KB.class.getName());
 	
     public static final String SERVER_URL = "http://localhost:7200";
-    public static final String ANSIBLE = "http://160.40.52.200:8084/Ansibles/";
+    public static final String ANSIBLE = MyFileUtil.REASONER_SERVER + "Ansibles/";
     public static final String REPOSITORY = "TOSCA";
 
     public static final String PREFIXES = "PREFIX tosca: <https://www.sodalite.eu/ontologies/tosca/> \r\n" +
