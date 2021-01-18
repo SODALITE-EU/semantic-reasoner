@@ -957,15 +957,15 @@ public class KBApi {
 		
 		//Initialize app type compatible node types - In the future, there will be many node types, we should find ANOTHER SOLUTION
 		HashMap<String, Set<String>> appTypes = new HashMap<String, Set<String>>();
-		appTypes.put("hpc", new HashSet<String>(){{
-		    add("my.nodes.hpc.wm.torque");
-		    add("my.nodes.hpc.job.torque");
-		}});
-		appTypes.put("ai_training", new HashSet<String>(){{
-		    add("sodalite.nodes.OpenStack.VM");
-		    add("sodalite.nodes.DockerizedComponent");
-		    add("sodalite.nodes.DockerHost");
-		}});
+		Set<String> hpcTypes = new HashSet<String>();
+		Set<String> AITypes = new HashSet<String>();
+		hpcTypes.add("my.nodes.hpc.wm.torque");
+		hpcTypes.add("my.nodes.hpc.job.torque");
+		AITypes.add("sodalite.nodes.OpenStack.VM");
+		AITypes.add("sodalite.nodes.DockerizedComponent");
+		AITypes.add("sodalite.nodes.DockerHost");
+		appTypes.put("hpc", hpcTypes);
+		appTypes.put("ai_training", AITypes);
 		
 		String sparql_r = MyUtils
 				.fileToString("sparql/capabilities/getNodeTemplateCapabilities.sparql");

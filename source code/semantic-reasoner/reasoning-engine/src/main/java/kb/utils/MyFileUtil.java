@@ -45,7 +45,7 @@ public class MyFileUtil {
 
 			myWriter = new FileWriter(path);
 			//removing the outer double quotes
-			String _content = content.replaceAll("^\"|\"$", "");
+			String _content = content.replaceAll("(?:^\")|(?:\"$)", "");
 			myWriter.write(_content);
 			myWriter.close();
 			LOG.info( "Successfully wrote to the file.");
