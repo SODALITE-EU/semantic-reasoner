@@ -1,4 +1,4 @@
-package kb.dsl;
+package kb.dsl.test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,9 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kb.KBApi;
+import kb.dsl.DSLMappingService;
+import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;
-import kb.dsl.util.RepositoryTestUtils;
-import kb.dto.Attribute;
+import kb.dsl.test.util.RepositoryTestUtils;
 import kb.dto.Trigger;
 import kb.repository.KB;
 import kb.repository.SodaliteRepository;

@@ -1,4 +1,4 @@
-package kb.dsl.util;
+package kb.dsl.test.util;
 
 import java.io.IOException;
 import java.io.InputStream;

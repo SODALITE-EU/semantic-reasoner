@@ -1,4 +1,4 @@
-package kb.dsl;
+package kb.dsl.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,9 +21,11 @@ import org.junit.jupiter.api.TestInstance;
 
 
 import kb.KBApi;
+import kb.dsl.DSLMappingService;
+import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
-import kb.dsl.util.RepositoryTestUtils;
+import kb.dsl.test.util.RepositoryTestUtils;
 import kb.dto.Attribute;
 import kb.dto.Capability;
 import kb.dto.Interface;
@@ -128,22 +130,17 @@ class DSLMappingServiceTest {
 				m.save();
 			} catch (MappingException e) {
 				LOG.error(e.getMessage(), e);
-				m.shutDown();
 			} catch (ValidationException e) {
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
 					LOG.info("validationModel" + validationModel.toJson());
 				}
-				m.shutDown();
 				return;
 			} catch (Exception e) {
 				LOG.error(e.getMessage(), e);
-				m.shutDown();
 			}
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
-			if (m!=null)
-				m.shutDown();
 		}
 		assertNotNull(aadmIRI);
 		LOG.info("Test Passed: aadm for snow");
@@ -169,7 +166,6 @@ class DSLMappingServiceTest {
 				LOG.info("Test Passed: group_description required property is missing");
 				return;
 			} catch (Exception e) {
-				m.shutDown();
 				LOG.error(e.getMessage(), e);
 				fail("Exception was thrown in start");
 			}
@@ -178,8 +174,6 @@ class DSLMappingServiceTest {
 			fail("Exception was thrown");
 		}
 	
-		if (m != null)
-			m.shutDown();
 		assertTrue(false);
 	}
 	

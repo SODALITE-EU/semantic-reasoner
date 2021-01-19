@@ -162,6 +162,12 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>kb/dsl/test/**/*</exclude>
+						<exclude>kb/dsl/test/util/**/*</exclude>
+					</excludes>
+  				</configuration>
 			</plugin>
 		</plugins>
 	</build>
