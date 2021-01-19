@@ -14,9 +14,7 @@
 	<properties>
 		<jersey2.version>2.32</jersey2.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sonar.coverage.exclusions> <!-- the members of the following list should be in the same line -->
-        src/test/java/kb/dsl/test/*.java,src/test/java/kb/dsl/test/util/*.java
-		</sonar.coverage.exclusions>
+		<sonar.exclusions>src/test/java/kb/dsl/test/*.java,src/test/java/kb/dsl/test/util/*.java</sonar.exclusions>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
