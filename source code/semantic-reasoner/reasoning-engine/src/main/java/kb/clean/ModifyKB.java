@@ -193,7 +193,8 @@ public class ModifyKB {
 		}
 	}
 	
-	public boolean deleteModel(String modelUri) {
+	public boolean deleteModel(String model) {
+		IRI modelUri = kb.getFactory().createIRI(model);
 		String queryDM = KB.SODA_DUL_PREFIXES;
 		
 		queryDM += "select ?x\r\n" +
@@ -205,7 +206,7 @@ public class ModifyKB {
 						"\t}\r\n" + 
 						"\t?m soda:includesType|soda:includesTemplate|soda:includesInput ?x .\r\n" + 
 						"}";
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryDM, new SimpleBinding("m", kb.getFactory().createIRI(modelUri)));
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryDM, new SimpleBinding("m", modelUri));
 		
 		LOG.info(queryDM);
 		

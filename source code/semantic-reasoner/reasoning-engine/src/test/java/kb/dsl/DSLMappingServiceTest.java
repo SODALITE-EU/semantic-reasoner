@@ -3,7 +3,6 @@ package kb.dsl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -14,11 +13,6 @@ import org.eclipse.rdf4j.model.IRI;
 
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-
-import org.eclipse.rdf4j.rio.RDFFormat;
-
-import org.apache.commons.io.IOUtils;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -175,9 +169,11 @@ class DSLMappingServiceTest {
 			} catch (Exception e) {
 				m.shutDown();
 				LOG.error(e.getMessage(), e);
+				fail("Exception was thrown in start");
 			}
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
+			fail("Exception was thrown");
 		}
 	
 		if (m != null)

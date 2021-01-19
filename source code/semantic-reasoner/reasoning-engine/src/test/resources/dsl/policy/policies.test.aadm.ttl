@@ -55,7 +55,7 @@
 :Property_7
   rdf:type exchange:Property ;
   exchange:name "adjustment" ;
-  exchange:value "1" ;
+  exchange:value "-1" ;
 .
 :Property_8
   rdf:type exchange:Property ;
@@ -65,7 +65,7 @@
 :Property_9
   rdf:type exchange:Property ;
   exchange:name "adjustment" ;
-  exchange:value "1" ;
+  exchange:value "2" ;
 .
 :Property_10
   rdf:type exchange:Property ;
@@ -75,7 +75,7 @@
 :Property_11
   rdf:type exchange:Property ;
   exchange:name "max_size" ;
-  exchange:value "7" ;
+  exchange:value "11" ;
 .
 
 :Parameter_1

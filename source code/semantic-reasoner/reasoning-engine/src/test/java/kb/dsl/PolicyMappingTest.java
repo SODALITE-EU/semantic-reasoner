@@ -1,6 +1,7 @@
 package kb.dsl;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,9 +63,11 @@ public class PolicyMappingTest {
 			LOG.info("Loading resource models");			
 			
 			String rmTTL1 = RepositoryTestUtils.fileToString("resource_models/policies.test.rm.ttl");
+			String aadmTTL1 = RepositoryTestUtils.fileToString("dsl/policy/policies.test.aadm.ttl");
 			
 			
 			rm1  = new DSLRMMappingService(kb, rmTTL1,"", "radon","DSL","");
+			aadm1  = new DSLMappingService(kb, aadmTTL1,"", false,  "radon","DSL","");
 			
 			try {
 				rmIRI1 = rm1.start();
@@ -74,21 +77,25 @@ public class PolicyMappingTest {
 				aadmIRI = aadm1.start();
 				aadm1.save();
 				assertNotNull(aadmIRI);
-				
+
 				LOG.info("Test Passed: saving rm and aadm for policy");
 			} catch (MappingException e) {
 				LOG.error(e.getMessage(), e);
+				fail("MappingException was thrown");
 			} catch (ValidationException e) {
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
 					LOG.info("validationModel" + validationModel.toJson());
 				}
+				fail("ValidationException was thrown");
 			} catch (Exception e) {
 				LOG.error(e.getMessage(), e);
+				fail("Exception was thrown");
 			}
 			
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
+			fail("IOException was thrown");
 		}
 		
 		repositoryConnection.close();
