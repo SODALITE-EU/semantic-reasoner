@@ -29,6 +29,7 @@ import kb.dto.Capability;
 import kb.dto.Interface;
 import kb.dto.Property;
 import kb.dto.Requirement;
+import kb.dto.SodaliteAbstractModel;
 import kb.repository.KB;
 import kb.repository.SodaliteRepository;
 import kb.validation.exceptions.ValidationException;
@@ -38,7 +39,6 @@ import kb.validation.exceptions.models.ValidationModel;
 class DSLMappingServiceTest {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DSLMappingServiceTest.class.getName());
-	private static final String SEMANTIC_REASONER_TEST = "SEMANTIC_REASONER_TEST";
 	
 	private static SodaliteRepository repositoryManager;
 	private static Repository repository;
@@ -48,21 +48,24 @@ class DSLMappingServiceTest {
 	static DSLRMMappingService rm1;
 	static DSLRMMappingService rm2;
 	static DSLRMMappingService rm3;
-	static DSLRMMappingService rm4; 
+	static DSLRMMappingService rm4;
+	
+	static IRI rmIRI3;
+
+	static IRI rmIRI4 = null;
 
 	@BeforeAll
 	 static void loadResourceModels() {
 		LOG.info("loadResourceModels");
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
-		kb = new KB(repositoryManager, SEMANTIC_REASONER_TEST);
+		kb = new KB(repositoryManager, RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 		api = new KBApi(kb);
 
-		repository = repositoryManager.getRepository(SEMANTIC_REASONER_TEST);
+		repository = repositoryManager.getRepository(RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 		
 		RepositoryConnection repositoryConnection = repository.getConnection();
 		RepositoryTestUtils.loadCoreOntologies(repositoryConnection);		
 	
-		IRI rmIRI3, rmIRI4 = null;
 		try {
 			LOG.info("Loading resource models");			
 			//String rmTTL1 = RepositoryTestUtils.fileToString("resource_models/modules.docker_registry.rm.ttl");
@@ -106,7 +109,6 @@ class DSLMappingServiceTest {
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		}
-		
 		repositoryConnection.close();
 	}
 
@@ -208,14 +210,10 @@ class DSLMappingServiceTest {
 				}
 			} catch (Exception e) {
 				LOG.error(e.getMessage(), e);
-			} finally {
-				if (m!=null)
-					m.shutDown();
 			}
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		}
-		m.shutDown();
 		assertTrue(false);
 	}
 	//MOVE THOSE KBAPI tests in another test file class
@@ -273,6 +271,56 @@ class DSLMappingServiceTest {
 		LOG.info("Test Passed: getAttributes of a node type");
 	}
 	
+	
+	@Test
+	void testGetModels() throws IOException {
+		LOG.info("testGetModels");
+		try {
+			Set<SodaliteAbstractModel> models = api.getModels("RM", KB.BASE_NAMESPACE + "openstack/");
+		
+			SodaliteAbstractModel model = models.iterator().next();
+			assertEquals(model.getUri(), rmIRI3.toString());
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			fail("Exception was thrown");
+		}
+		
+		LOG.info("Test Passed: Get Models");
+	}
+	
+	@Test
+	void testGetModelForResource()  {
+		LOG.info("testGetModel");
+		try {
+			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/");
+			assertEquals(model.getUri(), rmIRI3.toString());
+		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
+			fail("IOException was thrown");
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			fail("Exception was thrown");
+		}
+		
+		LOG.info("Test Passed: Get Model For Resource");
+	}
+	
+	@Test
+	void testGetModelForURI()  {
+		LOG.info("testGetModelForURI");
+		try {
+			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString());
+			assertEquals(model.getUri(), rmIRI3.toString());
+		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
+			fail("IOException was thrown");
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			fail("Exception was thrown");
+		}
+		
+		LOG.info("Test Passed: Get Model For URI");
+	}
 
 	
 	@AfterAll
@@ -281,13 +329,6 @@ class DSLMappingServiceTest {
 		//rm2.shutDown();
 		rm3.shutDown();
 		//rm4.shutDown();
-		removeRepository();
+		RepositoryTestUtils.removeRepository(repository, repositoryManager);
 	}
-	
-	static void removeRepository() {
-		repository.shutDown();
-		repositoryManager.removeRepository(SEMANTIC_REASONER_TEST);
-		repositoryManager.shutDown("TEST");
-	}
-	
 }

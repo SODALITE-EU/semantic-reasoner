@@ -1,16 +1,16 @@
 package kb.dsl;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,8 +18,11 @@ import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kb.KBApi;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.util.RepositoryTestUtils;
+import kb.dto.Attribute;
+import kb.dto.Trigger;
 import kb.repository.KB;
 import kb.repository.SodaliteRepository;
 import kb.validation.exceptions.ValidationException;
@@ -28,12 +31,11 @@ import kb.validation.exceptions.models.ValidationModel;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PolicyMappingTest {
 	private static final Logger LOG = LoggerFactory.getLogger(PolicyMappingTest.class.getName());
-	private static final String SEMANTIC_REASONER_TEST = "SEMANTIC_REASONER_TEST";
 	
 	private static SodaliteRepository repositoryManager;
 	private static Repository repository;
 	private static KB kb;
-
+	private static KBApi api;
 	
 
 	static DSLRMMappingService rm1;
@@ -44,19 +46,19 @@ public class PolicyMappingTest {
 	@BeforeAll
 	 static void loadResourceModels() {		
 		LOG.info("loadRepository");
+		
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
-		kb = new KB(repositoryManager, SEMANTIC_REASONER_TEST);
-
-		repository = repositoryManager.getRepository(SEMANTIC_REASONER_TEST);
+		kb = new KB(repositoryManager, RepositoryTestUtils.SEMANTIC_REASONER_TEST);
+		api = new KBApi(kb);
+		
+		repository = repositoryManager.getRepository(RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 	
 		repositoryConnection = repository.getConnection();
 		
 		RepositoryTestUtils.loadCoreOntologies(repositoryConnection);
-	}
 	
 	
-	@Test
-	void testDSLMappingPolicyService() {	
+	
 		IRI  rmIRI1 = null;
 		IRI aadmIRI = null;
 		try {
@@ -101,18 +103,21 @@ public class PolicyMappingTest {
 		repositoryConnection.close();
 	}
 	
+	@Test
+	void testTriggersService() throws IOException {
+		LOG.info("getTriggers");
+		
+		Set<Trigger> triggers = api.getTriggers(api.getResourceIRI("radon/radon.policies.scaling.ScaleUp"), false);
+		
+		assertTrue(triggers.size() == 1);
+		LOG.info("Test Passed: getTriggers of a policy type");
+		
+	}
 	
 	@AfterAll
 	public static void cleanUp() {
 		rm1.shutDown();
-		removeRepository();
+		RepositoryTestUtils.removeRepository(repository, repositoryManager);
 	}
-	
-	static void removeRepository() {
-		repository.shutDown();
-		repositoryManager.removeRepository(SEMANTIC_REASONER_TEST);
-		repositoryManager.shutDown("TEST");
-	}
-
 	
 }

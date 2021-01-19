@@ -25,7 +25,6 @@ import kb.validation.exceptions.ValidationException;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeleteModelTest {
 	private static final Logger LOG = LoggerFactory.getLogger(DeleteModelTest.class.getName());
-	private static final String SEMANTIC_REASONER_TEST = "SEMANTIC_REASONER_TEST";
 		
 	private static SodaliteRepository repositoryManager;
 	private static Repository repository;
@@ -39,9 +38,9 @@ public class DeleteModelTest {
 	 static void loadResourceModels() {
 		LOG.info("loadResourceModels");
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
-		kb = new KB(repositoryManager, SEMANTIC_REASONER_TEST);
+		kb = new KB(repositoryManager, RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 		api = new KBApi(kb);
-		repository = repositoryManager.getRepository(SEMANTIC_REASONER_TEST);
+		repository = repositoryManager.getRepository(RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 			
 		RepositoryConnection repositoryConnection = repository.getConnection();
 		RepositoryTestUtils.loadCoreOntologies(repositoryConnection);		
@@ -61,6 +60,7 @@ public class DeleteModelTest {
 		} catch (ValidationException e) {
 			LOG.error(e.getMessage(), e);
 		}
+		repositoryConnection.close();
 	}
 	
 	@Test
@@ -80,13 +80,8 @@ public class DeleteModelTest {
 	@AfterAll
 	public static void cleanUp() {
 		api.shutDown();
-		removeRepository();
+		RepositoryTestUtils.removeRepository(repository, repositoryManager);
 	}
 	
-	static void removeRepository() {
-		repository.shutDown();
-		repositoryManager.removeRepository(SEMANTIC_REASONER_TEST);
-		repositoryManager.shutDown("TEST");
-	}
-
+	
 }
