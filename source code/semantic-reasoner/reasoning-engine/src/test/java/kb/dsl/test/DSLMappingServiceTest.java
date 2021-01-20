@@ -272,8 +272,7 @@ class DSLMappingServiceTest {
 		try {
 			Set<SodaliteAbstractModel> models = api.getModels("RM", KB.BASE_NAMESPACE + "openstack/");
 		
-			SodaliteAbstractModel model = models.iterator().next();
-			assertEquals(model.getUri(), rmIRI3.toString());
+			assertEquals(models.size(), 2);
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 			fail("Exception was thrown");
