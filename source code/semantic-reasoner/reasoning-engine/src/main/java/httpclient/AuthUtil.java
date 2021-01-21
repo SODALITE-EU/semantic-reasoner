@@ -60,7 +60,8 @@ public class AuthUtil {
 	public static List<String> createRolesFromNamespaces(List<String> namespaces, String typeOfRole){
 		List<String> roles = new ArrayList<>();
 		for (String role: namespaces) {
-			roles.add(role + typeOfRole);
+			if (!role.equals("null"))
+				roles.add(role + typeOfRole);
 		}
 		LOG.info( "createRolesFromNamespaces = {}",  roles);
 		return roles;
