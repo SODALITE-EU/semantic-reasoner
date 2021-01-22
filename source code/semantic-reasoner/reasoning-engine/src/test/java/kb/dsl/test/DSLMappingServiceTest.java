@@ -1,9 +1,8 @@
-package kb.dsl;
+package kb.dsl.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -15,11 +14,6 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
-import org.eclipse.rdf4j.rio.RDFFormat;
-
-import org.apache.commons.io.IOUtils;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -27,13 +21,17 @@ import org.junit.jupiter.api.TestInstance;
 
 
 import kb.KBApi;
+import kb.dsl.DSLMappingService;
+import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
+import kb.dsl.test.util.RepositoryTestUtils;
 import kb.dto.Attribute;
 import kb.dto.Capability;
 import kb.dto.Interface;
 import kb.dto.Property;
 import kb.dto.Requirement;
+import kb.dto.SodaliteAbstractModel;
 import kb.repository.KB;
 import kb.repository.SodaliteRepository;
 import kb.validation.exceptions.ValidationException;
@@ -43,7 +41,6 @@ import kb.validation.exceptions.models.ValidationModel;
 class DSLMappingServiceTest {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DSLMappingServiceTest.class.getName());
-	private static final String SEMANTIC_REASONER_TEST = "SEMANTIC_REASONER_TEST";
 	
 	private static SodaliteRepository repositoryManager;
 	private static Repository repository;
@@ -53,43 +50,30 @@ class DSLMappingServiceTest {
 	static DSLRMMappingService rm1;
 	static DSLRMMappingService rm2;
 	static DSLRMMappingService rm3;
-	static DSLRMMappingService rm4; 
+	static DSLRMMappingService rm4;
+	
+	static IRI rmIRI3;
+
+	static IRI rmIRI4 = null;
 
 	@BeforeAll
-	 static void loadRepository() {
-		LOG.info("loadRepository");
+	 static void loadResourceModels() {
+		LOG.info("loadResourceModels");
 		repositoryManager = new SodaliteRepository(".", "/config.ttl");
-		kb = new KB(repositoryManager, SEMANTIC_REASONER_TEST);
+		kb = new KB(repositoryManager, RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 		api = new KBApi(kb);
 
-		repository = repositoryManager.getRepository(SEMANTIC_REASONER_TEST);
+		repository = repositoryManager.getRepository(RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 		
 		RepositoryConnection repositoryConnection = repository.getConnection();
-		try {
-			InputStream input1 =
-				DSLMappingServiceTest.class.getResourceAsStream("/import/DUL.rdf");
-			repositoryConnection.add(input1, "", RDFFormat.RDFXML);
+		RepositoryTestUtils.loadCoreOntologies(repositoryConnection);		
 	
-			InputStream input2 =
-					DSLMappingServiceTest.class.getResourceAsStream("/core/sodalite-metamodel.ttl");
-			repositoryConnection.add(input2, "", RDFFormat.TURTLE);
-
-			InputStream input3 =
-				DSLMappingServiceTest.class.getResourceAsStream("/core/tosca-builtins.ttl");
-			repositoryConnection.add(input3, "", RDFFormat.TURTLE);
-		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		
-		
-	
-		IRI rmIRI3, rmIRI4 = null;
 		try {
 			LOG.info("Loading resource models");			
-			//String rmTTL1 = fileToString("snow/modules.docker_registry.rm.ttl");
-			//String rmTTL2 = fileToString("snow/modules.docker_component.rm.ttl");
-			String rmTTL3 = fileToString("snow/modules.openstack_security_rule.rm.ttl");
-			String rmTTL4 = fileToString("snow/modules.openstack_vm.rm.ttl");
+			//String rmTTL1 = RepositoryTestUtils.fileToString("resource_models/modules.docker_registry.rm.ttl");
+			//String rmTTL2 = RepositoryTestUtils.fileToString("resource_models/modules.docker_component.rm.ttl");
+			String rmTTL3 = RepositoryTestUtils.fileToString("resource_models/modules.openstack_security_rule.rm.ttl");
+			String rmTTL4 = RepositoryTestUtils.fileToString("resource_models/modules.openstack_vm.rm.ttl");
 			
 			
 			/*rm1  = new DSLRMMappingService(kb, rmTTL1,"", "docker","DSL","");
@@ -127,7 +111,6 @@ class DSLMappingServiceTest {
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		}
-		
 		repositoryConnection.close();
 	}
 
@@ -140,29 +123,24 @@ class DSLMappingServiceTest {
 		IRI aadmIRI = null;
 		DSLMappingService m = null;
 		try {
-			String aadmTTL = fileToString("dsl/ide_snow_v3.ttl");
+			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3.ttl");
 			m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				aadmIRI = m.start();
 				m.save();
 			} catch (MappingException e) {
 				LOG.error(e.getMessage(), e);
-				m.shutDown();
 			} catch (ValidationException e) {
 				List<ValidationModel> validationModels = e.validationModels;
 				for (ValidationModel validationModel : validationModels) {
 					LOG.info("validationModel" + validationModel.toJson());
 				}
-				m.shutDown();
 				return;
 			} catch (Exception e) {
 				LOG.error(e.getMessage(), e);
-				m.shutDown();
 			}
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
-			if (m!=null)
-				m.shutDown();
 		}
 		assertNotNull(aadmIRI);
 		LOG.info("Test Passed: aadm for snow");
@@ -175,7 +153,7 @@ class DSLMappingServiceTest {
 		LOG.info("testMissingRequiredProperty");
 		DSLMappingService m = null;
 		try {
-			String aadmTTL = fileToString("dsl/ide_snow_v3_required_property_missing.ttl");
+			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_required_property_missing.ttl");
 			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
@@ -188,15 +166,14 @@ class DSLMappingServiceTest {
 				LOG.info("Test Passed: group_description required property is missing");
 				return;
 			} catch (Exception e) {
-				m.shutDown();
 				LOG.error(e.getMessage(), e);
+				fail("Exception was thrown in start");
 			}
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
+			fail("Exception was thrown");
 		}
 	
-		if (m != null)
-			m.shutDown();
 		assertTrue(false);
 	}
 	
@@ -207,7 +184,7 @@ class DSLMappingServiceTest {
 		LOG.info("testMappingException");
 		DSLMappingService m = null;
 		try {
-			String aadmTTL = fileToString("dsl/ide_snow_v3_mapping_exception.ttl");
+			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_mapping_exception.ttl");
 			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
 			try {
 				m.start();
@@ -227,14 +204,10 @@ class DSLMappingServiceTest {
 				}
 			} catch (Exception e) {
 				LOG.error(e.getMessage(), e);
-			} finally {
-				if (m!=null)
-					m.shutDown();
 			}
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		}
-		m.shutDown();
 		assertTrue(false);
 	}
 	//MOVE THOSE KBAPI tests in another test file class
@@ -292,10 +265,56 @@ class DSLMappingServiceTest {
 		LOG.info("Test Passed: getAttributes of a node type");
 	}
 	
-	public static String fileToString(String file) throws IOException {
-		InputStream resourceAsStream = DSLMappingServiceTest.class.getClassLoader().getResourceAsStream(file);
-		return IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8.name());
+	
+	@Test
+	void testGetModels() throws IOException {
+		LOG.info("testGetModels");
+		try {
+			Set<SodaliteAbstractModel> models = api.getModels("RM", KB.BASE_NAMESPACE + "openstack/");
+		
+			assertEquals(models.size(), 2);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			fail("Exception was thrown");
+		}
+		
+		LOG.info("Test Passed: Get Models");
 	}
+	
+	@Test
+	void testGetModelForResource()  {
+		LOG.info("testGetModel");
+		try {
+			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/");
+			assertEquals(model.getUri(), rmIRI3.toString());
+		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
+			fail("IOException was thrown");
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			fail("Exception was thrown");
+		}
+		
+		LOG.info("Test Passed: Get Model For Resource");
+	}
+	
+	//@Test
+	void testGetModelForURI()  {
+		LOG.info("testGetModelForURI");
+		try {
+			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString());
+			assertEquals(model.getUri(), rmIRI3.toString());
+		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
+			fail("IOException was thrown");
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			fail("Exception was thrown");
+		}
+		
+		LOG.info("Test Passed: Get Model For URI");
+	}
+
 	
 	@AfterAll
 	public static void cleanUp() {
@@ -303,13 +322,6 @@ class DSLMappingServiceTest {
 		//rm2.shutDown();
 		rm3.shutDown();
 		//rm4.shutDown();
-		removeRepository();
+		RepositoryTestUtils.removeRepository(repository, repositoryManager);
 	}
-	
-	static void removeRepository() {
-		repository.shutDown();
-		repositoryManager.removeRepository(SEMANTIC_REASONER_TEST);
-		repositoryManager.shutDown("TEST");
-	}
-	
 }

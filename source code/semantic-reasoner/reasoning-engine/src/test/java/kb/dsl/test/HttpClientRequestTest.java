@@ -1,4 +1,4 @@
-package kb.dsl;
+package kb.dsl.test;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;

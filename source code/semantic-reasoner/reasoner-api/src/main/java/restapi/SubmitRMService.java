@@ -72,13 +72,14 @@ public class SubmitRMService extends AbstractService  {
 	@Consumes("application/x-www-form-urlencoded")
 	@ApiOperation(value = "Stores submitted node types in the KB")
 	public Response saveRM(@ApiParam(value = "The TTL of RM", required = true) @FormParam("rmTTL") String rmTTL,
-			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("rmURI") String rmURI,
+			@ApiParam(value = "An id to uniquely identify a submission", required = true)  @DefaultValue("") @FormParam("rmURI") String rmURI,
 			@ApiParam(value = "The rm in DSL", required = true) @FormParam("rmDSL") String rmDSL,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
 			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException {
 	
+		LOG.info("rmURI = {}, namespace = {}, name = {}", rmURI, namespace, name);
 		if(AuthUtil.authentication()) {
 			AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(!SharedUtil.IS_AADM, namespace, token);
 			if (ares.getResponse() != null)
@@ -94,12 +95,12 @@ public class SubmitRMService extends AbstractService  {
 		JSONObject response = new JSONObject();
 		try {
 			rmUri = m.start();
-			String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(AADM_.*).*");
+			//String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
 			/*if(!HttpClientRequest.getWarnings(response, rmid)) {
 				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getNodeNames()));
 				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
-			}*/				
+			}*/
 		} catch (MappingException e) {
 			e.printStackTrace();
 			List<DslValidationModel> validationModels = e.mappingValidationModels;
