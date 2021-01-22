@@ -298,7 +298,7 @@ class DSLMappingServiceTest {
 		LOG.info("Test Passed: Get Model For Resource");
 	}
 	
-	@Test
+	//@Test
 	void testGetModelForURI()  {
 		LOG.info("testGetModelForURI");
 		try {

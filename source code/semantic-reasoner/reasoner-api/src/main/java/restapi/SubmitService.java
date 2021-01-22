@@ -82,7 +82,7 @@ public class SubmitService extends AbstractService {
 	@Consumes("application/x-www-form-urlencoded")
 	@ApiOperation(value = "Stores submitted node templates in the KB")
 	public Response saveAADM(@ApiParam(value = "The TTL of AADM", required = true) @FormParam("aadmTTL") String aadmTTL,
-			@ApiParam(value = "An id to uniquely identify a submission", required = true) @FormParam("aadmURI") String aadmURI,
+			@ApiParam(value = "An id to uniquely identify a submission", required = true) @DefaultValue("") @FormParam("aadmURI") String aadmURI,
 			@ApiParam(value = "The aadm in DSL", required = true) @DefaultValue("") @FormParam("aadmDSL") String aadmDSL,
 			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
