@@ -32,13 +32,13 @@ public class ConfigsLoader {
 		
 	private ConfigsLoader(){}
 
-    public static ConfigsLoader getInstance(){
-        if (configLoader == null) {
-        	configLoader = new ConfigsLoader();
-        }
+	public static ConfigsLoader getInstance(){
+		if (configLoader == null) {
+			configLoader = new ConfigsLoader();
+		}
 
-        return configLoader;
-    }
+		return configLoader;
+	}
 	
 	/**
 	* Function that loads the config.properties file.
@@ -51,7 +51,7 @@ public class ConfigsLoader {
 		LOG.info("environment = {}", environment);
 
 		if (environment == null) {
-			environment = "qa";
+			environment = "dev";
 
 			String configPath = "/envs/" + environment + "/config.properties";
 

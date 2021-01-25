@@ -21,6 +21,7 @@ public class MyFileUtil {
 	
 	static {
 		ConfigsLoader c  = ConfigsLoader.getInstance();
+		c.loadProperties();
 		ANSIBLE_PATH = c.getAnsiblePath();
 		REASONER_SERVER = c.getReasonerServer();
 	}

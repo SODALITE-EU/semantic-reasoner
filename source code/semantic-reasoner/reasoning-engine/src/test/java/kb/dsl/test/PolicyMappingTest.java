@@ -48,7 +48,7 @@ public class PolicyMappingTest {
 	 static void loadResourceModels() {		
 		LOG.info("loadRepository");
 		
-		repositoryManager = new SodaliteRepository(".", "/config.ttl");
+		repositoryManager = new SodaliteRepository("target/", "/config.ttl");
 		kb = new KB(repositoryManager, RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 		api = new KBApi(kb);
 		

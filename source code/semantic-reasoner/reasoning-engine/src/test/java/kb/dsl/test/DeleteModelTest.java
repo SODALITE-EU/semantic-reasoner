@@ -38,7 +38,7 @@ public class DeleteModelTest {
 	@BeforeAll
 	 static void loadResourceModels() {
 		LOG.info("loadResourceModels");
-		repositoryManager = new SodaliteRepository(".", "/config.ttl");
+		repositoryManager = new SodaliteRepository("target/", "/config.ttl");
 		kb = new KB(repositoryManager, RepositoryTestUtils.SEMANTIC_REASONER_TEST);
 		api = new KBApi(kb);
 		repository = repositoryManager.getRepository(RepositoryTestUtils.SEMANTIC_REASONER_TEST);
