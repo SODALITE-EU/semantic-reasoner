@@ -36,6 +36,7 @@ import kb.dto.Capability;
 import kb.dto.Interface;
 import kb.dto.Node;
 import kb.dto.NodeFull;
+import kb.dto.NodeType;
 import kb.dto.Property;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
@@ -78,14 +79,21 @@ class DSLMappingServiceTest {
 		RepositoryTestUtils.loadCoreOntologies(repositoryConnection);		
 	
 		try {
-			LOG.info("Loading resource models");			
+			LOG.info("Loading resource models");
+			String rmTTL1 = RepositoryTestUtils.fileToString("resource_models/modules.docker_registry.rm.ttl");	
+			//String rmTTL2 = RepositoryTestUtils.fileToString("resource_models/modules.docker_component.rm.ttl");
+			
 			String rmTTL3 = RepositoryTestUtils.fileToString("resource_models/modules.openstack_security_rule.rm.ttl");
 			String rmTTL4 = RepositoryTestUtils.fileToString("resource_models/modules.openstack_vm.rm.ttl");
 			
+			rm1  = new DSLRMMappingService(kb, rmTTL1,"", "docker","DSL","");
 			rm3  = new DSLRMMappingService(kb, rmTTL3,"", "openstack","DSL","");
 			rm4  = new DSLRMMappingService(kb, rmTTL4,"", "openstack","DSL","");
 			
 			try {
+				rm1.start();
+				rm1.save();
+				
 				rmIRI3 = rm3.start();
 				rm3.save();
 				assertNotNull(rmIRI3);
@@ -286,10 +294,9 @@ class DSLMappingServiceTest {
 		LOG.info("getNodes");
 		List<String> imports = new ArrayList<>(); 
 		  
-        // Initialize an ArrayList with add() 
 		imports.add("docker"); 
 		Set<Node> nodes = api.getNodes(imports, "node");
-		assertTrue(nodes.size() == 10);
+		assertTrue(nodes.size() == 9);
 		LOG.info("Test Passed: getNodes for TOSCA normative node types and types in docker namespace");
 	}
 	
@@ -304,6 +311,37 @@ class DSLMappingServiceTest {
 		LOG.info("Test Passed: getAADM");
 	}
 	
+	@Test
+	void isSubClassOf() throws IOException {
+		LOG.info("isSubClassOf");
+		List<String> nodeTypes = new ArrayList<>();
+		nodeTypes.add("openstack/sodalite.nodes.OpenStack.SecurityRules");
+		
+		Set<String> subNodes = api.isSubClassOf(nodeTypes, "tosca.nodes.Root");
+
+		assertTrue(subNodes.size() == 1);
+		LOG.info("Test Passed: isSubClassOf");
+	}
+	
+	@Test
+	void getRequirementValidNodeType() throws IOException {
+		LOG.info("getRequirementValidNodeType");
+		List<String> imports = new ArrayList<>();
+		imports.add("docker");
+		
+		Set<NodeType> nodeTypes = api.getRequirementValidNodeType("host", "docker/sodalite.nodes.DockerRegistry", imports);
+		assertTrue(nodeTypes.size() == 1);
+	}
+	
+	@Test
+	void getRequirementValidNodes() throws IOException {
+		LOG.info("getRequirementValidNodes");
+		List<String> imports = new ArrayList<>();
+		imports.add("docker");
+		
+		Set<Node> nodes = api.getRequirementValidNodes("host", "docker/sodalite.nodes.DockerRegistry", imports);
+		assertTrue(nodes.size() == 0);
+	}
 	
 	@Test
 	void testGetModels() throws IOException {

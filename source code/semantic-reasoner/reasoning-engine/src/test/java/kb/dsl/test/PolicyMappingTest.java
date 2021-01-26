@@ -115,6 +115,14 @@ public class PolicyMappingTest {
 		
 	}
 	
+	@Test
+	void testTargetsService() throws IOException {
+		LOG.info("getTargets");
+		Set<IRI> targets = api.getTargets(api.getResourceIRI("radon/autoscale"), true);
+		assertTrue(targets.size() == 1);
+		LOG.info("Test Passed: getTargets of a policy template");
+	}
+	
 	@AfterAll
 	public static void cleanUp() {
 		rm1.shutDown();
