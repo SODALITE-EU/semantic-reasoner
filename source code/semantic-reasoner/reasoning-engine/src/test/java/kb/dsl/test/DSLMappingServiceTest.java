@@ -3,8 +3,12 @@ package kb.dsl.test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +30,13 @@ import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.dsl.test.util.RepositoryTestUtils;
+import kb.dto.AADM;
 import kb.dto.Attribute;
 import kb.dto.Capability;
 import kb.dto.Interface;
+import kb.dto.Node;
+import kb.dto.NodeFull;
+import kb.dto.NodeType;
 import kb.dto.Property;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
@@ -36,6 +44,7 @@ import kb.repository.KB;
 import kb.repository.SodaliteRepository;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
+
 //Tests are running in arbitrary order, this is a good practice, tests to be independent
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DSLMappingServiceTest {
@@ -55,6 +64,7 @@ class DSLMappingServiceTest {
 	static IRI rmIRI3;
 
 	static IRI rmIRI4 = null;
+	static IRI aadmIRI = null;
 
 	@BeforeAll
 	 static void loadResourceModels() {
@@ -69,24 +79,20 @@ class DSLMappingServiceTest {
 		RepositoryTestUtils.loadCoreOntologies(repositoryConnection);		
 	
 		try {
-			LOG.info("Loading resource models");			
-			//String rmTTL1 = RepositoryTestUtils.fileToString("resource_models/modules.docker_registry.rm.ttl");
+			LOG.info("Loading resource models");
+			String rmTTL1 = RepositoryTestUtils.fileToString("resource_models/modules.docker_registry.rm.ttl");	
 			//String rmTTL2 = RepositoryTestUtils.fileToString("resource_models/modules.docker_component.rm.ttl");
+			
 			String rmTTL3 = RepositoryTestUtils.fileToString("resource_models/modules.openstack_security_rule.rm.ttl");
 			String rmTTL4 = RepositoryTestUtils.fileToString("resource_models/modules.openstack_vm.rm.ttl");
 			
-			
-			/*rm1  = new DSLRMMappingService(kb, rmTTL1,"", "docker","DSL","");
-			rm2  = new DSLRMMappingService(kb, rmTTL2,"", "docker","DSL","");*/
+			rm1  = new DSLRMMappingService(kb, rmTTL1,"", "docker","DSL","");
 			rm3  = new DSLRMMappingService(kb, rmTTL3,"", "openstack","DSL","");
 			rm4  = new DSLRMMappingService(kb, rmTTL4,"", "openstack","DSL","");
 			
 			try {
-				/*rm1.start();
+				rm1.start();
 				rm1.save();
-				
-				rm2.start();
-				rm2.save();*/
 				
 				rmIRI3 = rm3.start();
 				rm3.save();
@@ -96,7 +102,14 @@ class DSLMappingServiceTest {
 				rm4.save();
 				assertNotNull(rmIRI4);
 				
-				LOG.info("Test Passed: saving rm for openstack");
+				DSLMappingService m = null;
+				String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3.ttl");
+				m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+				aadmIRI = m.start();
+				assertNotNull(aadmIRI);
+				m.save();
+				
+				LOG.info("Test Passed: saving rm and aadm for openstack");
 			} catch (MappingException e) {
 				LOG.error(e.getMessage(), e);
 			} catch (ValidationException e) {
@@ -265,6 +278,70 @@ class DSLMappingServiceTest {
 		LOG.info("Test Passed: getAttributes of a node type");
 	}
 	
+	
+	@Test
+	void getPropAttrs() throws IOException {
+		LOG.info("getPropAttrs");
+		
+		Set<String> names = api.getPropAttrNames(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.SecurityRules"), "prop");
+		System.out.println("NAMES = " + names.toString());
+		assertTrue(names.size() == 3);
+		LOG.info("Test Passed: getPropAttrs for a node template");
+	}
+	
+	@Test
+	void getNodes() throws IOException {
+		LOG.info("getNodes");
+		List<String> imports = new ArrayList<>(); 
+		  
+		imports.add("docker"); 
+		Set<Node> nodes = api.getNodes(imports, "node");
+		assertTrue(nodes.size() == 9);
+		LOG.info("Test Passed: getNodes for TOSCA normative node types and types in docker namespace");
+	}
+	
+	@Test
+	void getAADM() throws IOException {
+		LOG.info("getAADM");
+		
+		AADM aadm = api.getAADM(aadmIRI.toString());
+		Set<NodeFull> templates = aadm.getTemplates();
+
+		assertTrue(templates.size() == 2);
+		LOG.info("Test Passed: getAADM");
+	}
+	
+	@Test
+	void isSubClassOf() throws IOException {
+		LOG.info("isSubClassOf");
+		List<String> nodeTypes = new ArrayList<>();
+		nodeTypes.add("openstack/sodalite.nodes.OpenStack.SecurityRules");
+		
+		Set<String> subNodes = api.isSubClassOf(nodeTypes, "tosca.nodes.Root");
+
+		assertTrue(subNodes.size() == 1);
+		LOG.info("Test Passed: isSubClassOf");
+	}
+	
+	@Test
+	void getRequirementValidNodeType() throws IOException {
+		LOG.info("getRequirementValidNodeType");
+		List<String> imports = new ArrayList<>();
+		imports.add("docker");
+		
+		Set<NodeType> nodeTypes = api.getRequirementValidNodeType("host", "docker/sodalite.nodes.DockerRegistry", imports);
+		assertTrue(nodeTypes.size() == 1);
+	}
+	
+	@Test
+	void getRequirementValidNodes() throws IOException {
+		LOG.info("getRequirementValidNodes");
+		List<String> imports = new ArrayList<>();
+		imports.add("docker");
+		
+		Set<Node> nodes = api.getRequirementValidNodes("host", "docker/sodalite.nodes.DockerRegistry", imports);
+		assertTrue(nodes.size() == 0);
+	}
 	
 	@Test
 	void testGetModels() throws IOException {

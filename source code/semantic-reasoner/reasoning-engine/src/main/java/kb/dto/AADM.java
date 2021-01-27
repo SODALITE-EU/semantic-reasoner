@@ -69,6 +69,10 @@ public class AADM extends Resource {
 	public void setVersion(String version) {
 		this.version = version;
 	}
+	
+	public Set<NodeFull> getTemplates() {
+		return this.templates;
+	}
 
 	public void setTemplates(Set<NodeFull> templates) {
 		this.templates = templates;
