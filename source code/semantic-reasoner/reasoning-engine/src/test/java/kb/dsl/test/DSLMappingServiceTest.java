@@ -12,6 +12,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import org.eclipse.rdf4j.model.IRI;
 
@@ -30,6 +33,7 @@ import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.dsl.test.util.RepositoryTestUtils;
+import kb.dsl.verify.singularity.VerifySingularity;
 import kb.dto.AADM;
 import kb.dto.Attribute;
 import kb.dto.Capability;
@@ -309,7 +313,23 @@ class DSLMappingServiceTest {
 
 		assertTrue(templates.size() == 2);
 		LOG.info("Test Passed: getAADM");
+	
+		LOG.info("removeInputs");
+		VerifySingularity.removeInputs(kb, aadmIRI.toString());
+		
+		String input = null;
+		for (NodeFull n: templates) {
+			String label = n.getLabel().toString();
+			if(label.startsWith("topology_template_inputs"))
+				input = n.getUri();
+		}
+		
+		Set<Property> inputs = api.getInputs(input, true);
+		assertTrue(inputs.size() == 0);
+		
+		LOG.info("Test Passed: removeInputs");
 	}
+	
 	
 	@Test
 	void isSubClassOf() throws IOException {
