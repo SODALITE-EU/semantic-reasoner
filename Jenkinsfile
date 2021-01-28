@@ -80,7 +80,7 @@ pipeline {
                 cd "source code/semantic-reasoner"
                 mvn clean install
             """
-        archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
+        //archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
     stage('SonarQube analysis'){
