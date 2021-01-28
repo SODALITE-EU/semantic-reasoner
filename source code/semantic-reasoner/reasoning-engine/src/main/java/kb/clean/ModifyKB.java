@@ -242,12 +242,5 @@ public class ModifyKB {
 		gresultM.close();
 			
 	}
-		
-	public static void main(String[] args) {
-		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
-		IRI n = kb.getFactory().createIRI("https://www.sodalite.eu/ontologies/workspace/1/global/sodalite.image_puller.singularity");
-			new ModifyKB(kb).deleteNode(n);
-	}
-
 }
 

@@ -1042,10 +1042,5 @@ public class DSLRMMappingService {
 		else
 			kb.connection.add(nmodel,namespace);
 	}
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
 
 }

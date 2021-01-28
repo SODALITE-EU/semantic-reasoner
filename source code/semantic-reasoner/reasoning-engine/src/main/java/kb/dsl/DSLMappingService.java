@@ -965,17 +965,4 @@ public class DSLMappingService {
 		else
 			kb.connection.add(tmodel,namespace);
 	}
-
-	public static void main(String[] args)
-			throws RDFParseException, UnsupportedRDFormatException, IOException, Exception {
-		String aadmTTL = MyUtils.fileToString("dsl/ide_snow_v3.ttl");
-
-		KB kb = new KB("TOSCA_automated");
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL,"test", false, "", "", "");
-		m.start();
-		m.save();
-		m.shutDown();
-
-	}
-
 }
