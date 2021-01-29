@@ -1344,7 +1344,7 @@ public class KBApi {
 //
 //	}
 
-	public static void main(String[] args) throws IOException {
+//	public static void main(String[] args) throws IOException {
 //		RecommendationService service = new RecommendationService();
 //
 //		Set<String> requirements = service.getInterfaces("tosca.nodes.Root");
@@ -1352,16 +1352,12 @@ public class KBApi {
 //
 //		service.shutDown();
 
-		KBApi a = new KBApi();
+//		KBApi a = new KBApi();
 
 //		Set<Parameter> parameters = a.getParameters(
 //				a.kb.factory.createIRI("https://www.sodalite.eu/ontologies/tosca/CPU_FrequencyProperty"));
 //		System.out.println(parameters);
 
-		AADM aadm = a.getAADM(
-				"https://www.sodalite.eu/ontologies/snow-blueprint-containerized-OS/AbstractApplicationDeployment_1");
-		LOG.info("AADM = {}", aadm);
-
-	}
+//	}
 
 }

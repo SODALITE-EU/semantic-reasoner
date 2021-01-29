@@ -305,6 +305,26 @@ class DSLMappingServiceTest {
 	}
 	
 	@Test
+	void getNode() throws IOException {
+		LOG.info("getNode");
+		String nodeType = KB.BASE_NAMESPACE + "openstack/" + "sodalite.datatypes.OpenStack.SecurityRule";
+		NodeFull node = api.getNode(nodeType, true);
+		assertTrue(node.getUri().equals(nodeType));
+		LOG.info("Test Passed: getNode for custom node type");
+	}
+	
+	@Test
+	void getTemplates() throws IOException {
+		LOG.info("getTemplates");
+		List<String> imports = new ArrayList<>(); 
+		  
+		imports.add("snow"); 
+		Set<Node> nodes = api.getTemplates(imports);
+		assertTrue(nodes.size() == 1);
+		LOG.info("Test Passed: getTemplates for snow");
+	}
+	
+	@Test
 	void getAADM() throws IOException {
 		LOG.info("getAADM");
 		
