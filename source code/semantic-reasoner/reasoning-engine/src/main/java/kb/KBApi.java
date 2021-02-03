@@ -114,8 +114,8 @@ public class KBApi {
 		return attributes;
 	}
 
-	public Set<Property> getProperties(String resource, boolean isTemplate) throws IOException {
-		LOG.info("getProperties: {}", resource);
+	public Set<Property> getProperties(String resource, boolean isTemplate, boolean aadmJson) throws IOException {
+		LOG.info("getProperties: {}, isTemplate: {}, aadmJson: {}", resource, isTemplate, aadmJson);
 		
 		Set<Property> properties = new HashSet<>();
 		String sparql = MyUtils
@@ -135,7 +135,14 @@ public class KBApi {
 			a.setClassifiedBy(concept);
 			if (_value != null)
 				a.setValue(_value, kb);
-
+			
+			//The node type of the property to be returned only in ide
+			if(!aadmJson) {
+				IRI whereDefined = (IRI) bindingSet.getBinding("type").getValue();
+				LOG.info("whereDefined: {}", whereDefined);
+				a.setHostDefinition(whereDefined);
+			}
+				
 			properties.add(a);
 		}
 		result.close();
@@ -893,6 +900,75 @@ public class KBApi {
 		result.close();
 		return results;
 	}
+	
+	/*
+	 * Given a resource, the capabilities of the requirements/requirement/node type/template are retrieved
+	 * If it is template, the capabilities of the instance type are retrieved
+	 * Example for template: input:  requirement =  host, resource=<namespace>/openstack_vm,  
+	 * The capabilities of tosca.nodes.Compute should be retrieved (and the inherited ones)
+	 * openstack_vm: 
+	 * requirement: 
+	 *    host:
+             radon/workstation
+        
+        workstation:
+            type 'tosca.nodes.Compute'
+	 * 
+	 */
+	public Set<Capability> getCapabilitiesFromRequirements(String resource, String requirement, boolean isTemplate) throws IOException {
+		LOG.info("getCapabilitiesFromRequirements: resource = {}, requirement = {}", resource, requirement);
+		Set<Capability> capabilities = new HashSet<>();
+		
+		String namespace = MyUtils.getNamespaceFromReference(resource);
+		LOG.info("namespace = {}", namespace);
+		
+		String graph = null;
+		if (namespace!= null)
+			graph = MyUtils.getFullNamespaceIRI(kb, namespace);
+		
+		System.err.println("graph = " + graph);
+		
+		String sparql = null;
+		if(isTemplate) {
+			sparql = MyUtils.fileToString(namespace != null ? "sparql/policies_assistance/getNamedRequirementNodeTemplate.sparql" : "sparql/policies_assistance/getGlobalRequirementNodeTemplate.sparql");
+		} else {
+			sparql = MyUtils.fileToString(namespace != null ? "sparql/policies_assistance/getNamedRequirementNode.sparql" : "sparql/policies_assistance/getGlobalRequirementNode.sparql");
+		}
+		
+		String query = KB.PREFIXES + sparql;
+		
+		TupleQueryResult result;
+		
+		if (namespace == null) {
+			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+					new SimpleBinding[] { new SimpleBinding("node", kb.getFactory().createIRI(getResourceIRI(resource))),
+							new SimpleBinding("var_req", kb.getFactory().createLiteral(requirement))});
+		}
+		else {
+			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+					new SimpleBinding[] { new SimpleBinding("node", kb.getFactory().createIRI(getResourceIRI(resource))),
+							new SimpleBinding("var_req", kb.getFactory().createLiteral(requirement)),
+							new SimpleBinding("g", kb.getFactory().createIRI(graph))});
+		}
+		
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI value = (IRI) bindingSet.getBinding("nodeValue").getValue();
+			System.err.println("value = " + value);
+			
+			//when template, then the capabilities of the instanceType of the template are retrieved
+			if (isTemplate) 
+				value = (IRI) bindingSet.getBinding("instanceType").getValue();
+			
+				
+			capabilities = getCapabilities(value.toString(), false);
+			System.err.println("capabilities = " + capabilities);
+			
+		}
+		result.close();
+		
+		return capabilities;
+	}
 
 	public Set<Operation> getOperations(String resource, boolean isTemplate) throws IOException {
 		LOG.info("getOperations: {}", resource);
@@ -1301,10 +1377,15 @@ public class KBApi {
 		return a;
 	}
 	
-	public boolean deleteModel (String uri) {
+	public boolean deleteModel (String uri) throws IOException {
 		LOG.info("deleteModel, uri = {}", uri);
 
-		boolean res = new ModifyKB(kb).deleteModel(uri);
+		SodaliteAbstractModel model = getModelFromURI(uri);
+		String namespace = null;
+		if (model != null) {
+			namespace = model.getNamespace();
+		}
+		boolean res = new ModifyKB(kb).deleteModel(uri, namespace);
 		return res;
 	}
 		

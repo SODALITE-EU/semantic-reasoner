@@ -6,9 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.eclipse.rdf4j.common.net.ParsedIRI;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
@@ -16,14 +18,20 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 
+import kb.KBApi;
 import kb.configs.ConfigsLoader;
+import kb.dto.SodaliteAbstractModel;
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 
@@ -76,6 +84,8 @@ public class ModifyKB {
 			Model result = QueryResults.asModel(gresult);
 			gresult.close();
 			addModel(result);
+			
+			displayModel(result);
 
 			Optional<Resource> _context = Models.getPropertyResource(result, node ,kb.factory.createIRI(KB.SODA + "hasContext"));
 			IRI context = null;
@@ -87,6 +97,8 @@ public class ModifyKB {
 				
 			Model result2 = QueryResults.asModel(gresult2);
 			addModel(result2);
+			
+			//displayModel(result2);
 			
 			gresult2.close();
 			
@@ -100,7 +112,9 @@ public class ModifyKB {
 															new SimpleBinding("s", classifier));
 						Model result3 = QueryResults.asModel(gresult3);
 					
-						addModel(result3);				
+						addModel(result3);
+						
+						//displayModel(result3);
 						Set<String> _datavalue = Models.getPropertyStrings(result3, classifier , kb.factory.createIRI(KB.TOSCA + "hasDataValue"));
 						if (!_datavalue.isEmpty()) {
 							continue;
@@ -108,6 +122,7 @@ public class ModifyKB {
 					
 						Optional<Resource> _objectvalue = Models.getPropertyResource(result3, classifier , kb.factory.createIRI(KB.TOSCA + "hasObjectValue"));
 						if (_objectvalue.isPresent()) {
+							deleteList(_objectvalue.get());
 							continue;
 						}
 					
@@ -143,6 +158,9 @@ public class ModifyKB {
 		Model result = QueryResults.asModel(gresult);		
 		gresult.close();
 		addModel(result);
+		
+		//displayModel(result);
+		
 			
 		Set<Literal> _datavalue = Models.getPropertyLiterals(result, p , kb.factory.createIRI(KB.TOSCA + "hasDataValue"));
 		if (!_datavalue.isEmpty()) {
@@ -152,6 +170,8 @@ public class ModifyKB {
 		Optional<Resource> _objectvalue = Models.getPropertyResource(result, p , kb.factory.createIRI(KB.TOSCA + "hasObjectValue"));
 			
 		if (_objectvalue.isPresent()) {
+			//Check if List object exists so as to delete it
+			deleteList(_objectvalue.get());
 			return;
 		}
 			
@@ -161,6 +181,23 @@ public class ModifyKB {
 			parameterModel(_p);
 		}
 	}
+	
+	
+	public void deleteList(Resource list) {
+		GraphQueryResult gresult2 = QueryUtil.evaluateConstructQuery(kb.getConnection(), query, new SimpleBinding("s", list));
+		Model result2 = QueryResults.asModel(gresult2);		
+
+		Set<Resource> _types = Models.getPropertyResources(result2,  list, RDF.TYPE);
+		Set<String> types =  _types.stream().map(x -> x.toString()).collect(Collectors.toSet());
+	
+		if (types.contains(KBConsts.TOSCALIST)) {
+			System.err.println("LIST");
+			addModel(result2);
+			displayModel(result2);
+		}
+		gresult2.close();
+	}
+	
 	
 	public void deleteEmptyModels(Set<IRI> models) {
 		for (IRI m:models) {
@@ -193,7 +230,8 @@ public class ModifyKB {
 		}
 	}
 	
-	public boolean deleteModel(String model) {
+	public boolean deleteModel(String model, String namespace) throws IOException {
+		LOG.info("model = {}, namespace = {}", model, namespace);
 		IRI modelUri = kb.getFactory().createIRI(model);
 		String queryDM = KB.SODA_DUL_PREFIXES;
 		
@@ -224,8 +262,22 @@ public class ModifyKB {
 		
 		deleteNodes(nodes);
 		
+		if (namespace != null)
+			deleteContext(namespace);
+		
 		result.close();
 		return true;
+	}
+	
+	/* If all nodes have been removed from the named graph, properties might remained as garbage
+	 * Remove the entire named graph as garbage has been left*/
+	public void deleteContext(String namespace) throws IOException {
+		RepositoryConnection conn = kb.getConnection();
+		
+		IRI context = kb.factory.createIRI(namespace);
+		RepositoryResult<Statement> statements = conn.getStatements(null, kb.factory.createIRI(KB.SODA + "hasContext"), null, context);
+		if (!statements.hasNext())
+			kb.connection.clear(context);
 	}
 	
 	//Delete some modelMetadata such as createdAt, so as to be refereshed with new data
@@ -241,6 +293,11 @@ public class ModifyKB {
 		kb.connection.remove(mresult);
 		gresultM.close();
 			
+	}
+	
+	
+	public static void main(String[] args) throws IOException {
+		new ModifyKB(new KB(configInstance.getGraphdb(), "TOSCA")).deleteModel("https://www.sodalite.eu/ontologies/workspace/1/qds7gkq5hvjte7sf5er6arq4ju/RM_8e7aj4rv1nm4vk4tvi22g0ks42", "https://www.sodalite.eu/ontologies/workspace/1/snow/");
 	}
 }
 

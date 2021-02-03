@@ -37,6 +37,7 @@ import org.joda.time.base.AbstractDateTime;
 
 import com.google.common.primitives.Ints;
 
+import kb.KBApi;
 import kb.clean.ModifyKB;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
@@ -422,6 +423,7 @@ public class DSLMappingService {
 		
 		try {
 			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString(), aadmKB);
+			//THIS SHOULD BE CORRECTED
 			if (!aadmURI.isEmpty())
 				VerifySingularity.removeInputs(kb, aadmURI);
 		} catch (IOException e) {
@@ -621,6 +623,7 @@ public class DSLMappingService {
 				propertyValuesForValidation.put(propertyName, value);
 			} else {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+				templateBuilder.add(list, RDF.TYPE, "tosca:List");
 				for (String string : _values) {
 					Object i = null;
 					if ((i = Ints.tryParse(string)) != null) {
@@ -635,6 +638,7 @@ public class DSLMappingService {
 		} else if (!listValues.isEmpty()) {
 			LOG.info("*****************************} else if (!listValues.isEmpty()) {");
 			IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+			templateBuilder.add(list, RDF.TYPE, "tosca:List");
 			for (String string : listValues) {
 				Object i = null;
 				if ((i = Ints.tryParse(string)) != null) {
@@ -855,11 +859,12 @@ public class DSLMappingService {
 		String sparql = "select distinct ?x { \r\n" + 
 						"   ?m DUL:isSettingFor ?x .\r\n" + 
 						"	{        \r\n" + 
-						"		?x rdf:type ?type .\r\n" + 
-						"         FILTER NOT EXISTS\r\n" + 
-						"         { \r\n" + 
-						"           GRAPH ?g { ?x ?p ?o } \r\n" + 
-						"         }\r\n" + 
+						"		?x rdf:type ?type .\r\n" +
+						"        ?x soda:hasName ?name ." + 
+						"        FILTER NOT EXISTS\r\n" + 
+						"        { \r\n" + 
+						"          GRAPH ?g { ?x ?p ?o } \r\n" + 
+						"        }\r\n" + 
 						"	} ";
 		if (namespace != null && !namespace.contains("global"))
 			sparql +=	"     UNION {\r\n" + 
@@ -936,6 +941,13 @@ public class DSLMappingService {
 	public void save() throws ValidationException, IOException {
 		Model amodel = aadmBuilder.build();
 		Model tmodel = templateBuilder.build();
+		
+		kb.connection.add(amodel);
+		if (namespace.toString().contains("global"))
+			kb.connection.add(tmodel);
+		else
+			kb.connection.add(tmodel,namespace);
+		
 		String aadmId = MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*");
 		//Requirement first check about existence, and (complete = true) update models if matching nodes found
 		IRI context = namespace.toString().contains("global") ? null : namespace;
@@ -943,8 +955,9 @@ public class DSLMappingService {
 		//Check for required omitted requirements
 		validationModels.addAll(r.validate());
 		if (!validationModels.isEmpty()) {
-			Set<IRI> templatesIRIs = MyUtils.getResourceIRIs(this.kb, this.namespace, this.templateNames);
-			new ModifyKB(kb).deleteNodes(templatesIRIs);
+			//Set<IRI> templatesIRIs = MyUtils.getResourceIRIs(this.kb, this.namespace, this.templateNames);
+			KBApi api = new KBApi(kb);
+			api.deleteModel(aadmId);
 			throw new ValidationException(validationModels);
 		}
 		
@@ -959,10 +972,5 @@ public class DSLMappingService {
 			throw new ValidationException(validationModels);
 		}*/
 		
-		kb.connection.add(amodel);
-		if (namespace.toString().contains("global"))
-			kb.connection.add(tmodel);
-		else
-			kb.connection.add(tmodel,namespace);
 	}
 }

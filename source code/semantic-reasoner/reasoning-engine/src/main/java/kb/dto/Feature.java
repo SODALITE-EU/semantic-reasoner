@@ -6,8 +6,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.rdf4j.model.IRI;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 
 import com.google.common.primitives.Ints;
 import com.google.gson.JsonArray;
@@ -19,6 +17,7 @@ import kb.utils.MyUtils;
 
 public abstract class Feature extends Parameter {
 
+	public IRI hostDefinition;
 	public Feature(IRI iri) {
 		super(iri);
 	}
@@ -36,6 +35,9 @@ public abstract class Feature extends Parameter {
 		JsonObject data = new JsonObject();
 		if (description != null)
 			data.addProperty("description", description);
+		//Returned only in ide, and not aadm json
+		if (hostDefinition != null)
+			data.addProperty("definedIn", hostDefinition.toString());
 		if (value != null) {
 			if (this.valueUri != null) {
 				JsonObject t = new JsonObject();
@@ -88,7 +90,7 @@ public abstract class Feature extends Parameter {
 		JsonObject data = new JsonObject();
 		if (description != null)
 			data.addProperty("description", description);
-
+		
 		if (value != null) {
 			if (this.valueUri != null) {
 				data.addProperty(uri, this.valueUri);
@@ -128,4 +130,11 @@ public abstract class Feature extends Parameter {
 		this.classifiedBy = classifiedBy;
 	}
 
+	public IRI getHostDefinition() {
+		return hostDefinition;
+	}
+
+	public void setHostDefinition(IRI hostDefinition) {
+		this.hostDefinition = hostDefinition;
+	}
 }

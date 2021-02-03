@@ -146,6 +146,8 @@ public class RequirementExistenceValidation extends ValidationManager {
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/" + fileName);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("aadmId", kb.getFactory().createLiteral(aadmId)));
 
+		System.err.println("aadm = " +aadmId);
+		System.err.println(query);
 			//HashMap<Template, HashMap<r_a, HashMap<r_inner, node types>>>
 			//e.g. HashMap<snow-vm,HashMap<protected_by, HashMap<node, sodalite.nodes.OpenStack.SecurityRules>
 			HashMap<IRI, HashMap<IRI,HashMap<IRI,Set<IRI>>>> templatesWithNoRequirements = new HashMap<IRI, HashMap<IRI,HashMap<IRI,Set<IRI>>>>();
@@ -156,6 +158,8 @@ public class RequirementExistenceValidation extends ValidationManager {
 				IRI v = (IRI) bindingSet.getBinding("v").getValue();
 				IRI r_a = (IRI) bindingSet.getBinding("r_a").getValue();
 				IRI r_i = (IRI) bindingSet.getBinding("r_i").getValue();
+
+				LOG.info("results : {} {} {} {}", template, v, r_a, r_i);
 				
 				Set <IRI> vList= new HashSet<IRI>();	
 				vList.add(v);
@@ -180,6 +184,7 @@ public class RequirementExistenceValidation extends ValidationManager {
 			}
 			result.close();
 
+			LOG.info("templates with no Requirements: {}", templatesWithNoRequirements);
 			return templatesWithNoRequirements;
 		}
 		
@@ -187,11 +192,19 @@ public class RequirementExistenceValidation extends ValidationManager {
 			Set<IRI> templates = new HashSet<>();
 			String query = KB.PREFIXES +
 					"select distinct ?template {\r\n" +
-					"?template a soda:SodaliteSituation ; \r\n" +
-					" rdf:type ?t .\r\n" + 
-					" ?t rdfs:subClassOf ?var" +
+					"\t?template a soda:SodaliteSituation . \r\n";
+				
+			String defaultGraph = "\t?template rdf:type ?t .\r\n";
+			String namedGraph = "\tGRAPH <"+ context + ">\r\n\t{\r\n" +
+								"\t\t?template rdf:type ?t .\r\n" + 
+								"\t}";
+					
+			query += (context != null) ? namedGraph : defaultGraph;
+					
+			query += "\n\t?t rdfs:subClassOf ?var\r\n" +
 					"}";
 			
+			LOG.info("selectCompatibleTemplates: {}", query);
 			TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("var", type));
 			
 			while (result.hasNext()) {

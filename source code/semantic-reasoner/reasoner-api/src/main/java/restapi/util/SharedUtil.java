@@ -21,6 +21,7 @@ import httpclient.dto.AuthResponse;
 import httpclient.dto.HttpRequestErrorModel;
 import httpclient.exceptions.AuthException;
 import httpclient.exceptions.MyRestTemplateException;
+
 import kb.utils.MyUtils;
 
 public class SharedUtil {
@@ -118,5 +119,8 @@ public class SharedUtil {
 		}
 		return authorizedContexts;
 	}
+	
+	
+	
 	
 }

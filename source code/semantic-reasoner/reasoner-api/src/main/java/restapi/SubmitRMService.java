@@ -22,15 +22,20 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import httpclient.AuthUtil;
+import httpclient.HttpClientRequest;
 import httpclient.dto.AuthResponse;
+import httpclient.dto.HttpRequestErrorModel;
+import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import kb.KBApi;
 import kb.configs.ConfigsLoader;
 import kb.dsl.DSLRMMappingService;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
@@ -97,10 +102,8 @@ public class SubmitRMService extends AbstractService  {
 			rmUri = m.start();
 			//String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			/*if(!HttpClientRequest.getWarnings(response, rmid)) {
-				new ModifyKB(kb).deleteNodes(MyUtils.getResourceIRIs(kb, m.getNamespace(), m.getNodeNames()));
-				return Response.status(Status.BAD_REQUEST).entity("Error connecting to host " + configInstance.getBugPredictorServer()).build();
-			}*/
+			
+			HttpClientRequest.getWarnings(response, rmUri.toString(), !KBConsts.AADM);
 		} catch (MappingException e) {
 			e.printStackTrace();
 			List<DslValidationModel> validationModels = e.mappingValidationModels;
@@ -122,6 +125,15 @@ public class SubmitRMService extends AbstractService  {
 			JSONObject errors = new JSONObject();
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
+		}  catch (MyRestTemplateException e) {
+			if (rmUri != null) {
+				KBApi api = new KBApi(kb);
+				api.deleteModel(rmUri.toString());
+			}
+			
+			HttpRequestErrorModel erm = e.error_model;
+			LOG.error("rawStatus={}, api={}, statusCode={}, error={}", erm.rawStatus, erm.api, erm.statusCode, erm.error);
+		 	return Response.status(erm.rawStatus).entity(erm.toJson().toString()).build();
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("There was an internal server error").build();

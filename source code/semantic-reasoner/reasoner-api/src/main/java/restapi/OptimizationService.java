@@ -41,6 +41,7 @@ import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
 
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
@@ -113,7 +114,7 @@ public class OptimizationService extends AbstractService {
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
 			
-			HttpClientRequest.getWarnings(response, aadmid);
+			HttpClientRequest.getWarnings(response, aadmUri.toString(), KBConsts.AADM);
 			
 			getOptimizations(response, aadmid);
 		} catch (MappingException e) {
@@ -129,8 +130,10 @@ public class OptimizationService extends AbstractService {
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		} catch (MyRestTemplateException e) {
-			if (aadmUri != null)
-				new ModifyKB(kb).deleteModel(aadmUri.toString());
+			if (aadmUri != null) {
+				KBApi api = new KBApi(kb);
+				api.deleteModel(aadmUri.toString());
+			}
 			
 			HttpRequestErrorModel erm = e.error_model;
 			LOG.error("rawStatus={}, api={}, statusCode={}, error={}", erm.rawStatus, erm.api, erm.statusCode, erm.error);

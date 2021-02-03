@@ -167,6 +167,7 @@ public class DSLRMMappingService {
 			throw new MappingException(mappingModels);
 		
 		try {
+			LOG.info("nodeNames = {}", this.nodeNames);
 			VerifySingularity.removeExistingDefinitions(kb, nodeNames, namespace.toString(), rmKB);
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
@@ -900,6 +901,7 @@ public class DSLRMMappingService {
 				}
 			} else {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+				nodeBuilder.add(list, RDF.TYPE, "tosca:List");
 				for (String string : _values) {
 					Object i = null;
 					if ((i = Ints.tryParse(string)) != null) {
@@ -915,6 +917,7 @@ public class DSLRMMappingService {
 		} else if (!listValues.isEmpty()) {
 			LOG.info("*****************************} else if (!listValues.isEmpty()) {");
 			IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+			nodeBuilder.add(list, RDF.TYPE, "tosca:List");
 			for (String string : listValues) {
 				Object i = null;
 				if ((i = Ints.tryParse(string)) != null) {

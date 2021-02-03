@@ -44,7 +44,7 @@ public class PolicyMappingTest {
 	
 	static RepositoryConnection repositoryConnection;
 
-	@BeforeAll
+	//@BeforeAll
 	 static void loadResourceModels() {		
 		LOG.info("loadRepository");
 		
@@ -104,7 +104,7 @@ public class PolicyMappingTest {
 		repositoryConnection.close();
 	}
 	
-	@Test
+	//@Test
 	void testTriggersService() throws IOException {
 		LOG.info("getTriggers");
 		
@@ -115,7 +115,7 @@ public class PolicyMappingTest {
 		
 	}
 	
-	@Test
+	//@Test
 	void testTargetsService() throws IOException {
 		LOG.info("getTargets");
 		Set<IRI> targets = api.getTargets(api.getResourceIRI("radon/autoscale"), true);
@@ -123,7 +123,7 @@ public class PolicyMappingTest {
 		LOG.info("Test Passed: getTargets of a policy template");
 	}
 	
-	@AfterAll
+	//@AfterAll
 	public static void cleanUp() {
 		rm1.shutDown();
 		RepositoryTestUtils.removeRepository(repository, repositoryManager);

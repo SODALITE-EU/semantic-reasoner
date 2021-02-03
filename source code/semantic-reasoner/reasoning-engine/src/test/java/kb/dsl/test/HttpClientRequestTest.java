@@ -16,6 +16,7 @@ import httpclient.dto.AuthErrorModel;
 
 import httpclient.exceptions.AuthException;
 import httpclient.exceptions.MyRestTemplateException;
+import kb.repository.KBConsts;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -67,7 +68,7 @@ public class HttpClientRequestTest {
 	public void testBugPredictor() throws MyRestTemplateException, URISyntaxException, ParseException {
 		HttpClientRequest.setBugPredictor("http://localhost:" + wireMockPort+"/");
 		JSONObject response = new JSONObject();
-		HttpClientRequest.getWarnings(response, "ddd");
+		HttpClientRequest.getWarnings(response, "ddd", KBConsts.AADM);
 		assertTrue(response.containsKey("warnings"));
 		LOG.info("Test Passed: testBugPredictor");
 	}

@@ -271,6 +271,175 @@
   exchange:value "Snow UC security group" ;
 .
 
+:Parameter_208
+  rdf:type exchange:Parameter ;
+  exchange:name "node" ;  
+  exchange:value 'snow/openstack_vm' ;
+.
+:Parameter_500
+  rdf:type exchange:Parameter ;
+  exchange:name "target_filter" ;
+  exchange:hasParameter :Parameter_208 ;
+.
+:Parameter_100
+  rdf:type exchange:Parameter ;
+  exchange:name "event" ;
+  exchange:value 'auto_scale_trigger' ;
+.
+:Parameter_120
+  rdf:type exchange:Parameter ;
+  exchange:name "constraint" ;
+  exchange:hasParameter :Parameter_111 ;
+.
+:Parameter_111
+  rdf:type exchange:Parameter ;
+  exchange:name "not" ;
+  exchange:hasParameter :Parameter_112 ;
+.
+:Parameter_112
+  rdf:type exchange:Parameter ;
+  exchange:name "and" ;
+  exchange:hasParameter :Parameter_97 ;
+  exchange:hasParameter :Parameter_99 ;
+.
+:Parameter_96
+  rdf:type exchange:Parameter ;
+  exchange:name "greater_than" ;
+  exchange:value "42" ;
+.
+:Parameter_97
+  rdf:type exchange:Parameter ;
+  exchange:name "available_instances" ;
+  exchange:hasParameter :Parameter_96 ;
+.
+:Parameter_98
+  rdf:type exchange:Parameter ;
+  exchange:name "greater_than" ;
+  exchange:value "1000" ;
+.		
+:Parameter_99
+  rdf:type exchange:Parameter ;
+  exchange:name "available_space" ;
+  exchange:hasParameter :Parameter_98 ;
+.
+:Parameter_130
+  rdf:type exchange:Parameter ;
+  exchange:name "period" ;
+  exchange:value '60 sec' ;
+.
+:Parameter_140
+  rdf:type exchange:Parameter ;
+  exchange:name "evaluations" ;
+  exchange:value 2 ;
+.
+:Parameter_150
+  rdf:type exchange:Parameter ;
+  exchange:name "method" ;
+  exchange:value 'average' ;
+.
+:Parameter_160
+  rdf:type exchange:Parameter ;
+  exchange:name "condition" ;
+  exchange:hasParameter :Parameter_120 ;
+  exchange:hasParameter :Parameter_130 ;
+  exchange:hasParameter :Parameter_140 ;
+  exchange:hasParameter :Parameter_150 ;
+.
+:Parameter_200
+  rdf:type exchange:Parameter ;
+  exchange:name "action" ;
+  exchange:hasParameter :Parameter_190 ;
+.
+:Parameter_190
+  rdf:type exchange:Parameter ;
+  exchange:name "call_operation" ;
+  exchange:hasParameter :Parameter_170 ;
+  exchange:hasParameter :Parameter_180 ;
+.
+:Parameter_170
+  rdf:type exchange:Parameter ;
+  exchange:name "operation" ;
+  exchange:value 'snow/radon.interfaces.scaling.AutoScale.retrieve_info' ;
+.
+
+:Parameter_180
+  rdf:type exchange:Parameter ;
+  exchange:name "inputs" ;
+.
+
+:Parameter_210
+  rdf:type exchange:Parameter ;
+  exchange:name "operation" ;
+  exchange:value 'openstack/radon.interfaces.scaling.AutoScale.autoscale' ;
+.
+
+:Parameter_220
+  rdf:type exchange:Parameter ;
+  exchange:name "inputs" ;
+.
+
+:Parameter_230
+  rdf:type exchange:Parameter ;
+  exchange:name "call_operation" ;
+  exchange:hasParameter :Parameter_210 ;
+  exchange:hasParameter :Parameter_220 ;
+.
+
+:Parameter_240
+  rdf:type exchange:Parameter ;
+  exchange:name "action" ;
+  exchange:hasParameter :Parameter_230 ;
+.
+:Trigger_1
+  rdf:type exchange:Trigger ;
+  exchange:name "radon.triggers.scaling" ;
+  exchange:description 'A trigger for autoscaling' ;
+  exchange:hasParameter :Parameter_100 ;
+  exchange:hasParameter :Parameter_500 ;
+  exchange:hasParameter :Parameter_160 ;
+  exchange:hasParameter :Parameter_200 ;
+  exchange:hasParameter :Parameter_240 ;
+.
+
+:Property_111
+  rdf:type exchange:Property ;
+  exchange:name "name" ;
+  exchange:value "HostVM" ;
+.
+:Property_211
+  rdf:type exchange:Property ;
+  exchange:name "image" ;
+  exchange:value "centos7" ;
+.
+:Property_311
+  rdf:type exchange:Property ;
+  exchange:name "flavor" ;
+  exchange:value "m1.xsmall" ;
+.
+:Property_411
+  rdf:type exchange:Property ;
+  exchange:name "network" ;
+  exchange:value "provider_64_net" ;
+.
+:Requirement_1
+  rdf:type exchange:Requirement ;
+  exchange:name "host" ;
+  exchange:value 'snow/workstation' ;  
+.
+:Attribute_10
+  rdf:type exchange:Attribute ;
+  exchange:name "private_address" ;
+  exchange:value "localhost" ;
+.
+:Attribute_20
+  rdf:type exchange:Attribute ;
+  exchange:name "public_address" ;
+  exchange:value "localhost" ;
+.
+:Parameter_114
+  rdf:type exchange:Parameter ;
+  exchange:listValue 'openstack/sodalite.nodes.OpenStack.VM' ; 
+.
 :Template_1
   rdf:type exchange:Template ;
   exchange:name "snow-security-rules" ;
@@ -279,5 +448,26 @@
   exchange:properties :Property_1 ;
   exchange:properties :Property_2 ;
   exchange:properties :Property_3 ;
-.  
+  exchange:triggers :Trigger_1 ;
+  exchange:targets :Parameter_114 ;
+.
 
+:Template_2
+  rdf:type exchange:Template ;
+  exchange:name "openstack_vm" ;
+  exchange:type 'openstack/sodalite.nodes.OpenStack.VM' ;  
+  
+  exchange:properties :Property_111 ;
+  exchange:properties :Property_211 ;
+  exchange:properties :Property_311 ;
+  exchange:properties :Property_411 ;
+  exchange:requirements :Requirement_1 ; 
+.
+:Template_3
+  rdf:type exchange:Template ;
+  exchange:name "workstation" ;
+  exchange:type 'tosca.nodes.Compute' ;  
+  
+  exchange:attributes :Attribute_10 ;
+  exchange:attributes :Attribute_20 ;
+.  

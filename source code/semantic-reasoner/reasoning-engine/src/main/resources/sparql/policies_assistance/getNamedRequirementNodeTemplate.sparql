@@ -1,0 +1,14 @@
+select ?nodeValue ?instanceType
+{
+    GRAPH ?g {
+    	?node soda:hasContext ?context .
+		?context tosca:requirements ?r.
+    	?r DUL:classifies ?requirementName;
+       		DUL:hasParameter ?p1.
+    	?p1 tosca:hasObjectValue ?nodeValue;
+        	DUL:classifies ?nodeClassifier
+		FILTER (STRENDS (str(?requirementName), ?var_req))
+		FILTER (STRENDS (str(?nodeClassifier), "node"))
+		?nodeValue rdf:type ?instanceType
+    }
+}

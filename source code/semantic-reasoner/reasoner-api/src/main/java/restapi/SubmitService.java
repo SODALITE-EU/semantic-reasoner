@@ -31,12 +31,14 @@ import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import kb.KBApi;
 import kb.clean.ModifyKB;
 import kb.configs.ConfigsLoader;
 import kb.dsl.DSLMappingService;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.MyUtils;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
@@ -105,9 +107,9 @@ public class SubmitService extends AbstractService {
 			
 		try {
 			aadmUri = m.start();
-			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
+			//String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			HttpClientRequest.getWarnings(response, aadmid);
+			HttpClientRequest.getWarnings(response, aadmUri.toString(), KBConsts.AADM);
 
 			addRequirementModels(m, response);
 		} catch (MappingException e) {
@@ -132,8 +134,10 @@ public class SubmitService extends AbstractService {
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		} catch (MyRestTemplateException e) {
-			if (aadmUri != null)
-				new ModifyKB(kb).deleteModel(aadmUri.toString());
+			if (aadmUri != null) {
+				KBApi api = new KBApi(kb);
+				api.deleteModel(aadmUri.toString());
+			}
 			
 			HttpRequestErrorModel erm = e.error_model;
 			LOG.error("rawStatus={}, api={}, statusCode={}, error={}", erm.rawStatus, erm.api, erm.statusCode, erm.error);
