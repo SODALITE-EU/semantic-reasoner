@@ -247,7 +247,7 @@ class DSLMappingServiceTest {
 		LOG.info("getAttributes");
 		
 		Set<Attribute> attributes;
-		attributes = api.getAttributes(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false);
+		attributes = api.getAttributes(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false, !KBConsts.AADM_JSON);
 		
 		assertTrue(attributes.size() == 10);
 		LOG.info("Test Passed: getAttributes of a node type");

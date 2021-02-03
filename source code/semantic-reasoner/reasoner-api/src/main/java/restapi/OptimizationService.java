@@ -113,8 +113,7 @@ public class OptimizationService extends AbstractService {
 			aadmUri = m.start();
 			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			
-			HttpClientRequest.getWarnings(response, aadmUri.toString(), KBConsts.AADM);
+			HttpClientRequest.getWarnings(response, aadmid, KBConsts.AADM);
 			
 			getOptimizations(response, aadmid);
 		} catch (MappingException e) {

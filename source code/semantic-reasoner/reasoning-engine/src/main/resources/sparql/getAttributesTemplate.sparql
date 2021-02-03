@@ -1,10 +1,11 @@
-select distinct ?p ?attribute ?value
+select distinct ?p ?attribute ?value ?type
 where {
 		?resource soda:hasContext ?context .
 		#FILTER (strends(str(?resource), ?var)).
 		?context tosca:attributes ?p .
 		?p DUL:classifies ?attribute .
 		OPTIONAL {?p tosca:hasValue ?value .}
+		?type soda:hasContext ?context
 		
 		FILTER NOT EXISTS {
 			?resource soda:hasInferredContext ?context2 .

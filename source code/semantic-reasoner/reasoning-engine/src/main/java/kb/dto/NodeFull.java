@@ -43,7 +43,7 @@ public class NodeFull extends Node {
 		LOG.info("building={}, isTemplate={}", uri, isTemplate);
 
 		properties = api.getProperties(uri.toString(), isTemplate, KBConsts.AADM_JSON);
-		attributes = api.getAttributes(uri.toString(), isTemplate);
+		attributes = api.getAttributes(uri.toString(), isTemplate, KBConsts.AADM_JSON);
 		capabilities = api.getCapabilities(uri.toString(), isTemplate);
 		interfaces = api.getInterfaces(uri.toString(), isTemplate);
 		requirements = api.getRequirements(uri.toString(), isTemplate);

@@ -81,7 +81,7 @@ public class KBApi {
 		return MyUtils.getFullResourceIRI(resource, kb);
 	}
 	
-	public Set<Attribute> getAttributes(String resource, boolean isTemplate) throws IOException {
+	public Set<Attribute> getAttributes(String resource, boolean isTemplate, boolean aadmJson) throws IOException {
 		LOG.info("getAttributes: {}", resource);
 		
 		Set<Attribute> attributes = new HashSet<>();
@@ -104,6 +104,13 @@ public class KBApi {
 			
 			if (_value != null)
 				a.setValue(_value, kb);
+			
+			//The node type of the property to be returned only in ide
+			if(!aadmJson) {
+				IRI whereDefined = (IRI) bindingSet.getBinding("type").getValue();
+				LOG.info("whereDefined: {}", whereDefined);
+				a.setHostDefinition(whereDefined);
+			}
 
 			attributes.add(a);
 		}
@@ -997,6 +1004,7 @@ public class KBApi {
 		return operations;
 
 	}
+	
 	
 	public Optimization getOptimization(String resource) throws IOException {
 		LOG.info("getOptimization: {}", resource);
