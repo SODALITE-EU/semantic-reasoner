@@ -1,0 +1,9 @@
+PREFIX sesame: <http://www.openrdf.org/schema/sesame#>
+select distinct ?concept ?property 
+FROM sesame:nil
+where {
+	?resource soda:hasContext ?context .
+    ?resource rdfs:subClassOf tosca:tosca.interfaces.Root.
+    ?context tosca:operations ?concept .
+	?concept DUL:classifies ?property .
+}

@@ -18,6 +18,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.repository.RepositoryResult;
@@ -920,6 +921,31 @@ public class KBApi {
 
 		return operations;
 
+	}
+	
+	public Set<Operation> getOperationsFromNamespaces(List<String> imports) throws IOException, MalformedQueryException {
+		LOG.info("getOperationsFromNamespaces: {}", imports);
+		Set<Operation> operations = new HashSet<>();
+		String sparql = MyUtils
+				.fileToString("sparql/getOperationsFromNamespaces.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
+		//No addition of imports, since then QueryUtil.namedGraphsForQuery has to be used, since imports is a list
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI p1 = (IRI) bindingSet.getBinding("property").getValue();
+			IRI concept = (IRI) bindingSet.getBinding("concept").getValue();
+
+			Operation op = new Operation(p1);
+			op.setClassifiedBy(concept);
+			operations.add(op);
+		}
+		result.close();
+		for (Operation op : operations) {
+			op.build(this);
+		}
+		return operations;
 	}
 	
 	public Optimization getOptimization(String resource) throws IOException {
