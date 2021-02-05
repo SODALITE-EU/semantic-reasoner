@@ -1034,7 +1034,7 @@ public class KBApi {
 						"\t\t?concept DUL:classifies ?property .\r\n" + 
 						"\t}\n" +
 						"}\n";
-				System.err.println(query);
+				LOG.info("query = {}", query);
 				TupleQueryResult result2 = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
 				
 				_setOperations(result2, operations);
