@@ -18,6 +18,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.repository.RepositoryResult;
@@ -998,6 +999,56 @@ public class KBApi {
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
 
+		_setOperations(result, operations);
+		
+		for (Operation op : operations) {
+			op.build(this);
+		}
+
+		return operations;
+
+	}
+	
+	public Set<Operation> getOperationsFromNamespaces(List<String> imports) throws IOException, MalformedQueryException {
+		LOG.info("getOperationsFromNamespaces: {}", imports);
+		Set<Operation> operations = new HashSet<>();
+		String sparql = MyUtils
+				.fileToString("sparql/policies_assistance/getGlobalOperationsFromNamespaces.sparql");
+		String query = KB.PREFIXES + sparql;
+		
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
+		_setOperations(result,operations);
+		
+		//named graphs of imports queried
+		if(!imports.isEmpty()) {
+			String dataset = QueryUtil.namedGraphsForQuery(kb, imports);
+			if (!dataset.isEmpty()) {
+				query = KB.PREFIXES + "\nSELECT ?concept ?property\r\n";		
+				query += dataset;
+		
+				query += "{\n"
+						+ "\tGRAPH ?g {\r\n" + 
+						"\t\t?resource soda:hasContext ?context .\r\n" + 
+						"\t\t?resource rdfs:subClassOf tosca:tosca.interfaces.Root.\r\n" + 
+						"\t\t?context tosca:operations ?concept .\r\n" + 
+						"\t\t?concept DUL:classifies ?property .\r\n" + 
+						"\t}\n" +
+						"}\n";
+				System.err.println(query);
+				TupleQueryResult result2 = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
+				
+				_setOperations(result2, operations);
+		
+			}
+		}
+		
+		for (Operation op : operations) {
+			op.build(this);
+		}
+		return operations;
+	}
+	
+	private void _setOperations(TupleQueryResult result, Set<Operation> operations) {
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			IRI p1 = (IRI) bindingSet.getBinding("property").getValue();
@@ -1008,12 +1059,6 @@ public class KBApi {
 			operations.add(op);
 		}
 		result.close();
-		for (Operation op : operations) {
-			op.build(this);
-		}
-
-		return operations;
-
 	}
 	
 	
