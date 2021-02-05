@@ -26,7 +26,7 @@ public class AuthUtil {
 	}
 	
 	public static boolean authentication() {
-		return ConfigsLoader.AUTHENVS.contains(configInstance.getEnvironment());
+		return configInstance.getKeycloak() != null;
 	}
 	
 	/**

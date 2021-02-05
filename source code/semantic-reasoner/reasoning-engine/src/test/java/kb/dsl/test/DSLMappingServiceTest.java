@@ -44,7 +44,9 @@ import kb.dto.NodeType;
 import kb.dto.Property;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
+import kb.dto.Trigger;
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.repository.SodaliteRepository;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
@@ -132,37 +134,6 @@ class DSLMappingServiceTest {
 	}
 
 	
-
-	//Test for a snow aadm. It is mapped without any error
-	@Test
-	void testDSLMappingService() {
-
-		IRI aadmIRI = null;
-		DSLMappingService m = null;
-		try {
-			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3.ttl");
-			m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
-			try {
-				aadmIRI = m.start();
-				m.save();
-			} catch (MappingException e) {
-				LOG.error(e.getMessage(), e);
-			} catch (ValidationException e) {
-				List<ValidationModel> validationModels = e.validationModels;
-				for (ValidationModel validationModel : validationModels) {
-					LOG.info("validationModel" + validationModel.toJson());
-				}
-				return;
-			} catch (Exception e) {
-				LOG.error(e.getMessage(), e);
-			}
-		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		assertNotNull(aadmIRI);
-		LOG.info("Test Passed: aadm for snow");
-	}
-	
 	/* Test for required properties that are missing
 	   The required registry_ip property has been removed from Template_2. */
 	@Test
@@ -233,7 +204,7 @@ class DSLMappingServiceTest {
 		LOG.info("getProperties");
 		
 		Set<Property> properties;
-		properties = api.getProperties(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.SecurityRules"), false);
+		properties = api.getProperties(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.SecurityRules"), false, !KBConsts.AADM_JSON);
 		
 		assertTrue(properties.size() == 3);
 		LOG.info("Test Passed: getProperties of a node type");
@@ -265,7 +236,7 @@ class DSLMappingServiceTest {
 		LOG.info("getCapabilities");
 		
 		Set<Capability> capabilities;
-		capabilities = api.getCapabilities(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false);
+		capabilities = api.getCapabilities(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false, !KBConsts.AADM_JSON);
 		LOG.info("capabilities.size = {}\n", capabilities.size());
 		assertTrue(capabilities.size() == 7);
 		LOG.info("Test Passed: getCapabilities of a node type");
@@ -276,7 +247,7 @@ class DSLMappingServiceTest {
 		LOG.info("getAttributes");
 		
 		Set<Attribute> attributes;
-		attributes = api.getAttributes(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false);
+		attributes = api.getAttributes(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false, !KBConsts.AADM_JSON);
 		
 		assertTrue(attributes.size() == 10);
 		LOG.info("Test Passed: getAttributes of a node type");
@@ -320,7 +291,7 @@ class DSLMappingServiceTest {
 		  
 		imports.add("snow"); 
 		Set<Node> nodes = api.getTemplates(imports);
-		assertTrue(nodes.size() == 1);
+		assertTrue(nodes.size() == 3);
 		LOG.info("Test Passed: getTemplates for snow");
 	}
 	
@@ -331,9 +302,9 @@ class DSLMappingServiceTest {
 		AADM aadm = api.getAADM(aadmIRI.toString());
 		Set<NodeFull> templates = aadm.getTemplates();
 
-		assertTrue(templates.size() == 2);
+		assertTrue(templates.size() == 4);
 		LOG.info("Test Passed: getAADM");
-	
+
 		LOG.info("removeInputs");
 		VerifySingularity.removeInputs(kb, aadmIRI.toString());
 		
@@ -381,6 +352,25 @@ class DSLMappingServiceTest {
 		
 		Set<Node> nodes = api.getRequirementValidNodes("host", "docker/sodalite.nodes.DockerRegistry", imports);
 		assertTrue(nodes.size() == 0);
+	}
+	
+	@Test
+	void testTriggersService() throws IOException {
+		LOG.info("getTriggers");
+		
+		Set<Trigger> triggers = api.getTriggers(api.getResourceIRI("snow/snow-security-rules"), true);
+		
+		assertTrue(triggers.size() == 1);
+		LOG.info("Test Passed: getTriggers");
+		
+	}
+	
+	@Test
+	void testTargetsService() throws IOException {
+		LOG.info("getTargets");
+		Set<IRI> targets = api.getTargets(api.getResourceIRI("snow/snow-security-rules"), true);
+		assertTrue(targets.size() == 1);
+		LOG.info("Test Passed: getTargets of a policy template");
 	}
 	
 	@Test

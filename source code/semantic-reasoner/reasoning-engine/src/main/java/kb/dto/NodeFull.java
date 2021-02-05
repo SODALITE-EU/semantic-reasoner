@@ -12,6 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import kb.KBApi;
+import kb.repository.KBConsts;
 
 public class NodeFull extends Node {
 	private static final Logger LOG = LoggerFactory.getLogger(NodeFull.class.getName());
@@ -41,9 +42,9 @@ public class NodeFull extends Node {
 	public void build(KBApi api) throws IOException {
 		LOG.info("building={}, isTemplate={}", uri, isTemplate);
 
-		properties = api.getProperties(uri.toString(), isTemplate);
-		attributes = api.getAttributes(uri.toString(), isTemplate);
-		capabilities = api.getCapabilities(uri.toString(), isTemplate);
+		properties = api.getProperties(uri.toString(), isTemplate, KBConsts.AADM_JSON);
+		attributes = api.getAttributes(uri.toString(), isTemplate, KBConsts.AADM_JSON);
+		capabilities = api.getCapabilities(uri.toString(), isTemplate, KBConsts.AADM_JSON);
 		interfaces = api.getInterfaces(uri.toString(), isTemplate);
 		requirements = api.getRequirements(uri.toString(), isTemplate);
 

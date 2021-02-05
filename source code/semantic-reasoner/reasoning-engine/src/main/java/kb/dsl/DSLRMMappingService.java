@@ -167,6 +167,7 @@ public class DSLRMMappingService {
 			throw new MappingException(mappingModels);
 		
 		try {
+			LOG.info("nodeNames = {}", this.nodeNames);
 			VerifySingularity.removeExistingDefinitions(kb, nodeNames, namespace.toString(), rmKB);
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
@@ -317,6 +318,15 @@ public class DSLRMMappingService {
 				if (nodeDescriptionKB != null)	
 					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "interfaces"),
 						interfaceClassifierKB);
+			}
+			
+			// operations
+			for (Resource _operation : Models.getPropertyResources(rmModel, _node,
+					factory.createIRI(KB.EXCHANGE + "operations"))) {
+				IRI operation = (IRI) _operation;
+				IRI operationClassifierKB = createOperationKBModel(operation);
+				if (nodeDescriptionKB != null)
+					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "operations"), operationClassifierKB);
 			}
 			
 			// triggers
@@ -688,7 +698,7 @@ public class DSLRMMappingService {
 				if(kbNode != null)
 					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 			} else if (triggerName!=null && (triggerName.equals("capability") || triggerName.equals("requirement"))) {
-			 IRI req_cap = GetResources.getReqCapFromEventFilter(kb, value.getLabel());
+				IRI req_cap = GetResources.getReqCapFromEventFilter(kb, value.getLabel());
 				if (req_cap != null) {
 					nodeBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), req_cap);
 				} else {
@@ -900,6 +910,7 @@ public class DSLRMMappingService {
 				}
 			} else {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+				nodeBuilder.add(list, RDF.TYPE, "tosca:List");
 				for (String string : _values) {
 					Object i = null;
 					if ((i = Ints.tryParse(string)) != null) {
@@ -915,6 +926,7 @@ public class DSLRMMappingService {
 		} else if (!listValues.isEmpty()) {
 			LOG.info("*****************************} else if (!listValues.isEmpty()) {");
 			IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+			nodeBuilder.add(list, RDF.TYPE, "tosca:List");
 			for (String string : listValues) {
 				Object i = null;
 				if ((i = Ints.tryParse(string)) != null) {
@@ -974,6 +986,77 @@ public class DSLRMMappingService {
 		}
 		
 		return parameterClassifierKB;		
+	}
+	
+	private IRI createOperationKBModel(IRI operation) throws MappingException {
+		LOG.info( "createOperationKBModel: {}", operation);
+		Optional<Literal> _operationName = Models
+				.objectLiteral(rmModel.filter(operation, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		String operationName = null;
+		if (!_operationName.isPresent())
+			mappingModels.add(new MappingValidationModel(currentType, operation.getLocalName(), "No 'name' defined for operation"));
+		else 
+			operationName = _operationName.get().getLabel();
+		
+		IRI operationProperty = null;
+		if (operationName != null) {
+			operationProperty = GetResources.getKBProperty(operationName, this.namespacesOfType, kb);
+			if (operationProperty == null || operationProperty.toString().equals(namespace + operationName)) {
+				operationProperty = factory.createIRI(namespace + operationName);
+				nodeBuilder.add(operationProperty, RDF.TYPE, "rdf:Property");
+			}
+		}
+		
+		Optional<Resource> _type  = Models.getPropertyResource(rmModel, operation,
+				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+		String type = MyUtils.getStringValue(_type.get());
+		
+		IRI operationClassifierKB = null;
+		switch (type) {
+			case KBConsts.OPERATION:
+				operationClassifierKB = factory.createIRI(namespace + "OperationClassifer_" + MyUtils.randomString());
+				nodeBuilder.add(operationClassifierKB, RDF.TYPE, "tosca:Operation");
+				break;
+			case KBConsts.PARAMETER:
+				operationClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
+				nodeBuilder.add(operationClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				break;
+			default:
+				LOG.warn("type = {} does not exist", type);
+		}
+		
+		if (operationProperty != null)
+			nodeBuilder.add(operationClassifierKB, factory.createIRI(KB.DUL + "classifies"), operationProperty);
+		
+		//description is added for triggers
+		Optional<String> description = Models.getPropertyString(rmModel, operation,
+						factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
+		if (description.isPresent())
+				nodeBuilder.add(operationClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
+
+		// check for direct values of parameters
+		Literal value = Models
+						.objectLiteral(rmModel.filter(operation, factory.createIRI(KB.EXCHANGE + "value"), null))
+						.orElse(null);
+	
+		if (value != null) { // this means there is no parameters
+			Object i = null;
+			if ((i = Ints.tryParse(value.toString())) != null)
+				nodeBuilder.add(operationClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+			else 
+				nodeBuilder.add(operationClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+			
+		} else {
+			Set<Resource> _parameters = Models.getPropertyResources(rmModel, operation,
+					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
+			for (Resource _parameter : _parameters) {
+				IRI parameter = (IRI) _parameter;
+				IRI _p = createOperationKBModel(parameter);
+				nodeBuilder.add(operationClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+			}
+		}
+		return operationClassifierKB;
 	}
 	
 	private IRI getKBNode(NamedResource n) {

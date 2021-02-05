@@ -27,8 +27,8 @@ public class ConfigsLoader {
 	String keycloakClientSecret;
 	
 	//envs for authentication
-	public static final List<String> AUTHENVS = Collections.unmodifiableList(
-		    Arrays.asList(new String[] {"qa"}));
+	//public static final List<String> AUTHENVS = Collections.unmodifiableList(
+	//	    Arrays.asList(new String[] {""}));
 		
 	private ConfigsLoader(){}
 
@@ -70,7 +70,7 @@ public class ConfigsLoader {
 			ansiblePath = properties.getProperty("ansiblePath");
 			reasonerServer = properties.getProperty("reasonerServer");
 			
-			//omit for developement purposes
+			//omit for development purposes
 			keycloak = properties.getProperty("keycloak");
 			keycloakClientId = properties.getProperty("keycloakClientId");
 			keycloakClientSecret = properties.getProperty("keycloakClientSecret");

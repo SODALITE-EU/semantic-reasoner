@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Property;
+import kb.repository.KBConsts;
 import restapi.util.SharedUtil;
 
 /** A service that returns the properties of a single TOSCA node
@@ -69,7 +70,7 @@ public class PropertyService extends AbstractService {
 		// a node or template.
 		// For now this is always false, since we are asking only for nodes (not
 		// templates)
-		Set<Property> properties = api.getProperties(api.getResourceIRI(resource), template);
+		Set<Property> properties = api.getProperties(api.getResourceIRI(resource), template, !KBConsts.AADM_JSON);
 		api.shutDown();
 		JsonObject _properties = new JsonObject();
 		JsonArray array = new JsonArray();

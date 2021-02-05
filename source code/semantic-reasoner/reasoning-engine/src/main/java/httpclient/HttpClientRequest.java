@@ -142,11 +142,15 @@ public class HttpClientRequest {
 		return rolesList;
 	}
 	
-	public static void getWarnings(JSONObject response, String aadmId) throws URISyntaxException, ParseException, MyRestTemplateException {
+	public static void getWarnings(JSONObject response, String modelId, boolean aadm) throws URISyntaxException, ParseException, MyRestTemplateException {
 		LOG.info("getWarnings:");
 		String url = bugPredictor + BUG_PREDICTOR_SERVICE;
 		
-		String input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"aadmid\":\""+ aadmId + "\"}";
+		String input;
+		if (aadm) 
+			input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"aadmid\":\""+ modelId + "\"}";
+		else
+			input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"rmid\":\""+ modelId + "\"}";
 		LOG.info("input = {}", input);
 		
 		String result = null;
@@ -161,7 +165,7 @@ public class HttpClientRequest {
 	
 	public static void main(String[] args) throws ParseException, MyRestTemplateException, URISyntaxException, AuthException  {
 		JSONObject response = new JSONObject();
-		HttpClientRequest.getWarnings(response, "ddd");
+		//HttpClientRequest.getWarnings(response, "ddd");
 			
 		HttpClientRequest.validateToKen("eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIwLV82aEVJRFdBajNvTnYtZE5Ud05VblJlcmt3ZmR3UExlUnM1ZTBsVDJrIn0.eyJleHAiOjE2MDgwNTU0NzYsImlhdCI6MTYwODA1NTE3NiwianRpIjoiYzlhNmNhNTEtZTg5NC00NTU5LTljNzEtMjM4NWM1YmNlZWJlIiwiaXNzIjoiaHR0cDovLzE5Mi4xNjguMi4xNzk6ODA4MC9hdXRoL3JlYWxtcy9TT0RBTElURSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJkZGYzODE1My1lNmQ3LTRjYzQtOTcxYi1hY2M2ZThkODE1M2EiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzb2RhbGl0ZS1pZGUiLCJzZXNzaW9uX3N0YXRlIjoiMmJhM2EyYWYtZWZlNy00OGI5LTgxMjAtNmEzMzE4OTBkOTBiIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsic29kYWxpdGUtaWRlIjp7InJvbGVzIjpbImFhZG1fciIsImNsaW5pY2FsX2FhZG1fciIsInNub3dfYWFkbV9yIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlpvZSBWYXNpbGVpb3UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ6b2UiLCJnaXZlbl9uYW1lIjoiWm9lIiwiZmFtaWx5X25hbWUiOiJWYXNpbGVpb3UiLCJlbWFpbCI6InpvZXZhczFAZ21haWwuY29tIn0.p8S89U9rOWdSpexCb4f-3FnptyNyfpfJHnJ3NSxw5J1H_1yr3yR1EJ8Xlp918X9Jq5pqHEdY-Ernw8fwWX90-J6BGuRchFULl_SZ-ofdhpnFAeqRNlD97N8-kuRygit3YrRoWnINJSf99UPaOVsZePzxRtFqd3AyvPc59bY6kPYe9vWYBAbZz79kZu_unjPpgzeNWD_1k46k5Jy2yILwDrEUC8UTeT4g0v2WRYeV0R3IF6qYtfv4F70wzxLCry0lUQIwKIfWEfz8BUeX7L7sC7Zu4sPSnQKlzT8spGfHfs9osCJPUSZKFV45X3Fg1qFJt8SOqufwXWALTi86zlMRHw");
 
