@@ -146,75 +146,72 @@ public class RequirementExistenceValidation extends ValidationManager {
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/" + fileName);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("aadmId", kb.getFactory().createLiteral(aadmId)));
 
-		System.err.println("aadm = " +aadmId);
-		System.err.println(query);
-			//HashMap<Template, HashMap<r_a, HashMap<r_inner, node types>>>
-			//e.g. HashMap<snow-vm,HashMap<protected_by, HashMap<node, sodalite.nodes.OpenStack.SecurityRules>
-			HashMap<IRI, HashMap<IRI,HashMap<IRI,Set<IRI>>>> templatesWithNoRequirements = new HashMap<IRI, HashMap<IRI,HashMap<IRI,Set<IRI>>>>();
+		//HashMap<Template, HashMap<r_a, HashMap<r_inner, node types>>>
+		//e.g. HashMap<snow-vm,HashMap<protected_by, HashMap<node, sodalite.nodes.OpenStack.SecurityRules>
+		HashMap<IRI, HashMap<IRI,HashMap<IRI,Set<IRI>>>> templatesWithNoRequirements = new HashMap<IRI, HashMap<IRI,HashMap<IRI,Set<IRI>>>>();
 
-			while (result.hasNext()) {
-				BindingSet bindingSet = result.next();
-				IRI template = (IRI) bindingSet.getBinding("template").getValue();
-				IRI v = (IRI) bindingSet.getBinding("v").getValue();
-				IRI r_a = (IRI) bindingSet.getBinding("r_a").getValue();
-				IRI r_i = (IRI) bindingSet.getBinding("r_i").getValue();
-
-				LOG.info("results : {} {} {} {}", template, v, r_a, r_i);
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI template = (IRI) bindingSet.getBinding("template").getValue();
+			IRI v = (IRI) bindingSet.getBinding("v").getValue();
+			IRI r_a = (IRI) bindingSet.getBinding("r_a").getValue();
+			IRI r_i = (IRI) bindingSet.getBinding("r_i").getValue();
+			LOG.info("results : {} {} {} {}", template, v, r_a, r_i);
 				
-				Set <IRI> vList= new HashSet<IRI>();	
-				vList.add(v);
-				if (templatesWithNoRequirements.get(template)!= null) {
-					if(templatesWithNoRequirements.get(template).get(r_a) != null) {
-						if(templatesWithNoRequirements.get(template).get(r_a).get(r_i) != null)
-							templatesWithNoRequirements.get(template).get(r_a).get(r_i).addAll(vList);
-						else
-							templatesWithNoRequirements.get(template).get(r_a).put(r_i, vList);
-					} else {
-						HashMap<IRI,Set<IRI>> in_inHash = new HashMap<IRI,Set<IRI>>();
-						in_inHash.put(r_i, vList);
-						templatesWithNoRequirements.get(template).put(r_a, in_inHash);
-					}
+			Set <IRI> vList= new HashSet<IRI>();	
+			vList.add(v);
+			if (templatesWithNoRequirements.get(template)!= null) {
+				if(templatesWithNoRequirements.get(template).get(r_a) != null) {
+					if(templatesWithNoRequirements.get(template).get(r_a).get(r_i) != null)
+						templatesWithNoRequirements.get(template).get(r_a).get(r_i).addAll(vList);
+					else
+						templatesWithNoRequirements.get(template).get(r_a).put(r_i, vList);
 				} else {
-					HashMap<IRI,HashMap<IRI,Set<IRI>>> inHash = new HashMap<IRI,HashMap<IRI,Set<IRI>>>();
 					HashMap<IRI,Set<IRI>> in_inHash = new HashMap<IRI,Set<IRI>>();
 					in_inHash.put(r_i, vList);
-					inHash.put(r_a, in_inHash);
-					templatesWithNoRequirements.put(template,inHash);
+					templatesWithNoRequirements.get(template).put(r_a, in_inHash);
 				}
+			} else {
+				HashMap<IRI,HashMap<IRI,Set<IRI>>> inHash = new HashMap<IRI,HashMap<IRI,Set<IRI>>>();
+				HashMap<IRI,Set<IRI>> in_inHash = new HashMap<IRI,Set<IRI>>();
+				in_inHash.put(r_i, vList);
+				inHash.put(r_a, in_inHash);
+				templatesWithNoRequirements.put(template,inHash);
 			}
-			result.close();
+		}
+		result.close();
 
-			LOG.info("templates with no Requirements: {}", templatesWithNoRequirements);
-			return templatesWithNoRequirements;
-		}
+		LOG.info("templates with no Requirements: {}", templatesWithNoRequirements);
+		return templatesWithNoRequirements;
+	}
 		
-		public Set<IRI> selectCompatibleTemplates(IRI type) {
-			Set<IRI> templates = new HashSet<>();
-			String query = KB.PREFIXES +
-					"select distinct ?template {\r\n" +
-					"\t?template a soda:SodaliteSituation . \r\n";
+	public Set<IRI> selectCompatibleTemplates(IRI type) {
+		Set<IRI> templates = new HashSet<>();
+		String query = KB.PREFIXES +
+				"select distinct ?template {\r\n" +
+				"\t?template a soda:SodaliteSituation . \r\n";
+			
+		String defaultGraph = "\t?template rdf:type ?t .\r\n";
+		String namedGraph = "\tGRAPH <"+ context + ">\r\n\t{\r\n" +
+							"\t\t?template rdf:type ?t .\r\n" + 
+							"\t}";
+					
+		query += (context != null) ? namedGraph : defaultGraph;
 				
-			String defaultGraph = "\t?template rdf:type ?t .\r\n";
-			String namedGraph = "\tGRAPH <"+ context + ">\r\n\t{\r\n" +
-								"\t\t?template rdf:type ?t .\r\n" + 
-								"\t}";
-					
-			query += (context != null) ? namedGraph : defaultGraph;
-					
-			query += "\n\t?t rdfs:subClassOf ?var\r\n" +
-					"}";
+		query += "\n\t?t rdfs:subClassOf ?var\r\n" +
+				"}";
 			
-			LOG.info("selectCompatibleTemplates: {}", query);
-			TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("var", type));
+		LOG.info("selectCompatibleTemplates: {}", query);
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("var", type));
 			
-			while (result.hasNext()) {
-				BindingSet bindingSet = result.next();
-				IRI t = (IRI) bindingSet.getBinding("template").getValue();
-				templates.add(t);
-			}
-			result.close();
-			
-			return templates;
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI t = (IRI) bindingSet.getBinding("template").getValue();
+			templates.add(t);
 		}
+		result.close();
+			
+		return templates;
+	}
 	
 }

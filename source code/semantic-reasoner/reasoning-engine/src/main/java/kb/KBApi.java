@@ -920,8 +920,8 @@ public class KBApi {
 	}
 	
 	/*
-	 * Given a resource, the capabilities of the requirements/requirement/node type/template are retrieved
-	 * If it is template, the capabilities of the instance type are retrieved
+	 * Given a resource, the capabilities of the requirements/requirement/node: type/template are retrieved
+	 * If it is template, the capabilities of the template's instance type are retrieved
 	 * Example for template: input:  requirement =  host, resource=<namespace>/openstack_vm,  
 	 * The capabilities of tosca.nodes.Compute should be retrieved (and the inherited ones)
 	 * openstack_vm: 
@@ -944,7 +944,7 @@ public class KBApi {
 		if (namespace!= null)
 			graph = MyUtils.getFullNamespaceIRI(kb, namespace);
 		
-		System.err.println("graph = " + graph);
+		LOG.info("graph = {}", graph);
 		
 		String sparql = null;
 		if(isTemplate) {
