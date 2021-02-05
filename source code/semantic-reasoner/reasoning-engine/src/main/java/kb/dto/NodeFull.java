@@ -44,7 +44,7 @@ public class NodeFull extends Node {
 
 		properties = api.getProperties(uri.toString(), isTemplate, KBConsts.AADM_JSON);
 		attributes = api.getAttributes(uri.toString(), isTemplate, KBConsts.AADM_JSON);
-		capabilities = api.getCapabilities(uri.toString(), isTemplate);
+		capabilities = api.getCapabilities(uri.toString(), isTemplate, KBConsts.AADM_JSON);
 		interfaces = api.getInterfaces(uri.toString(), isTemplate);
 		requirements = api.getRequirements(uri.toString(), isTemplate);
 

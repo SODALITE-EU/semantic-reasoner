@@ -249,7 +249,7 @@ public class KBApi {
 		return inputs;
 	}
 
-	public Set<Capability> getCapabilities(String resource, boolean isTemplate) throws IOException {
+	public Set<Capability> getCapabilities(String resource, boolean isTemplate, boolean aadmJson) throws IOException {
 		LOG.info("getCapabilities: {}", resource);
 		
 		Set<Capability> capabilities = new HashSet<>();
@@ -268,6 +268,13 @@ public class KBApi {
 
 			Capability c = new Capability(p1);
 			c.setClassifiedBy(concept);
+			
+			//The node type of the property to be returned only in ide
+			if(!aadmJson) {
+				IRI whereDefined = (IRI) bindingSet.getBinding("type").getValue();
+				LOG.info("whereDefined: {}", whereDefined);
+				c.setHostDefinition(whereDefined);
+			}
 
 			capabilities.add(c);
 		}
@@ -598,14 +605,18 @@ public class KBApi {
 		Set<IRI> _nodeTypes = new HashSet<>();
 		
 		IRI node = getMostSpecificRequirementNode(requirement, _nodeType);
-		_nodeTypes.add(node);
+		if (node != null)
+			_nodeTypes.add(node);
 
 		IRI req_cap = getRequirementCapability(requirement, _nodeType);
 		LOG.info("req_cap: {}", req_cap);
 		
-		Set<IRI> _capTypes = getValidSourceTypes(requirement, req_cap, kb.factory.createIRI(_nodeType), imports);
-		for (IRI c:_capTypes) {
-			_nodeTypes.add(c);
+		if (req_cap != null) {
+			Set<IRI> _capTypes = getValidSourceTypes(requirement, req_cap, kb.factory.createIRI(_nodeType), imports);
+		
+			for (IRI c:_capTypes) {
+				_nodeTypes.add(c);
+			}
 		}
 		
 		for(IRI _n:_nodeTypes) {
@@ -623,7 +634,7 @@ public class KBApi {
 	
 	//Get requirements/requirementName/capability
 	public IRI getRequirementCapability(String requirementName, String ofNode) throws IOException {
-		LOG.info("getRequirementCapabilityType: requirementName = {}, ofNode = {}", requirementName, ofNode);
+		LOG.info("getRequirementCapability: requirementName = {}, ofNode = {}", requirementName, ofNode);
 		IRI nodeType = null;
 		
 		String sparql = MyUtils.fileToString("sparql/getRequirementCapability.sparql");
@@ -968,7 +979,7 @@ public class KBApi {
 				value = (IRI) bindingSet.getBinding("instanceType").getValue();
 			
 				
-			capabilities = getCapabilities(value.toString(), false);
+			capabilities = getCapabilities(value.toString(), false, !KBConsts.AADM_JSON);
 			System.err.println("capabilities = " + capabilities);
 			
 		}

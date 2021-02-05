@@ -64,8 +64,7 @@ public class OperationService extends AbstractService {
 			responseContainer = "List")
 	public Response getOperations(@ApiParam(
 			value = "A TOSCA resource, e.g. a node",
-			required = true,
-			defaultValue = "docker/my.nodes.SkylineExtractor") @QueryParam("resource") String resource,
+			required = true) @QueryParam("resource") String resource,
 			@ApiParam(
 			value = "For template, it is true. For type, it is false",
 			required = true,

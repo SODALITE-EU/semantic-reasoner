@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.dto.Capability;
+import kb.repository.KBConsts;
 import restapi.util.SharedUtil;
 
 /** A service that returns the capabilities of a single TOSCA resource in JSON format
@@ -64,7 +65,7 @@ public class CapabilityService extends AbstractService {
 		}
 
 		KBApi api = new KBApi();
-		Set<Capability> capabilities = api.getCapabilities(api.getResourceIRI(resource), template);
+		Set<Capability> capabilities = api.getCapabilities(api.getResourceIRI(resource), template, !KBConsts.AADM_JSON);
 		api.shutDown();
 		JsonObject _capabilities = new JsonObject();
 		JsonArray array = new JsonArray();

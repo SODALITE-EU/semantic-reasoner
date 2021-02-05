@@ -236,7 +236,7 @@ class DSLMappingServiceTest {
 		LOG.info("getCapabilities");
 		
 		Set<Capability> capabilities;
-		capabilities = api.getCapabilities(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false);
+		capabilities = api.getCapabilities(api.getResourceIRI("openstack/sodalite.nodes.OpenStack.VM"), false, !KBConsts.AADM_JSON);
 		LOG.info("capabilities.size = {}\n", capabilities.size());
 		assertTrue(capabilities.size() == 7);
 		LOG.info("Test Passed: getCapabilities of a node type");

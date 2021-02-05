@@ -1,9 +1,10 @@
-select distinct ?capability ?classifier
+select distinct ?capability ?classifier ?type
 where {
 	?resource soda:hasInferredContext ?context .
 	#FILTER (strends(str(?resource), ?var)).
 	?context tosca:capabilities ?classifier. 
 	?classifier DUL:classifies ?capability .
+	?type soda:hasContext ?context
 	
 	FILTER NOT EXISTS {
 			?resource soda:hasInferredContext ?context2 .
