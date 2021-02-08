@@ -1,7 +1,8 @@
-select distinct ?concept ?property
+select ?concept ?property ?resource
+FROM sesame:nil
 where {
 	?resource soda:hasContext ?context .
-	#FILTER (strends(str(?resource), ?var)).
+	?resource rdfs:subClassOf tosca:tosca.interfaces.Root.
 	?context tosca:operations ?concept .
 	?concept DUL:classifies ?property .
 }
