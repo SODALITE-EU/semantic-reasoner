@@ -1023,7 +1023,7 @@ public class KBApi {
 		if(!imports.isEmpty()) {
 			String dataset = QueryUtil.namedGraphsForQuery(kb, imports);
 			if (!dataset.isEmpty()) {
-				query = KB.PREFIXES + "\nSELECT ?concept ?property\r\n";		
+				query = KB.PREFIXES + "\nSELECT ?concept ?property ?resource\r\n";
 				query += dataset;
 		
 				query += "{\n"
@@ -1053,9 +1053,11 @@ public class KBApi {
 			BindingSet bindingSet = result.next();
 			IRI p1 = (IRI) bindingSet.getBinding("property").getValue();
 			IRI concept = (IRI) bindingSet.getBinding("concept").getValue();
+			IRI whereDefined = (IRI) bindingSet.getBinding("resource").getValue();
 
 			Operation op = new Operation(p1);
 			op.setClassifiedBy(concept);
+			op.setHostDefinition(whereDefined);
 			operations.add(op);
 		}
 		result.close();

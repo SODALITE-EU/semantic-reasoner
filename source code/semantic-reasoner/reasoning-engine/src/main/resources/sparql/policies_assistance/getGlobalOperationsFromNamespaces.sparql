@@ -1,4 +1,4 @@
-select ?concept ?property 
+select ?concept ?property ?resource
 FROM sesame:nil
 where {
 	?resource soda:hasContext ?context .

@@ -5,6 +5,3 @@ where {
 	?context tosca:operations ?concept .
 	?concept DUL:classifies ?property .
 }
-
-
-                

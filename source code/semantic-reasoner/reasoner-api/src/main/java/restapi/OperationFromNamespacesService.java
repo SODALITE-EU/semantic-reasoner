@@ -32,7 +32,7 @@ import kb.dto.Operation;
  * @version 1.0
  * @since 1.0
 */
-@Path("/operationsfromnamespaces")
+@Path("/operationsFromNamespaces")
 @Api()
 public class OperationFromNamespacesService extends AbstractService {
 	private static final Logger LOG = LoggerFactory.getLogger(OperationFromNamespacesService.class.getName());
