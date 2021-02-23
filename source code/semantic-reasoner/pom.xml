@@ -10,6 +10,7 @@
 	<modules>
 		<module>reasoning-engine</module>
 		<module>reasoner-api</module>
+		<module>tosca-mapper</module>
 	</modules>
 	<properties>
 		<jersey2.version>2.32</jersey2.version>
@@ -137,7 +138,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.0</version>
 				<configuration>
-					<skipTests>false</skipTests>
+					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 			<plugin>

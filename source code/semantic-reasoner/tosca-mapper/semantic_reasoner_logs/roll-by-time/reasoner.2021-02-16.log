@@ -1,0 +1,3302 @@
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+ssrdf:type owl:Ontology ;
+ssowl:imports exchange: ;
+ss  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - property: ports
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - property: remote_ip_prefix
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - property: port_range_max
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator - property: image_id
+2021-02-16 14:08:49 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+	rdf:type owl:Ontology ;
+	owl:imports exchange: ;
+	owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - property: image_id
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - property: ports
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - property: remote_ip_prefix
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator - property: port_range_max
+2021-02-16 14:09:29 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - property: image_id
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - property: ports
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - property: remote_ip_prefix
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator - property: port_range_max
+2021-02-16 14:15:40 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - property: image_id
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - property: ports
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - property: remote_ip_prefix
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - property: port_range_max
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 14:16:08 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.:Type_1 rdf:type exchange:Type ;
+ rdf:type exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - property: image_id
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - property: ports
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - property: remote_ip_prefix
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - property: port_range_max
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 14:17:02 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+:Type_1
+ rdf:type exchange:Type ;
+ rdf:type exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:37:21 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Property_1
+ rdf:type exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00':Property_2
+ rdf:type exchange:name  "ports" ;
+:Parameter_3
+ rdf:type exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0':Parameter_4
+ rdf:type exchange:name  "port_range_max" ;
+  exchange:value '80'  exchange:hasParameter :Parameter_3
+  exchange:hasParameter :Parameter_4
+:Parameter_1 rdf:type exchange:name  "zoe2" ;
+  exchange:value '90':Parameter_2 rdf:type exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:39:02 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+ rdf:type exchange:Type ;
+ rdf:type exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+ exchange:properties:Property_2
+ exchange:properties:Property_1
+:Property_1
+ rdf:type exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00':Property_2
+ rdf:type exchange:name  "ports" ;
+:Parameter_3
+ rdf:type exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0':Parameter_4
+ rdf:type exchange:name  "port_range_max" ;
+  exchange:value '80'  exchange:hasParameter :Parameter_3
+
+
+  exchange:hasParameter :Parameter_4
+
+
+:Parameter_1 rdf:type exchange:name  "zoe2" ;
+  exchange:value '90'
+
+:Parameter_2 rdf:type exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:40:27 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+ rdf:type exchange:Type ;
+ rdf:type exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+ exchange:properties
+
+:Property_2
+ exchange:properties
+
+:Property_1
+
+
+
+
+:Property_1
+ rdf:type exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00'
+
+:Property_2
+ rdf:type exchange:name  "ports" ;
+
+
+:Parameter_3
+ rdf:type exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0'
+
+:Parameter_4
+ rdf:type exchange:name  "port_range_max" ;
+  exchange:value '80'  exchange:hasParameter 
+
+:Parameter_3
+
+
+  exchange:hasParameter 
+
+:Parameter_4
+
+
+
+
+
+
+:Parameter_1 rdf:type exchange:name  "zoe2" ;
+  exchange:value '90'
+
+
+
+:Parameter_2 rdf:type exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:42:19 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+ rdf:type exchange:Type ;
+ exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+ exchange:properties
+
+:Property_2
+ exchange:properties
+
+:Property_1
+
+
+
+
+:Property_1
+ exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00'
+
+:Property_2
+ exchange:name  "ports" ;
+
+
+:Parameter_3
+ exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0'
+
+:Parameter_4
+ exchange:name  "port_range_max" ;
+  exchange:value '80'  exchange:hasParameter 
+
+:Parameter_3
+
+
+  exchange:hasParameter 
+
+:Parameter_4
+
+
+
+
+
+
+:Parameter_1 exchange:name  "zoe2" ;
+  exchange:value '90'
+
+
+
+:Parameter_2 exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:44:49 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+ rdf:type exchange:Type ;
+ exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+ exchange:properties:Property_1
+ exchange:properties:Property_2
+
+
+
+
+:Property_1
+ exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00'
+
+:Property_2
+ exchange:name  "ports" ;
+
+
+:Parameter_3
+ exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0'
+
+:Parameter_4
+ exchange:name  "port_range_max" ;
+  exchange:value '80'  exchange:hasParameter :Parameter_3
+  exchange:hasParameter :Parameter_4
+
+
+
+
+:Parameter_1 exchange:name  "zoe2" ;
+  exchange:value '90'
+
+
+
+:Parameter_2 exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:47:31 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+ rdf:type exchange:Type ;
+ exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+ exchange:properties :Property_1 ;
+ exchange:properties :Property_2 ;
+.
+
+
+
+
+:Property_1
+ exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00'.
+
+
+:Property_2
+ exchange:name  "ports" ;
+
+
+:Parameter_3
+ exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0'.
+
+
+:Parameter_4
+ exchange:name  "port_range_max" ;
+  exchange:value '80'.
+  exchange:hasParameter :Parameter_3
+  exchange:hasParameter :Parameter_4
+
+
+
+
+:Parameter_1 exchange:name  "zoe2" ;
+  exchange:value '90' ;
+.
+
+
+:Parameter_2 exchange:name  "ports-tcp-80-80" ;
+.
+
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:50:31 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+ rdf:type exchange:Type ;
+ exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+ exchange:properties :Property_1 ;
+ exchange:properties :Property_2 ;
+.
+
+
+
+
+:Property_1
+ exchange:name  "image_id" ;
+  rdf:type  rdf:type exchange:Property ;
+ ;
+  exchange:value 'ami-7e45cb00'.
+
+
+:Property_2
+ exchange:name  "ports" ;
+  rdf:type  rdf:type exchange:Property ;
+ ;
+
+
+:Parameter_3
+ exchange:name  "remote_ip_prefix" ;
+  rdf:type  rdf:type exchange:Parameter ;
+ ;
+  exchange:value '0.0.0.0/0'.
+
+
+:Parameter_4
+ exchange:name  "port_range_max" ;
+  rdf:type  rdf:type exchange:Parameter ;
+ ;
+  exchange:value '80'.
+  exchange:hasParameter :Parameter_3
+  exchange:hasParameter :Parameter_4
+
+
+
+
+:Parameter_1 exchange:name  "zoe2" ;
+  exchange:value '90' ;
+.
+
+
+:Parameter_2 exchange:name  "ports-tcp-80-80" ;
+.
+
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:52:28 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+ rdf:type exchange:Type ;
+ exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+ exchange:derivesFrom  "tosca.nodes.Compute" ;
+ exchange:properties :Property_1 ;
+ exchange:properties :Property_2 ;
+.
+
+
+
+:Property_1
+  rdf:type  rdf:type exchange:Property ;
+ ;
+ exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type  rdf:type exchange:Property ;
+ ;
+ exchange:name  "ports" ;
+
+:Parameter_3
+  rdf:type  rdf:type exchange:Parameter ;
+ ;
+ exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type  rdf:type exchange:Parameter ;
+ ;
+ exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+  exchange:hasParameter :Parameter_3
+  exchange:hasParameter :Parameter_4
+
+
+
+
+:Parameter_1 exchange:name  "zoe2" ;
+  exchange:value '90' ;
+.
+
+
+:Parameter_2 exchange:name  "ports-tcp-80-80" ;
+.
+
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:54:05 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+
+
+:Property_1
+ rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+ rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+
+:Parameter_3
+ rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+ rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+  exchange:hasParameter :Parameter_3
+  exchange:hasParameter :Parameter_4
+
+
+
+
+:Parameter_1  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+.
+
+
+:Parameter_2  exchange:name  "ports-tcp-80-80" ;
+.
+
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 15:54:25 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+  exchange:hasParameter :Parameter_3
+  exchange:hasParameter :Parameter_4
+
+
+
+
+:Parameter_1  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+.
+
+
+:Parameter_2  exchange:name  "ports-tcp-80-80" ;
+.
+
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:04:25 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter zoe2 ;
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+  exchange:hasParameter ports-tcp-80-80 ;
+.
+
+
+
+
+:Parameter_1  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+
+:Parameter_2  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:05:43 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+  exchange:hasParameter :Parameter_2 ;
+.
+
+
+
+:Parameter_1
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:21:01 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Parameter_1
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  exchange:name  "ports-tcp-80-80" ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:25:45 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Parameter_1
+  rdf:type exchange:Property ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports-tcp-80-80" ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Property ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:26:06 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:29:41 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:32:16 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:42:32 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 16:43:40 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 17:12:59 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 17:23:49 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+  exchange:hasParameter  :Parameter_3 ;
+  exchange:hasParameter  :Parameter_4 ;
+
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 17:26:40 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+  exchange:hasParameter  :Parameter_3 ;
+  exchange:hasParameter  :Parameter_4 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 17:27:54 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter  :Parameter_3 ;
+  exchange:hasParameter  :Parameter_4 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 17:32:34 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter  :Parameter_3 ;
+  exchange:hasParameter  :Parameter_4 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 17:35:27 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+  exchange:hasParameter  :Parameter_3 ;
+  exchange:hasParameter  :Parameter_4 ;
+
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 17:36:41 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+  exchange:hasParameter  :Parameter_3 ;
+  exchange:hasParameter  :Parameter_4 ;
+.
+
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, data_types={sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}}
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: data_types, v: {sodalite.nodes.hpc.TestTorque.TorqueWM={description=Torque wm, here we can define properties/attributes applicable for Torque WM, derived_from=tosca.nodes.Compute, properties={ports={ports-tcp-80-80={port_range_max=80, remote_ip_prefix=0.0.0.0/0}, zoe2=90}, image_id=ami-7e45cb00}}}
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.nodes.hpc.TestTorque.TorqueWM
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.nodes.Compute
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: image_id
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator -  value: ami-7e45cb00
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: ports
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - par: zoe2, value: 90
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - par:ports-tcp-80-80
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: remote_ip_prefix
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator -  value: 0.0.0.0/0
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - :Parameter_: concept: port_range_max
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator -  value: 80
+2021-02-16 17:37:08 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.nodes.hpc.TestTorque.TorqueWM" ;
+  exchange:derivesFrom  "tosca.nodes.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "remote_ip_prefix" ;
+  exchange:value '0.0.0.0/0' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "port_range_max" ;
+  exchange:value '80' ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "image_id" ;
+  exchange:value 'ami-7e45cb00' ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "ports" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "zoe2" ;
+  exchange:value '90' ;
+.
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "ports-tcp-80-80" ;
+  exchange:hasParameter  :Parameter_3 ;
+  exchange:hasParameter  :Parameter_4 ;
+.
+
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}}
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.capabilities.TestTorque.Queue
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.capabilities.TestTorque.JobResources
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: cpus
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - par: type, value: integer
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - par: required, value: true
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: gpus
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - par: type, value: integer
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - par: required, value: true
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: memory
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - par: type, value: integer
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - par: required, value: false
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.capabilities.TestTorque.WM
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.Queue" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+:Type_2
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.JobResources" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+  exchange:properties :Property_3 ;
+.
+:Type_3
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.WM" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "cpus" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "gpus" ;
+  exchange:hasParameter :Parameter_3 ;
+  exchange:hasParameter :Parameter_4 ;
+.
+
+:Property_3
+  rdf:type exchange:Property ;
+  exchange:name  "memory" ;
+  exchange:hasParameter :Parameter_5 ;
+  exchange:hasParameter :Parameter_6 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_5
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_6
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'false' ;
+.
+
+2021-02-16 17:59:34 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/aadm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/aadm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:AADM_1
+	  rdf:type exchange:AADM ;
+	  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+	.
+
+2021-02-16 18:01:57 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}, topology_template={inputs={user={type=string}, key-location={type=string}}, node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:01:57 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:01:57 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 18:01:57 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: topology_template, v: {inputs={user={type=string}, key-location={type=string}}, node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}
+2021-02-16 18:03:03 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}, topology_template={node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:03:03 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:03:03 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 18:03:03 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: topology_template, v: {node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}, topology_template={node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: topology_template, v: {node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.capabilities.TestTorque.JobResources
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: gpus
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - par: required, value: true
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - par: type, value: integer
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: cpus
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - par: required, value: true
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - par: type, value: integer
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: memory
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - par: type, value: integer
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - par: required, value: false
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.capabilities.TestTorque.WM
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - node name = sodalite.capabilities.TestTorque.Queue
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.JobResources" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+  exchange:properties :Property_3 ;
+.
+:Type_2
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.WM" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+:Type_3
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.Queue" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "gpus" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "cpus" ;
+  exchange:hasParameter :Parameter_3 ;
+  exchange:hasParameter :Parameter_4 ;
+.
+
+:Property_3
+  rdf:type exchange:Property ;
+  exchange:name  "memory" ;
+  exchange:hasParameter :Parameter_5 ;
+  exchange:hasParameter :Parameter_6 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_5
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_6
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'false' ;
+.
+
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - node name = node-hpc-TestTorque-node-1.novalocal
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - node type = sodalite.nodes.hpc.TestTorque.TorqueNode
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - :Property_: concept: name
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator -  value: node-1.novalocal
+2021-02-16 18:03:57 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/aadm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/aadm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:AADM_1
+	  rdf:type exchange:AADM ;
+	  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+	.
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "node-hpc-TestTorque-node-1.novalocal" ;
+  exchange:derivesFrom  "sodalite.nodes.hpc.TestTorque.TorqueNode" ;
+  exchange:properties :Property_1 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "name" ;
+  exchange:value 'node-1.novalocal' ;
+.
+
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}, topology_template={node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: topology_template, v: {node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.JobResources
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: gpus
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: cpus
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: memory
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: false
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.WM
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.Queue
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.RMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.JobResources" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+  exchange:properties :Property_3 ;
+.
+:Type_2
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.WM" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+:Type_3
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.Queue" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "gpus" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "cpus" ;
+  exchange:hasParameter :Parameter_3 ;
+  exchange:hasParameter :Parameter_4 ;
+.
+
+:Property_3
+  rdf:type exchange:Property ;
+  exchange:name  "memory" ;
+  exchange:hasParameter :Parameter_5 ;
+  exchange:hasParameter :Parameter_6 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_5
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_6
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'false' ;
+.
+
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.AADMGenerator - node name = node-hpc-TestTorque-node-1.novalocal
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.AADMGenerator - node type = sodalite.nodes.hpc.TestTorque.TorqueNode
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: name
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.ModelGenerator -  value: node-1.novalocal
+2021-02-16 18:19:43 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/aadm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/aadm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:AADM_1
+	rdf:type exchange:AADM ;
+	exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "node-hpc-TestTorque-node-1.novalocal" ;
+  exchange:derivesFrom  "sodalite.nodes.hpc.TestTorque.TorqueNode" ;
+  exchange:properties :Property_1 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "name" ;
+  exchange:value 'node-1.novalocal' ;
+.
+
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}, topology_template={node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: topology_template, v: {node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.JobResources
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: gpus
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: cpus
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: memory
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: false
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.WM
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.Queue
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.RMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.JobResources" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+  exchange:properties :Property_3 ;
+.
+:Type_2
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.WM" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+:Type_3
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.Queue" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "gpus" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "cpus" ;
+  exchange:hasParameter :Parameter_3 ;
+  exchange:hasParameter :Parameter_4 ;
+.
+
+:Property_3
+  rdf:type exchange:Property ;
+  exchange:name  "memory" ;
+  exchange:hasParameter :Parameter_5 ;
+  exchange:hasParameter :Parameter_6 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_5
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_6
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'false' ;
+.
+
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.AADMGenerator - node name = node-hpc-TestTorque-node-1.novalocal
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.AADMGenerator - node type = sodalite.nodes.hpc.TestTorque.TorqueNode
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: name
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.ModelGenerator -  value: node-1.novalocal
+2021-02-16 18:20:10 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/aadm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/aadm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:AADM_1
+  rdf:type exchange:AADM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "node-hpc-TestTorque-node-1.novalocal" ;
+  exchange:derivesFrom  "sodalite.nodes.hpc.TestTorque.TorqueNode" ;
+  exchange:properties :Property_1 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "name" ;
+  exchange:value 'node-1.novalocal' ;
+.
+
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}, topology_template={node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: topology_template, v: {node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.JobResources
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: gpus
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: cpus
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: memory
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: false
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.WM
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.Queue
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.RMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.JobResources" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+  exchange:properties :Property_3 ;
+.
+:Type_2
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.WM" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+:Type_3
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.Queue" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "gpus" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "cpus" ;
+  exchange:hasParameter :Parameter_3 ;
+  exchange:hasParameter :Parameter_4 ;
+.
+
+:Property_3
+  rdf:type exchange:Property ;
+  exchange:name  "memory" ;
+  exchange:hasParameter :Parameter_5 ;
+  exchange:hasParameter :Parameter_6 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_5
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_6
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'false' ;
+.
+
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.AADMGenerator - node name = node-hpc-TestTorque-node-1.novalocal
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.AADMGenerator - node type = sodalite.nodes.hpc.TestTorque.TorqueNode
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: name
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.ModelGenerator -  value: node-1.novalocal
+2021-02-16 18:23:29 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/aadm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/aadm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:AADM_1
+  rdf:type exchange:AADM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+:Template_1
+  rdf:type exchange:Type ;
+  exchange:name  "node-hpc-TestTorque-node-1.novalocal" ;
+  rdf:type exchange:Template ;
+ "sodalite.nodes.hpc.TestTorque.TorqueNode" ;
+  exchange:properties :Property_1 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "name" ;
+  exchange:value 'node-1.novalocal' ;
+.
+
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}, topology_template={node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: topology_template, v: {node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.JobResources
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: gpus
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: cpus
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: memory
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: false
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.WM
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.Queue
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.RMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.JobResources" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+  exchange:properties :Property_3 ;
+.
+:Type_2
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.WM" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+:Type_3
+  rdf:type exchange:Type ;
+  exchange:name  "sodalite.capabilities.TestTorque.Queue" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "gpus" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "cpus" ;
+  exchange:hasParameter :Parameter_3 ;
+  exchange:hasParameter :Parameter_4 ;
+.
+
+:Property_3
+  rdf:type exchange:Property ;
+  exchange:name  "memory" ;
+  exchange:hasParameter :Parameter_5 ;
+  exchange:hasParameter :Parameter_6 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_5
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_6
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'false' ;
+.
+
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.AADMGenerator - node name = node-hpc-TestTorque-node-1.novalocal
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.AADMGenerator - node type = sodalite.nodes.hpc.TestTorque.TorqueNode
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: name
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.ModelGenerator -  value: node-1.novalocal
+2021-02-16 18:24:19 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/aadm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/aadm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:AADM_1
+  rdf:type exchange:AADM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+:Template_1
+  rdf:type exchange:Template ;
+  exchange:name  "node-hpc-TestTorque-node-1.novalocal" ;
+  rdf:type  "sodalite.nodes.hpc.TestTorque.TorqueNode" ;
+  exchange:properties :Property_1 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "name" ;
+  exchange:value 'node-1.novalocal' ;
+.
+
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}, topology_template={node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}}}
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: topology_template, v: {node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.JobResources
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: gpus
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: cpus
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: true
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: memory
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - par: type, value: integer
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - par: required, value: false
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.WM
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.RMGenerator - node name = sodalite.capabilities.TestTorque.Queue
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.RMGenerator - node type = tosca.capabilities.Compute
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.RMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+
+:Type_1
+  rdf:type exchange:Template ;
+  exchange:name  "sodalite.capabilities.TestTorque.JobResources" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+  exchange:properties :Property_3 ;
+.
+:Type_2
+  rdf:type exchange:Template ;
+  exchange:name  "sodalite.capabilities.TestTorque.WM" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+:Type_3
+  rdf:type exchange:Template ;
+  exchange:name  "sodalite.capabilities.TestTorque.Queue" ;
+  exchange:derivesFrom  "tosca.capabilities.Compute" ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "gpus" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.
+
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name  "cpus" ;
+  exchange:hasParameter :Parameter_3 ;
+  exchange:hasParameter :Parameter_4 ;
+.
+
+:Property_3
+  rdf:type exchange:Property ;
+  exchange:name  "memory" ;
+  exchange:hasParameter :Parameter_5 ;
+  exchange:hasParameter :Parameter_6 ;
+.
+
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'true' ;
+.
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_5
+  rdf:type exchange:Parameter ;
+  exchange:name  "type" ;
+  exchange:value 'integer' ;
+.
+
+:Parameter_6
+  rdf:type exchange:Parameter ;
+  exchange:name  "required" ;
+  exchange:value 'false' ;
+.
+
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.AADMGenerator - node name = node-hpc-TestTorque-node-1.novalocal
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.AADMGenerator - node type = sodalite.nodes.hpc.TestTorque.TorqueNode
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator - :Property_: concept: name
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.ModelGenerator -  value: node-1.novalocal
+2021-02-16 18:28:28 [main] INFO  tosca.mapper.AADMGenerator - EXCHANGE MODEL: # baseURI: https://www.sodalite.eu/ontologies/exchange/aadm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/aadm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+:AADM_1
+  rdf:type exchange:AADM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+:Template_1
+  rdf:type exchange:Template ;
+  exchange:name  "node-hpc-TestTorque-node-1.novalocal" ;
+  exchange:type  "sodalite.nodes.hpc.TestTorque.TorqueNode" ;
+  exchange:properties :Property_1 ;
+.
+
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name  "name" ;
+  exchange:value 'node-1.novalocal' ;
+.
+
+2021-02-16 18:31:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - data: {tosca_definitions_version=tosca_simple_yaml_1_3, capability_types={sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}, requirements=[{wm={node=sodalite.nodes.hpc.TestTorque.TorqueWM, capability=sodalite.capabilities.TestTorque.WM, relationship=tosca.relationships.AttachesTo}}]}}, topology_template={node_templates={node-hpc-TestTorque-node-1.novalocal={type=sodalite.nodes.hpc.TestTorque.TorqueNode, properties={name=node-1.novalocal}}}}}
+2021-02-16 18:31:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: tosca_definitions_version, v: tosca_simple_yaml_1_3
+2021-02-16 18:31:34 [main] INFO  tosca.mapper.TOSCAMappingService2 - k: capability_types, v: {sodalite.capabilities.TestTorque.Queue={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.WM={derived_from=tosca.capabilities.Compute}, sodalite.capabilities.TestTorque.JobResources={derived_from=tosca.capabilities.Compute, properties={gpus={type=integer, required=true}, cpus={type=integer, required=true}, memory={type=integer, required=false}}, requirements=[{wm={node=sodalite.nodes.hpc.TestTorque.TorqueWM, capability=sodalite.capabilities.TestTorque.WM, relationship=tosca.relationships.AttachesTo}}]}}
