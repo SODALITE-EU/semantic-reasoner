@@ -274,7 +274,7 @@ Send a POST request with the following parameters as x-www-form-urlencoded to th
 
 **aadmTTL:**
 <details>
-<summary>Resource model here</summary>
+<summary>AADM here</summary>
 
 ```
 # baseURI: https://www.sodalite.eu/ontologies/exchange/sodalite-test/
