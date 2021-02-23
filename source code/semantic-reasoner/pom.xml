@@ -10,6 +10,7 @@
 	<modules>
 		<module>reasoning-engine</module>
 		<module>reasoner-api</module>
+		<module>tosca-mapper</module>
 	</modules>
 	<properties>
 		<jersey2.version>2.32</jersey2.version>

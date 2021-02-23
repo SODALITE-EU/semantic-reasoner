@@ -19,6 +19,11 @@
 			<artifactId>reasoning-engine</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>gr.iti.sodalite</groupId>
+			<artifactId>tosca-mapper</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

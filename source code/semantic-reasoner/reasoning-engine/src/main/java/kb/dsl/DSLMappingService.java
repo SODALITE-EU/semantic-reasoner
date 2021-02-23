@@ -185,7 +185,8 @@ public class DSLMappingService {
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "createdAt"), DateTime.now());
 			
 			if ("".equals(aadmDSL)) {
-				mappingModels.add(new MappingValidationModel("AADM", "aadmDSL", "No 'DSL' defined for the aadm model"));
+				//mappingModels.add(new MappingValidationModel("AADM", "aadmDSL", "No 'DSL' defined for the aadm model"));
+				LOG.info("No 'DSL' defined for the rm model");
 			} else {
 				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasDSL"), aadmDSL);
 			}
@@ -676,8 +677,24 @@ public class DSLMappingService {
 				.stringValue();
 
 		// create classifier
-		IRI capabilityClassifierKB = factory.createIRI(namespace + "CapClassifier_" + MyUtils.randomString());
-		templateBuilder.add(capabilityClassifierKB, RDF.TYPE, "tosca:Capability");
+		IRI capabilityClassifierKB = null;
+		Optional<Resource> _type  = Models.getPropertyResource(aadmModel, capability,
+				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+		String type = MyUtils.getStringValue(_type.get());
+		
+		switch (type) {
+			case KBConsts.CAPABILITY:
+				capabilityClassifierKB = factory.createIRI(namespace + "CapabilityClassifier_" + MyUtils.randomString());
+				aadmBuilder.add(capabilityClassifierKB, RDF.TYPE, "tosca:Capability");
+				break;
+			case KBConsts.PARAMETER:
+				capabilityClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
+				aadmBuilder.add(capabilityClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				break;
+			default:
+				LOG.warn("type = {} does not exist", type);
+		}
+		
 
 		IRI capabilityProperty = GetResources.getKBProperty(capabilityName, this.namespacesOfType, kb);
 		if (capabilityProperty == null) {
@@ -685,29 +702,49 @@ public class DSLMappingService {
 		}
 		templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + "classifies"), capabilityProperty);
 
+		
 		// check for direct values of parameters
 		Literal value = Models
 				.objectLiteral(aadmModel.filter(capability, factory.createIRI(KB.EXCHANGE + "value"), null))
 				.orElse(null);
-
+		
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
-			IRI kbTemplate = getKBTemplate(n);
-			if (kbTemplate == null) {
-				if (templateNames.contains(n.getResource()))
-					kbTemplate = factory.createIRI(namespace + n.getResource());
-				else
-					mappingModels.add(new MappingValidationModel(currentTemplate, capability.getLocalName(), "Cannot find Template: " + value.getLabel()));
-			}
-			if (kbTemplate != null)
-				templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+			
+			String valueString = value.getLabel();
+			
+			//in type:, there is a node type or a string. e.g. capabilities/network/type/tosca.capabilities.Network, or capabilities/os/type/linux, so no error to be thrown
+			if (capabilityProperty.getLocalName().equals("type")) {			
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
+				IRI kbTemplate = getKBTemplate(n);
+				if (kbTemplate == null) {
+					if (templateNames.contains(n.getResource())) {
+						kbTemplate = factory.createIRI(namespace + n.getResource());
+						templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+					}
+					else {
+						//e.g. os/type/linux
+						templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), valueString);
+						//mappingModels.add(new MappingValidationModel(currentTemplate, capability.getLocalName(), "Cannot find Template: " + value.getLabel()));
+					}
+				} 
+			} else if (Ints.tryParse(valueString) != null) {
+				templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), Integer.parseInt(valueString));
+			} 
+			
 		} else {
 			Set<Resource> _properties = Models.getPropertyResources(aadmModel, capability,
 			factory.createIRI(KB.EXCHANGE + "properties"));
 			//definedPropertiesForValidation.clear();
 			if (_properties.isEmpty()) {
-				IRI root = createParameterKBModel(capability);
-				templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), root);
+				/*IRI root = createParameterKBModel(capability);
+				templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), root);*/
+				Set<Resource> _parameters = Models.getPropertyResources(aadmModel, capability,
+						factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
+				for (Resource _parameter : _parameters) {
+					IRI parameter = (IRI) _parameter;
+					IRI _p = createCapabilityKBModel(parameter);
+					templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				}
 			} else {
 				for (Resource _property : _properties) {
 					IRI property = (IRI) _property;
