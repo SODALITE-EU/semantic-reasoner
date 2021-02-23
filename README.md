@@ -247,7 +247,7 @@ Send a POST request with the following parameters as x-www-form-urlencoded to th
 For the sake of this testing, leave rmURI empty.
 When rmURI is empty, a new resource model is created. Otherwise, the resource model with rmURI is overriden.
 
-**namespace:** test
+**namespace:** openstack
 
 The namespace on which the model will be saved. If no namespace given, the model is saved in the global namespace.
 
@@ -264,4 +264,85 @@ If success, you 'll get an rmURI as response.
     "rmuri": "https://www.sodalite.eu/ontologies/workspace/1/q03i5hhp8oac5ogftbmgr7ra4v/RM_nom7pmrlja496e5kkb026ub7d8"
 }
 ```
+## Sample scenarios:
+### Save an aadm model
+```
+http://<server_ip>:8080/reasoner-api/v0.6/saveAADM
+```
+
+Send a POST request with the following parameters as x-www-form-urlencoded to the above url:
+
+**aadmTTL:**
+<details>
+<summary>Resource model here</summary>
+
+```
+# baseURI: https://www.sodalite.eu/ontologies/exchange/sodalite-test/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/sodalite-test/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+
+:AADM_1
+  rdf:type exchange:AADM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name "username" ;
+  exchange:value "1" ;
+.
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name "docker_ip" ;
+  exchange:value "1" ;
+.
+
+:Template_1
+  rdf:type exchange:Template ;
+  exchange:name "sodalite-vm" ;
+  exchange:type 'openstack/sodalite.nodes.Compute' ;  
+  
+  exchange:properties :Property_1 ;
+  exchange:properties :Property_2 ;
+.  ```
+
+</details>
+
+
+**rmURI:** <LEAVE IT EMPTY>
+
+
+For the sake of this testing, leave rmURI empty.
+When rmURI is empty, a new resource model is created. Otherwise, the resource model with rmURI is overriden.
+
+**namespace:** test
+
+The namespace on which the model will be saved. If no namespace given, the model is saved in the global namespace.
+
+**name**: test.aadm
+
+The file name of the model
+
+
+If success, you 'll get an aadmURI as response.
+
+**Successful Response**
+```
+{
+    "aadmuri": "https://www.sodalite.eu/ontologies/workspace/1/q03i5hhp8oac5ogftbmgr7ra4v/AADM_nom7pmrlja496e5kkb026ub7d8"
+}
+```
+
+
  
