@@ -87,7 +87,7 @@ For graph-db, the error plain/text message is:
  
 
 ## Sample scenarios:
-### Save a resource model
+### 1. Save a resource model
 ```
 http://<server_ip>:8080/reasoner-api/v0.6/saveRM
 ```
@@ -264,8 +264,7 @@ If success, you 'll get an rmURI as response.
     "rmuri": "https://www.sodalite.eu/ontologies/workspace/1/q03i5hhp8oac5ogftbmgr7ra4v/RM_nom7pmrlja496e5kkb026ub7d8"
 }
 ```
-## Sample scenarios:
-### Save an aadm model
+### 2.  Save an aadm model
 ```
 http://<server_ip>:8080/reasoner-api/v0.6/saveAADM
 ```
@@ -274,7 +273,7 @@ Send a POST request with the following parameters as x-www-form-urlencoded to th
 
 **aadmTTL:**
 <details>
-<summary>AADM here</summary>
+<summary>Resource model here</summary>
 
 ```
 # baseURI: https://www.sodalite.eu/ontologies/exchange/sodalite-test/
