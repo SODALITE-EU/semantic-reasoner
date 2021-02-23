@@ -4,9 +4,10 @@
 
 The repository contains the Maven modules for the Semantic Reasoner component of SODALITE. More specifically:
 
-- `semantic-reasoner`: parent module (pom)  that encapsulates two sub-modules
+- `semantic-reasoner`: parent module (pom)  that encapsulates three sub-modules
     1. `reasoner-api`: The reasoner's REST API (war)
     2. `reasoning-engine`: The reasoning infrastructure and application API (jar)
+    3.  `tosca-mapper `: The mapper from tosca to exchange format
 
 ## Prerequisites
 This module depends on:
@@ -35,7 +36,7 @@ Extract the bug-predictor.war to the tomcat webapps folder.
 After graph-db is up and running, create a TOSCA repository with ruleset = owl-2rl and disable owl-sameas.
 Load the ontologies from [semantic-models](https://github.com/SODALITE-EU/semantic-models/tree/master/ontology%20definitions).
 Specifically, load the ontologies under ontology-definitions folder:
-optimizations.ttl, sodalite-metamodel.ttl, import/DUL.ttl, tosca-builtins.ttl
+ `optimizations.ttl`,  `sodalite-metamodel.ttl `,  `import/DUL.ttl `,  `tosca-builtins.ttl `
 4) Build the semantic reasoner as a maven project. Run it on a tomcat server. 
 The reasoner should be up and running, waiting for receiving API requests.
 
@@ -45,6 +46,11 @@ Run
 
 You can access the graph database [here](http://localhost:7200/)
 and send requests to the reasoner http://localhost:8080/reasoner-api/v0.6/<service_name>
+##### For building docker images separately:
+
+> maven install
+>docker build -t semantic-reasoner -f docker/web/Dockerfile .
+> docker build -t graphdb -f docker/graph-db/Dockerfile .
 
   Prerequisite:
  - Docker engine 19.03 or newer
@@ -86,16 +92,168 @@ For graph-db, the error plain/text message is:
 http://<server_ip>:8080/reasoner-api/v0.6/saveRM
 ```
 
-Send a POST request with two parameters as x-www-form-urlencoded to the above url:
+Send a POST request with the following parameters as x-www-form-urlencoded to the above url:
 
 **rmTTL:**
-```turtle
-RM MODEL HERE IN TURTLE FORMAT
+<details>
+<summary>Resource model here</summary>
+
 ```
+# baseURI: https://www.sodalite.eu/ontologies/exchange/rm/
+# imports: https://www.sodalite.eu/ontologies/exchange/
+
+@prefix : <https://www.sodalite.eu/ontologies/exchange/rm/> .
+@prefix exchange: <https://www.sodalite.eu/ontologies/exchange/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports exchange: ;
+  owl:versionInfo "Created by the SODALITE IDE" ;
+.
+
+:RM_1
+  rdf:type exchange:RM ;
+  exchange:userId "27827d44-0f6c-11ea-8d71-362b9e155667" ;
+.
+:Parameter_1
+  rdf:type exchange:Parameter ;
+  exchange:name "property" ;  
+  exchange:value 'docker_ip' ; 
+.
+:Parameter_2
+  rdf:type exchange:Parameter ;
+  exchange:name "entity" ;  
+  exchange:value 'SELF' ; 
+.
+:Parameter_3
+  rdf:type exchange:Parameter ;
+  exchange:name "get_property" ;
+  exchange:hasParameter :Parameter_1 ;
+  exchange:hasParameter :Parameter_2 ;
+.	
+
+:Parameter_4
+  rdf:type exchange:Parameter ;
+  exchange:name "value" ;
+  exchange:hasParameter :Parameter_3 ;
+.
+
+:Parameter_5
+  rdf:type exchange:Parameter ;
+  exchange:name "docker_ip" ;
+  exchange:hasParameter :Parameter_4 ;
+.	
+
+
+:Parameter_6
+  rdf:type exchange:Parameter ;
+  exchange:name "path" ;
+  exchange:value '/workspace/iac-management/blueprint-samples/blueprints/sodalite-test/modules/vm/playbooks/set_ip.yaml' ;
+.
+
+:Parameter_7
+  rdf:type exchange:Parameter ;
+  exchange:name "content" ;
+  exchange:value '- hosts: all\n  gather_facts: no\n  tasks:\n    - name: Set attributes\n      set_stats:\n        data:\n          private_address: "{{ docker_ip }}"\n          public_address: "{{ docker_ip }}"' ;
+.
+
+
+:Parameter_8
+  rdf:type exchange:Parameter ;
+  exchange:name "primary" ;
+  exchange:hasParameter :Parameter_6 ;
+  exchange:hasParameter :Parameter_7 ;
+.
+
+
+:Parameter_9
+  rdf:type exchange:Parameter ;
+  exchange:name "implementation" ;
+  exchange:hasParameter :Parameter_8 ;
+.
+
+:Parameter_10
+  rdf:type exchange:Parameter ;
+  exchange:name "create" ;
+  exchange:hasParameter :Parameter_5 ;
+  exchange:hasParameter :Parameter_9 ;
+.
+
+:Parameter_11
+  rdf:type exchange:Parameter ;
+  exchange:name "type" ;
+  exchange:value 'string' ;  
+.
+
+:Parameter_12
+  rdf:type exchange:Parameter ;
+  exchange:name "required" ;
+  exchange:value 'false' ;
+.
+:Property_1
+  rdf:type exchange:Property ;
+  exchange:name "username" ;
+  exchange:hasParameter :Parameter_11 ;
+  exchange:hasParameter :Parameter_12 ;
+.
+:Parameter_13
+  rdf:type exchange:Parameter ;
+  exchange:name "type" ;
+  exchange:value 'string' ;  
+.
+:Parameter_14
+  rdf:type exchange:Parameter ;
+  exchange:name "required" ;
+  exchange:value 'false' ;
+.
+:Property_2
+  rdf:type exchange:Property ;
+  exchange:name "docker_ip" ;
+  exchange:hasParameter :Parameter_13 ;
+  exchange:hasParameter :Parameter_14 ;
+.
+:Parameter_15
+  rdf:type exchange:Parameter ;
+  exchange:name "type" ;
+  exchange:value 'tosca.interfaces.node.lifecycle.Standard' ;
+.
+:Interface_1
+  rdf:type exchange:Interface ;
+  exchange:name "Standard" ;
+  exchange:hasParameter :Parameter_15 ;
+  exchange:hasParameter :Parameter_10 ;
+.
+
+:NodeType_1
+  rdf:type exchange:Type ;
+  exchange:name "sodalite.nodes.Compute" ;
+  exchange:derivesFrom 'tosca.nodes.Compute' ;  
+  exchange:properties :Property_1 ; 
+  exchange:properties :Property_2 ; 
+  exchange:interfaces :Interface_1 ; 
+.  
+```
+
+</details>
+
+
 **rmURI:** <LEAVE IT EMPTY>
+
 
 For the sake of this testing, leave rmURI empty.
 When rmURI is empty, a new resource model is created. Otherwise, the resource model with rmURI is overriden.
+
+**namespace:** test
+The namespace on which the model will be saved. If no namespace given, the model is saved in the global namespace.
+
+**name**: test.rm
+The file name of the model
+
+
 If success, you 'll get an rmURI as response.
 
 **Successful Response**
