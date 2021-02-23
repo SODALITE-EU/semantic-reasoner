@@ -315,12 +315,13 @@ Send a POST request with the following parameters as x-www-form-urlencoded to th
   
   exchange:properties :Property_1 ;
   exchange:properties :Property_2 ;
-.  ```
+.  
+```
 
 </details>
 
 
-**rmURI:** <LEAVE IT EMPTY>
+**aadmURI:** <LEAVE IT EMPTY>
 
 
 For the sake of this testing, leave rmURI empty.
