@@ -248,9 +248,11 @@ For the sake of this testing, leave rmURI empty.
 When rmURI is empty, a new resource model is created. Otherwise, the resource model with rmURI is overriden.
 
 **namespace:** test
+
 The namespace on which the model will be saved. If no namespace given, the model is saved in the global namespace.
 
 **name**: test.rm
+
 The file name of the model
 
 
