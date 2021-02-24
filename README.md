@@ -40,6 +40,8 @@ Specifically, load the ontologies under ontology-definitions folder:
 4) Build the semantic reasoner as a maven project. Run it on a tomcat server. 
 The reasoner should be up and running, waiting for receiving API requests.
 
+The access to the KB is restricted to authenticated users. All apis have as input token for aunthenticating and authorizing the user. For the local environment, auth check is disabled.
+
 ## Running the reasoner on docker containers
 Run 
 ```docker-compose up```
@@ -49,7 +51,9 @@ and send requests to the reasoner http://localhost:8080/reasoner-api/v0.6/<servi
 ##### For building docker images separately:
 
 > maven install
+
 >docker build -t semantic-reasoner -f docker/web/Dockerfile .
+
 > docker build -t graphdb -f docker/graph-db/Dockerfile .
 
   Prerequisite:
@@ -343,6 +347,14 @@ If success, you 'll get an aadmURI as response.
     "aadmuri": "https://www.sodalite.eu/ontologies/workspace/1/q03i5hhp8oac5ogftbmgr7ra4v/AADM_nom7pmrlja496e5kkb026ub7d8"
 }
 ```
+
+### 3. Other apis for context assistance
+There are various apis for accessing Knowledge Base
+##### Examples:
+a) Get interfaces of a tosca normative type
+http://localhost:8080/reasoner-api/v0.6/interfaces?resource=tosca.interfaces.node.lifecycle.Standard
+b) Get properties of a tosca normative type
+http://localhost:8080/reasoner-api/v0.6/properties?resource=tosca.capabilities.Scalable
 
 
  
