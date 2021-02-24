@@ -353,6 +353,7 @@ There are various apis for accessing Knowledge Base
 ##### Examples:
 a) Get interfaces of a tosca normative type
 http://localhost:8080/reasoner-api/v0.6/interfaces?resource=tosca.interfaces.node.lifecycle.Standard
+
 b) Get properties of a tosca normative type
 http://localhost:8080/reasoner-api/v0.6/properties?resource=tosca.capabilities.Scalable
 
