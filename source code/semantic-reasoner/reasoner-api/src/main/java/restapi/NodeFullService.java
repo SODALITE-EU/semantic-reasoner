@@ -37,7 +37,6 @@ public class NodeFullService extends AbstractService {
 	/**
 	  * Getting the full information of a single TOSCA resource.
 	  * @param resource The resource name
-	  * @param template Flag that represents if it is template or type
 	  * @return The node full information in JSON format
 	 * @throws IOException 
 	 */
