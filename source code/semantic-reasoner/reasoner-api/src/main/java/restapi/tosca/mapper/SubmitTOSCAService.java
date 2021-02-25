@@ -56,7 +56,8 @@ public class SubmitTOSCAService extends AbstractService {
 	/**
 	 * Storing the submitted resource model and aadm to the Knowledge Base
 	 * @param modelTOSCA Both resource model and aadm in tosca format
-	 * @param aadmURI A unique id
+	 * @param aadmURI A unique aadm uri
+	 * @param rmURI  A unique rm uri
 	 * @param rmName The file name of the resource model
 	 * @param aadmName The file name of the aadm
 	 * @param namespace The namespace of the model
