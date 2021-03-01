@@ -55,8 +55,9 @@ public class SubmitTOSCAService extends AbstractService {
 	}
 	/**
 	 * Storing the submitted resource model and aadm to the Knowledge Base
-	 * @param modelTTL Both resource model and aadm in tosca format
-	 * @param aadmURI A unique id
+	 * @param modelTOSCA Both resource model and aadm in tosca format
+	 * @param aadmURI A unique aadm uri
+	 * @param rmURI  A unique rm uri
 	 * @param rmName The file name of the resource model
 	 * @param aadmName The file name of the aadm
 	 * @param namespace The namespace of the model
@@ -73,7 +74,7 @@ public class SubmitTOSCAService extends AbstractService {
 	@Produces("application/json")
 	@Consumes("application/x-www-form-urlencoded")
 	@ApiOperation(value = "Stores submitted node templates in the KB")
-	public Response saveTOSCA(@ApiParam(value = "The TTL of model", required = true) @FormParam("modelTTL") String modelTTL,
+	public Response saveTOSCA(@ApiParam(value = "The model in TOSCA format", required = true) @FormParam("modelTOSCA") String modelTOSCA,
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @DefaultValue("") @FormParam("aadmURI") String aadmURI,
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @DefaultValue("") @FormParam("rmURI") String rmURI,
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("rmName") String rmName,
@@ -83,10 +84,10 @@ public class SubmitTOSCAService extends AbstractService {
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
 		JSONObject response = new JSONObject();
-		LOG.info("modelTTL = {}, namespace = {}", modelTTL, namespace);
+		LOG.info("modelTTL = {}, namespace = {}", modelTOSCA, namespace);
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
-		TOSCAMappingService toscaMapper = new TOSCAMappingService(modelTTL);
+		TOSCAMappingService toscaMapper = new TOSCAMappingService(modelTOSCA);
 		toscaMapper.parse();
 		String rmTTL = toscaMapper.getExchangeRM();
 		String aadmTTL = toscaMapper.getExchangeAADM();
