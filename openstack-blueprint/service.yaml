@@ -47,8 +47,8 @@ topology_template:
     docker-registry-cert-email-address: 
       type: string
       default: ""
-    identity_file:
-      type: string    
+    ssh_config:
+      type: map
     reasoner_env:
       type: map        
     toscasmells_env:
@@ -104,7 +104,7 @@ topology_template:
         network:          { get_input: openstack-network-name } 
         security_groups:  { get_input: security-groups } 
         flavor:           { get_input: flavor-name }
-        identity_file:    { get_input: identity_file }        
+        ssh_config:       { get_input: ssh_config }
         username: centos
       requirements:  
         - protected_by: security-rules-sodalite 
