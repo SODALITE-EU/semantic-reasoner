@@ -40,6 +40,10 @@ pipeline {
        OS_REGION_NAME = "RegionOne"
        OS_AUTH_PLUGIN = "password"
 
+       // ROOT X.509 CERTIFICATES
+       ca_crt_file = credentials('xopera-ca-crt')
+       ca_key_file = credentials('xopera-ca-key')
+
        // CI-CD vars
        // When triggered from git tag, $BRANCH_NAME is actually tag_name
        TAG_SEM_VER_COMPLIANT = """${sh(
