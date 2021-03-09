@@ -82,10 +82,14 @@ public class SubmitTOSCAService extends AbstractService {
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
 		JSONObject response = new JSONObject();
-		LOG.info("modelTTL = {}, rmNamespace = {}, aadmNamespace = {}", modelTOSCA, rmNamespace, aadmNamespace);
+		LOG.info("modelTOSCA = {}, rmNamespace = {}, aadmNamespace = {}", modelTOSCA, rmNamespace, aadmNamespace);
+		
+		//4 slashes for \n. Two slashes since in string with two slashes you have one. But also two more slashes since, \ is an escape char also in regex 
+		String finalModelTOSCA = modelTOSCA.replaceAll("\\\\n",System.getProperty("line.separator"));
+		
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
-		TOSCAMappingService toscaMapper = new TOSCAMappingService(modelTOSCA);
+		TOSCAMappingService toscaMapper = new TOSCAMappingService(finalModelTOSCA);
 		toscaMapper.parse();
 		String rmTTL = toscaMapper.getExchangeRM();
 		String aadmTTL = toscaMapper.getExchangeAADM();
