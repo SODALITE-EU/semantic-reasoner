@@ -58,9 +58,8 @@ public class SubmitTOSCAService extends AbstractService {
 	 * @param modelTOSCA Both resource model and aadm in tosca format
 	 * @param aadmURI A unique aadm uri
 	 * @param rmURI  A unique rm uri
-	 * @param rmName The file name of the resource model
-	 * @param aadmName The file name of the aadm
-	 * @param namespace The namespace of the model
+	 * @param rmNamespace The namespace where the resource model will be saved
+	 * @param aadmNamespace The namespace where the aadm will be saved
 	 * @param token The token
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
@@ -77,14 +76,13 @@ public class SubmitTOSCAService extends AbstractService {
 	public Response saveTOSCA(@ApiParam(value = "The model in TOSCA format", required = true) @FormParam("modelTOSCA") String modelTOSCA,
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @DefaultValue("") @FormParam("aadmURI") String aadmURI,
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @DefaultValue("") @FormParam("rmURI") String rmURI,
-			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("rmName") String rmName,
-			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("aadmName") String aadmName,
-			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
+			@ApiParam(value = "namespace for rm", required = false) @DefaultValue("") @FormParam("rmNamespace") String rmNamespace,
+			@ApiParam(value = "namespace for aadm", required = false) @DefaultValue("") @FormParam("aadmNamespace") String aadmNamespace,
 			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
 		JSONObject response = new JSONObject();
-		LOG.info("modelTTL = {}, namespace = {}", modelTOSCA, namespace);
+		LOG.info("modelTTL = {}, rmNamespace = {}, aadmNamespace = {}", modelTOSCA, rmNamespace, aadmNamespace);
 		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
 		
 		TOSCAMappingService toscaMapper = new TOSCAMappingService(modelTOSCA);
@@ -95,16 +93,25 @@ public class SubmitTOSCAService extends AbstractService {
 		if (aadmTTL == null && rmTTL == null)
 			return Response.status(Status.BAD_REQUEST).entity("rm and aadm are empty").build();
 		
-		DSLRMMappingService rm = new DSLRMMappingService(kb, rmTTL, rmURI, namespace, "", rmName);
-		DSLMappingService aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, namespace, "", aadmName);
+		DSLRMMappingService rm = null;
+		DSLMappingService aadm = null;
+		//platform discovery service does not need file names for the resource and application models
+		if (rmTTL != null)
+			 rm = new DSLRMMappingService(kb, rmTTL, rmURI, rmNamespace, "", "");
+		if (aadmTTL != null)
+			aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, aadmNamespace, "", "");
 
 		IRI rmUri = null;
 		IRI aadmUri = null;
 		try {
-			rmUri = rm.start();
-			rm.save();
-			aadmUri = aadm.start();
-			aadm.save();			
+			if (rm != null) {
+				rmUri = rm.start();
+				rm.save();
+			}
+			if (aadm != null) {
+				aadmUri = aadm.start();
+				aadm.save();
+			}
 		}  catch (MappingException e) {
 			e.printStackTrace();
 			List<DslValidationModel> validationModels = e.mappingValidationModels;
