@@ -67,7 +67,7 @@ public class KBApi {
 	}
 	
 	public KBApi() {
-		kb = new KB(configInstance.getGraphdb(), "TOSCA");
+		kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 	}
 	
 	public KBApi(KB kb) {

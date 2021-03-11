@@ -98,7 +98,7 @@ public class SubmitService extends AbstractService {
 				return ares.getResponse();
 		}
 					
-		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
+		KB kb = new KB(configInstance.getGraphdb(),  KB.REPOSITORY);
 		
 		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name);
 		IRI aadmUri = null;

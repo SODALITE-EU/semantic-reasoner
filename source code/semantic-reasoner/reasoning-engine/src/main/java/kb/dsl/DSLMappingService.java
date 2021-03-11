@@ -424,7 +424,7 @@ public class DSLMappingService {
 		
 		try {
 			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString(), aadmKB);
-			//THIS SHOULD BE CORRECTED
+			//THIS SHOULD BE CORRECTED 
 			if (!aadmURI.isEmpty())
 				VerifySingularity.removeInputs(kb, aadmURI);
 		} catch (IOException e) {
@@ -991,23 +991,25 @@ public class DSLMappingService {
 		RequirementExistenceValidation r = new RequirementExistenceValidation(aadmId, complete, kb, namespace.toString(), context);
 		//Check for required omitted requirements
 		validationModels.addAll(r.validate());
-		if (!validationModels.isEmpty()) {
+		//if (!validationModels.isEmpty()) {
 			//Set<IRI> templatesIRIs = MyUtils.getResourceIRIs(this.kb, this.namespace, this.templateNames);
-			KBApi api = new KBApi(kb);
+	/*		KBApi api = new KBApi(kb);
 			api.deleteModel(aadmId);
 			throw new ValidationException(validationModels);
-		}
+		}*/
 		
 		suggestedModels.addAll(r.getSuggestions());
 		modifiedModels.addAll(r.getModifiedModels());
 		
 		//Sommelier validations
-		//ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
-		/*validationModels.addAll(v.validate());
+		ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
+		validationModels.addAll(v.validate());
+		
 		if (!validationModels.isEmpty()) {
-			kb.connection.clear(context);
+			KBApi api = new KBApi(kb);
+			api.deleteModel(this.aadmKB.toString());
 			throw new ValidationException(validationModels);
-		}*/
+		}
 		
 	}
 }

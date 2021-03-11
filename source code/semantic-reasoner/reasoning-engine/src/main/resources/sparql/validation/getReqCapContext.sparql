@@ -1,0 +1,8 @@
+select distinct ?nodeType ?ctx ?resource
+where {
+    ?nodeType soda:hasInferredContext ?ctx;
+        rdfs:subClassOf tosca:tosca.entity.Root. 
+    ?ctx tosca:requirements [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies tosca:capability]] .
+    ?resource soda:hasContext ?ctx .
+}
+

@@ -16,6 +16,7 @@ import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
 import kb.repository.KB;
+import kb.utils.InferencesUtil;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 import kb.validation.exceptions.CapabilityMismatchValidationException;
@@ -59,44 +60,57 @@ public class RequirementValidation extends ValidationManager {
 			
 			LOG.log(Level.INFO, "RequirementValidation {0}, r_a = {1}", new Object[] {templateRequirement.get("template").toString(), r_a.toString()});
 			// 1.1 + 1.2 (check if rd.node exists)
-			Set<HashMap<String, IRI>> requirementDefinitions = requirementDefinitions(templateRequirement);
-			if (requirementDefinitions.isEmpty()) {
+			boolean hasRequirementDefinition = requirementDefinitions(templateRequirement);
+			
+			if (hasRequirementDefinition == false) {
 				//throw new NoRequirementDefinitionValidationException(template, r_a);
 				models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a),"NoRequirementDefinition"));
 			}
 
-			for (HashMap<String, IRI> requirementDefinition : requirementDefinitions) { // ?nodeType ?ctx
-				IRI ctx = requirementDefinition.get("ctx");
+			HashMap<String, IRI> requirementDefinition = getRequirementContexts(templateRequirement);
+			
+			//for (HashMap<String, IRI> requirementDefinition : requirementDefinitions) { // ?nodeType ?ctx
+			if (requirementDefinition != null) {	
+			
+				IRI nodeCtx = requirementDefinition.get("nodeContext");
 				IRI nodeType = requirementDefinition.get("nodeType");
 
 				// 1.2
-				HashMap<String, IRI> nodeMismatch = nodeMismatch(ctx, r_a, template);
-				LOG.log(Level.INFO, "template = {0}, r_a = {1}, ctx = {2}", new Object[] {template, r_a, ctx});
-				if (!nodeMismatch.isEmpty()) {
-					//throw new NodeMismatchValidationException(nodeMismatch.get("type_r_a_node"), template,
+				if(nodeCtx != null) {
+					HashMap<String, IRI> nodeMismatch = nodeMismatch(nodeCtx, r_a, template);
+			
+					LOG.log(Level.INFO, "template = {0}, r_a = {1}, nodeCtx = {2}", new Object[] {template, r_a, nodeCtx});
+					if (!nodeMismatch.isEmpty()) {
+						//throw new NodeMismatchValidationException(nodeMismatch.get("type_r_a_node"), template,
 							//nodeMismatch.get("r_d_node"));
-					models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), MyUtils.getStringValue(nodeMismatch.get("type_r_a_node")), MyUtils.getStringValue(nodeMismatch.get("r_d_node")), "NodeMismatch"));		
+						models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), MyUtils.getStringValue(nodeMismatch.get("type_r_a_node")), MyUtils.getStringValue(nodeMismatch.get("r_d_node")), "NodeMismatch"));		
+					}
 				}
 
 				// ra.capability exists (1.3)
-				// TODO
-				HashMap<String, IRI> capabilityExistsMismatch = capabilityExistsMismatch(template, r_a, ctx);
-				if (!capabilityExistsMismatch.isEmpty()) {
-					models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), MyUtils.getStringValue(capabilityExistsMismatch.get("templateCapabilityType")), MyUtils.getStringValue(capabilityExistsMismatch.get("r_d_capability")),  MyUtils.getStringValue(nodeType), "CapabilityExistsMismatch"));		
+				IRI capCtx = requirementDefinition.get("capContext");
+				if (capCtx != null) {
+					HashMap<String, IRI> capabilityExistsMismatch = capabilityExistsMismatch(template, r_a, capCtx);
+					if (!capabilityExistsMismatch.isEmpty()) {
+						models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), MyUtils.getStringValue(capabilityExistsMismatch.get("templateCapabilityType")), MyUtils.getStringValue(capabilityExistsMismatch.get("r_d_capability")),  MyUtils.getStringValue(nodeType), "CapabilityExistsMismatch"));		
+					}
+				
+					// ra.capability not exists (1.4)
+					HashMap<String, IRI> capabilityMatch = capabilityMatch(template, r_a, capCtx);
+					if (!capabilityMatch.isEmpty()) {
+						/*throw new CapabilityMismatchValidationException(template, r_a, nodeType,
+							capabilityMatch.get("templateCapabilityType"), capabilityMatch.get("r_d_capability"));*/
+						models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), MyUtils.getStringValue(capabilityMatch.get("templateCapabilityType")), MyUtils.getStringValue(capabilityMatch.get("r_d_capability")),  MyUtils.getStringValue(nodeType), "CapabilityMismatch"));		
+					}
 				}
 				
-				// ra.capability not exists (1.4)
-				HashMap<String, IRI> capabilityMatch = capabilityMatch(template, r_a, ctx);
-				if (!capabilityMatch.isEmpty()) {
-					/*throw new CapabilityMismatchValidationException(template, r_a, nodeType,
-							capabilityMatch.get("templateCapabilityType"), capabilityMatch.get("r_d_capability"));*/
-					models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), MyUtils.getStringValue(capabilityMatch.get("templateCapabilityType")), MyUtils.getStringValue(capabilityMatch.get("r_d_capability")),  MyUtils.getStringValue(nodeType), "CapabilityMismatch"));		
-				}
-
+				IRI relCtx = requirementDefinition.get("relContext");
 				// ra.relationship exists (1.5)
-				HashMap<String, IRI> relationshipMismatch = relationshipMisMatch(template, r_a, ctx);
-				if (!relationshipMismatch.isEmpty()) {
-					models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), MyUtils.getStringValue(relationshipMismatch.get("templateRelationshipType")), MyUtils.getStringValue(relationshipMismatch.get("r_d_relationship")),  MyUtils.getStringValue(nodeType), "RelationshipMismatch"));		
+				if (relCtx != null) {
+					HashMap<String, IRI> relationshipMismatch = relationshipMisMatch(template, r_a, relCtx);
+					if (!relationshipMismatch.isEmpty()) {
+						models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), MyUtils.getStringValue(relationshipMismatch.get("templateRelationshipType")), MyUtils.getStringValue(relationshipMismatch.get("r_d_relationship")),  MyUtils.getStringValue(nodeType), "RelationshipMismatch"));		
+					}
 				}
 
 			}
@@ -108,7 +122,7 @@ public class RequirementValidation extends ValidationManager {
 	}
 	
 	
-	
+	// Sommelier 1.3
 	private HashMap<String, IRI> capabilityExistsMismatch(IRI template, IRI r_a, IRI ctx) throws IOException {
 		LOG.log(Level.INFO, "capabilityExistsMismatch: template:{0}, r_a:{1}, ctx:{2}", new Object[] {template.getLocalName(), r_a.getLocalName(), ctx.getLocalName()});
 
@@ -133,6 +147,7 @@ public class RequirementValidation extends ValidationManager {
 
 	}
 
+	// Sommelier 1.4
 	private HashMap<String, IRI> capabilityMatch(IRI template, IRI r_a, IRI ctx) throws IOException {
 		LOG.log(Level.INFO, "capabilityNotExistsCheck: template:{0}, r_a:{1}, ctx:{2}", new Object[] {template.getLocalName(), r_a.getLocalName(), ctx.getLocalName()});
 
@@ -157,7 +172,7 @@ public class RequirementValidation extends ValidationManager {
 
 	}
 
-
+	// Sommelier 1.2
 	private HashMap<String, IRI> nodeMismatch(IRI ctx, IRI r_a, IRI template) throws IOException {
 		LOG.log(Level.INFO, "nodeMismatch: ctx:{0}, r_a:{1}, template:{2}", new Object[] { ctx.getLocalName(),
 				r_a.getLocalName(), template.getLocalName()});
@@ -182,6 +197,7 @@ public class RequirementValidation extends ValidationManager {
 
 	}
 	
+	// Sommelier 1.5
 	private HashMap<String, IRI> relationshipMisMatch(IRI template, IRI r_a, IRI ctx) throws IOException {
 		LOG.log(Level.INFO, "capabilityExistsMismatch: template:{0}, r_a:{1}, ctx:{2}", new Object[] { template.getLocalName(),
 				r_a.getLocalName(), ctx.getLocalName()});
@@ -230,27 +246,80 @@ public class RequirementValidation extends ValidationManager {
 		return container;
 	}
 
-	// template, templateType, r_a
-	public Set<HashMap<String, IRI>> requirementDefinitions(HashMap<String, IRI> dto) throws IOException {
+	/*Get requirements node, capability, and relationship context separately so as to return the lowest context in the
+	*hierarchy for each requirement. e.g. requirement/host/node might be defined in many node types in the hierarchy*/
+	public HashMap<String, IRI> getRequirementContexts(HashMap<String, IRI> dto) throws IOException {
+		HashMap<String, IRI> contexts = new HashMap<String, IRI>();
+		IRI nodeType = dto.get("templateType");
+		contexts.put("nodeType", nodeType);
+		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/getReqNodeContext.sparql");
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] {
+				new SimpleBinding("r_a", dto.get("r_a")), new SimpleBinding("nodeType", nodeType) });
+		contexts.put("nodeContext", getLowestContext(result));
+		result.close();
+		
+		query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/getReqCapContext.sparql");
+		result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] {
+				new SimpleBinding("r_a", dto.get("r_a")), new SimpleBinding("nodeType", nodeType) });
+		contexts.put("capContext", getLowestContext(result));
+		result.close();
+		
+		query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/getReqRelContext.sparql");
+		result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] {
+				new SimpleBinding("r_a", dto.get("r_a")), new SimpleBinding("nodeType", nodeType) });
+		contexts.put("relContext", getLowestContext(result));
+		result.close();
+		
+		
+		return contexts;
+	}
+	
+	public IRI getLowestContext(TupleQueryResult result) {
+		Set<HashMap<String, IRI>> container = new HashSet<>();
+		Set<IRI> resources = new HashSet<IRI>();
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI ctx = (IRI) bindingSet.getBinding("ctx").getValue();
+			IRI resource = (IRI) bindingSet.getBinding("resource").getValue();
+			
+			HashMap<String, IRI> nodeTypeRequirements = new HashMap<String, IRI>();
+			
+			nodeTypeRequirements.put("ctx", ctx);
+			nodeTypeRequirements.put("resource", resource);
+			
+			resources.add(resource);
+			
+			container.add(nodeTypeRequirements);
+		}
+		result.close();
+		
+		
+		IRI lowestR_AContext = null;
+		if (container.size() > 1) {
+			IRI lowestNode = InferencesUtil.getLowestSubclass(kb, resources);
+			
+			for (HashMap<String, IRI> req: container) {
+				IRI resource = req.get("resource");
+				if (resource.equals(lowestNode)) {
+					lowestR_AContext = req.get("ctx");
+					break;
+				}
+					
+			}
+		} else if (container.size() == 1) {
+			lowestR_AContext = container.iterator().next().get("ctx");
+		}
+		
+		return lowestR_AContext;
+	}
+	
+	// Sommelier 1.1
+	public boolean requirementDefinitions(HashMap<String, IRI> dto) throws IOException {	
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/requirementDefinitionExists.sparql");
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] {
 				new SimpleBinding("r_a", dto.get("r_a")), new SimpleBinding("nodeType", dto.get("templateType")) });
 
-		Set<HashMap<String, IRI>> container = new HashSet<>();
-
-		while (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			IRI nodeType = (IRI) bindingSet.getBinding("nodeType").getValue();
-			IRI ctx = (IRI) bindingSet.getBinding("ctx").getValue();
-
-			HashMap<String, IRI> nodeTypeRequirements = new HashMap<String, IRI>();
-			nodeTypeRequirements.put("nodeType", nodeType);
-			nodeTypeRequirements.put("ctx", ctx);
-
-			container.add(nodeTypeRequirements);
-		}
-		result.close();
-		return container;
+		return result.hasNext();
 	}
 
 	public boolean condition1_1() {

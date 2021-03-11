@@ -91,7 +91,7 @@ public class SubmitRMService extends AbstractService  {
 				return ares.getResponse();
 		}
 		
-		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
+		KB kb = new KB(configInstance.getGraphdb(),  KB.REPOSITORY);
 		
 		DSLRMMappingService m = new DSLRMMappingService(kb, rmTTL, rmURI, namespace, rmDSL, name);
 		IRI rmUri = null;
