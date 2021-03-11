@@ -830,7 +830,6 @@ public class KBApi {
 						if (fileUrlValue != null)
 							p.setValue(fileUrlValue, kb);
 					}
-				}
 			} else if (parameter.equals("occurrences")){
 				Map<String, String> limitsMap = _getOccurrencesLimits(_classifier);
 				
