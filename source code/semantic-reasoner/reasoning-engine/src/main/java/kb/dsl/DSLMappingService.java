@@ -1002,8 +1002,8 @@ public class DSLMappingService {
 		modifiedModels.addAll(r.getModifiedModels());
 		
 		//Sommelier validations
-		ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
-		validationModels.addAll(v.validate());
+		//ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
+		//validationModels.addAll(v.validate());
 		
 		if (!validationModels.isEmpty()) {
 			KBApi api = new KBApi(kb);
