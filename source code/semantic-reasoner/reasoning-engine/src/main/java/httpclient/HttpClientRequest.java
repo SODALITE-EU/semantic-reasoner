@@ -60,7 +60,7 @@ public class HttpClientRequest {
 	
 			
 	public static final String BUG_PREDICTOR_SERVICE = "bug-predictor-api/v0.1/bugs/tosca/jsonv2";
-	public static final String INTROSPECT_SERVICE = "auth/realms/SODALITE/protocol/openid-connect/token/introspect";
+	public static final String INTROSPECT_SERVICE = "/auth/realms/SODALITE/protocol/openid-connect/token/introspect";
 	
 	public static void setKeyCloak(String urlbase) {
 		keycloak = urlbase;
@@ -113,8 +113,8 @@ public class HttpClientRequest {
 	}
 	
 	public static List<String> validateToKen(String token) throws URISyntaxException, MyRestTemplateException, AuthException {
-		LOG.info("validateToKen:");
 		String url = keycloak + INTROSPECT_SERVICE;
+		LOG.info("validateToKen in url {}", url);
 		
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 
