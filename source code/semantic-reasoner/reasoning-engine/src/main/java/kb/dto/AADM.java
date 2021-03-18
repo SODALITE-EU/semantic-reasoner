@@ -26,7 +26,9 @@ public class AADM extends Resource {
 	String version;
 
 	Set<NodeFull> templates;
-
+	
+	boolean forRefactorer;
+	
 	public AADM(IRI iri) {
 		super(iri);
 		templates = new HashSet<NodeFull>();
@@ -81,6 +83,14 @@ public class AADM extends Resource {
 	public void addTemplate(NodeFull n) {
 		templates.add(n);
 	}
+	
+	public boolean getForRefactorer() {
+		return this.forRefactorer;
+	}
+
+	public void setForRefactorer(boolean forRefactorer) {
+		this.forRefactorer = forRefactorer;
+	}
 
 	@Override
 	public JsonElement serialise() throws IOException {
@@ -117,7 +127,8 @@ public class AADM extends Resource {
 			aadm.add(nodeFull.uri, serialise);
 
 //			System.out.println("---->" + nodeFull.relevantUris);
-			list.addAll(getNodes(nodeFull.relevantUris));
+			if (!this.forRefactorer)
+				list.addAll(getNodes(nodeFull.relevantUris));
 			LOG.info("list: {}", list.size());
 			LOG.info("bag: {}", bag.size());
 		}
