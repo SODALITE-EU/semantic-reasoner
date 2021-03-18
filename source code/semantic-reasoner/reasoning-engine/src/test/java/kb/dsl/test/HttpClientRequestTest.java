@@ -53,7 +53,7 @@ public class HttpClientRequestTest {
 				.willReturn(aResponse().withHeader("Content-Type", "text/plain")
 						.withStatus(200)
 						.withBodyFile("warnings.json")));
-		  wireMockServer.stubFor(post(urlEqualTo("/" + HttpClientRequest.INTROSPECT_SERVICE))
+		  wireMockServer.stubFor(post(urlEqualTo(HttpClientRequest.INTROSPECT_SERVICE))
 				  .willReturn(aResponse().withHeader("Content-Type", "application/json")
 						  .withStatus(200)
 						  .withBody("{\"active\" : false}")));
@@ -75,7 +75,7 @@ public class HttpClientRequestTest {
 	  
 	@Test
 	public void testValidateToKenFalse() throws URISyntaxException, ParseException {
-		HttpClientRequest.setKeyCloak("http://localhost:" + wireMockPort+"/");
+		HttpClientRequest.setKeyCloak("http://localhost:" + wireMockPort);
 		try {
 			HttpClientRequest.validateToKen("testtoken");
 		} catch (AuthException e) {
