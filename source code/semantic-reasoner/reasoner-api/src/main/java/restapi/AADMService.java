@@ -43,11 +43,16 @@ public class AADMService extends AbstractService {
 	public Response getAADM(
 			@ApiParam(
 					value = "The Id (IRI) of the AADM",
-					required = true) @QueryParam("aadmIRI") String aadmIRI)
+					required = true) @QueryParam("aadmIRI") String aadmIRI,
+			@ApiParam(
+					value = "boolean value representing if it is called from the refactorer or the IaC builder",
+					required = true,
+					defaultValue = "false") @QueryParam("refactorer") boolean refactorer)
 			throws IOException {
 
 		KBApi api = new KBApi();
 		AADM aadm = api.getAADM(aadmIRI);
+		aadm.setForRefactorer(refactorer);
 		api.shutDown();
 
 		JsonElement convert = AADMJsonFormat.convert(aadm.serialise());
@@ -58,7 +63,7 @@ public class AADMService extends AbstractService {
 	public static void main(String[] args) throws IOException {
 		AADMService s = new AADMService();
 		Response aadm = s.getAADM(
-				"https://www.sodalite.eu/ontologies/snow-blueprint-containerized-OS/AbstractApplicationDeployment_1");
+				"https://www.sodalite.eu/ontologies/snow-blueprint-containerized-OS/AbstractApplicationDeployment_1", false);
 		LOG.info("AADM = {}", aadm.getEntity().toString());
 	}
 
