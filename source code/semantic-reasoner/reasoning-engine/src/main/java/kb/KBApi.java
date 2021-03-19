@@ -258,7 +258,12 @@ public class KBApi {
 		String sparql = MyUtils
 				.fileToString(!isTemplate ? "sparql/getCapabilities.sparql" : "sparql/getCapabilitiesTemplate.sparql");
 		String query = KB.PREFIXES + sparql;
-
+		String propertyQuery = null;
+		if (isTemplate)	{
+			 String propSparql = MyUtils
+				.fileToString("sparql/getPropertiesFromCapabilities.sparql");
+			  propertyQuery = KB.PREFIXES + propSparql;
+		}
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
 
@@ -276,7 +281,29 @@ public class KBApi {
 				LOG.info("whereDefined: {}", whereDefined);
 				c.setHostDefinition(whereDefined);
 			}
+			
+			if (isTemplate) {
+				Set<Property> properties = new HashSet<>();
+				TupleQueryResult result2 = QueryUtil.evaluateSelectQuery(kb.getConnection(), propertyQuery,
+						new SimpleBinding("var",  concept));
+				while (result2.hasNext()) {
+					BindingSet bindingSet2 = result2.next();
+					IRI p2 = (IRI) bindingSet2.getBinding("property").getValue();
+					IRI propConcept = (IRI) bindingSet2.getBinding("concept").getValue();
+					Value _value = bindingSet2.hasBinding("value") ? bindingSet2.getBinding("value").getValue() : null;
 
+					Property a = new Property(p2);
+					a.setClassifiedBy(propConcept);
+					if (_value != null)
+						a.setValue(_value, kb);
+					properties.add(a);
+				}
+				if (!properties.isEmpty()) {
+					c.setProperties(properties);
+				}
+				result2.close();
+			}
+			
 			capabilities.add(c);
 		}
 		result.close();

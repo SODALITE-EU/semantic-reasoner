@@ -101,7 +101,7 @@ public class GetResources {
 	
 
 	
-	public static NamedResource setNamedResource (String namespace, String value) {
+	public static NamedResource setNamedResource (String namespace, String value, KB kb) {
 		NamedResource n = new NamedResource();
 		
 		String namespaceRef = MyUtils.getNamespaceFromReference(value);
@@ -109,9 +109,8 @@ public class GetResources {
 		if (namespaceRef != null) {
 			namespaceRef = namespace + namespaceRef + "/";
 			resource = MyUtils.getReferenceFromNamespace(resource);
-			n.setResourceURI(namespaceRef + resource);
 		}
-		
+		n.setResourceURI(MyUtils.getFullResourceIRI(value, kb));
 		n.setNamespace(namespaceRef);
 		n.setResource(resource);
 		return n;

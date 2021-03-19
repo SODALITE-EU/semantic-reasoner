@@ -37,6 +37,7 @@ public class ModelGenerator extends ExchangeGenerator {
 	}
 	
 	public  Set<String> convertConceptToExchange(Set<? extends Parameter> concepts, String concept) {
+		LOG.info("concepts: {}, concept: {}", concepts, concept);
 		String exchangeOneConceptModel = "";
 		String exchangeParameterModel = "";
 		Set<String> exchangeConcepts = new HashSet<>();

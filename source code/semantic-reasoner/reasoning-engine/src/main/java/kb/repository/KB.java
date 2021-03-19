@@ -50,15 +50,15 @@ public class KB {
     public static final String OWL_PREFIX = "PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n";
     public static final String SODA_PREFIX = "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/>\r\n";		
 
-    
+    public static final String BASE_NAMESPACE = "https://www.sodalite.eu/ontologies/workspace/1/";
     public static final String DCTERMS = "http://purl.org/dc/terms/";
     public static final String DUL = "http://www.loa-cnr.it/ontologies/DUL.owl#";
     public static final String TOSCA = "https://www.sodalite.eu/ontologies/tosca/";
     public static final String SODA = "https://www.sodalite.eu/ontologies/sodalite-metamodel/";
     public static final String EXCHANGE = "https://www.sodalite.eu/ontologies/exchange/";
-    public static final String GLOBAL = "https://www.sodalite.eu/ontologies/global/";
+    public static final String GLOBAL = BASE_NAMESPACE +"global/";
     
-    public static final String BASE_NAMESPACE = "https://www.sodalite.eu/ontologies/workspace/1/";
+    
 
 
     SodaliteRepository manager;

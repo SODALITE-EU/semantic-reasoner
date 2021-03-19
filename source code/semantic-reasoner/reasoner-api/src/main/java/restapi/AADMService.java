@@ -46,7 +46,7 @@ public class AADMService extends AbstractService {
 					required = true) @QueryParam("aadmIRI") String aadmIRI,
 			@ApiParam(
 					value = "boolean value representing if it is called from the refactorer or the IaC builder",
-					required = true,
+					required = false,
 					defaultValue = "false") @QueryParam("refactorer") boolean refactorer)
 			throws IOException {
 

@@ -141,7 +141,10 @@ public class SubmitTOSCAService extends AbstractService {
 			LOG.error(e.getMessage(), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("There was an internal server error").build();
 		} finally {
-			rm.shutDown();
+			if (rm != null)
+				rm.shutDown();
+			if (aadmTTL != null)
+				aadm.shutDown();
 		}
 		
 		
