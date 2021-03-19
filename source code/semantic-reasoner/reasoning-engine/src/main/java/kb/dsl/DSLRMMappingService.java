@@ -195,7 +195,7 @@ public class DSLRMMappingService {
 	private void createTypes() throws MappingException {
 		for (Resource _node : rmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Type"))
 				.subjects()) {
-			IRI node = (IRI) _node;
+			IRI node = (IRI) _node;			
 			
 			Optional<Literal> _nodeName = Models
 					.objectLiteral(rmModel.filter(node, factory.createIRI(KB.EXCHANGE + "name"), null));
@@ -235,6 +235,10 @@ public class DSLRMMappingService {
 				// add node to the rm container instance
 				IRI nodeKB = factory.createIRI(namespace + nodeName); // this will be always new
 				nodeBuilder.add(nodeKB, factory.createIRI(KB.SODA + "hasName"), nodeName);
+				
+				//assign kind of type - node_types e.t.c needed by IaC builder
+				String kindOfType = MyUtils.getStringPattern(node.getLocalName(), "([A-Za-z]+)_\\d+");
+				nodeBuilder.add(nodeKB, factory.createIRI(KB.SODA + "hasClass"), KBConsts.AADM_JSON_CLASSES.get(kindOfType));
 			
 				IRI kbNodeType = GetResources.getKBNodeType(n , "tosca:tosca.entity.Root", kb);
 			

@@ -1264,6 +1264,27 @@ public class KBApi {
 		return optimizations.isEmpty() ? null : optimizations;
 	}
 	
+	public String getClassForType(String node) {
+		String classType = null;
+		String sparql = "select ?class where { \r\n" + 
+				"\t?var a soda:SodaliteSituation;\r\n" + 
+				"\ta owl:Class;\r\n" + 
+				"\t\tsoda:hasClass ?class\r\n" + 
+				"}\r\n";
+		
+		String query = KB.OWL_PREFIX + KB.SODA_PREFIX + sparql;
+		
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("var", kb.factory.createIRI(node)));
+
+		if (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			classType = bindingSet.getBinding("class").getValue().stringValue();
+		}
+		result.close();
+		
+		return classType;
+	}
 	
 	public AADM getAADM(String aadmId) throws IOException {
 		LOG.info("AADM: {}", aadmId);

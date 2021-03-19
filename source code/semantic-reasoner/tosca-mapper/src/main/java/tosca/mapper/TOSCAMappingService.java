@@ -63,11 +63,16 @@ public class TOSCAMappingService {
 	            	case "description":
 	            		break;
 	            	case "data_types":
+	            		nodes.addAll(parseTypes(v, ":DataType_"));
+	            		break;
 	            	case "node_types":
+	            		nodes.addAll(parseTypes(v, ":NodeType_"));
+	            		break;
 	            	case "capability_types":
+	            		nodes.addAll(parseTypes(v, ":CapabilityType_"));
+	            		break;
 	            	case "relationship_types":
-	            		Set<Node> nodesPerCategory = parseTypes(v);
-	            		nodes.addAll(nodesPerCategory);
+	            		nodes.addAll(parseTypes(v, ":RelationshipType_"));
 	            		break;
 	            	case "topology_template":
 	            		Map<?,?> templatesMap =  (Map<?,?>) v;
@@ -90,13 +95,13 @@ public class TOSCAMappingService {
 		
 	 }
 	 
-	public Set<Node> parseTypes(Object value) {
+	public Set<Node> parseTypes(Object value, String classType) {
 		Set<Node> nodes = new HashSet<>();
-		System.err.println("parseTypes");
+		LOG.info("parseTypes: " + classType);
 		Map<?,?> typeMap =  (Map<?,?>) value;
 		typeMap.forEach((k, v) -> {
 				String name = k.toString();
-				Node node = new Node(name);
+				Node node = new Node(name, classType);
 				Map<?,?> descriptionMap =  (Map<?,?>) v;
 				descriptionMap.forEach((k2, v2) ->  {
 	            	String key2 = k2.toString();
@@ -135,7 +140,7 @@ public class TOSCAMappingService {
 	
 	public Set<Node> parseTemplates(Object value) {
 		Set<Node> nodes = new HashSet<>();
-		System.err.println("parseTemplates");
+		LOG.info("parseTemplates");
 		Map<?,?> typeMap =  (Map<?,?>) value;
 		typeMap.forEach((k, v) -> {
 				String name = k.toString();

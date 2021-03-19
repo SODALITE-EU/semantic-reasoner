@@ -30,6 +30,8 @@ public class NodeFull extends Node {
 	Set<Property> inputs;	
 	Optimization optimization;
 
+	//only for types
+	String classType;
 
 
 	public boolean isTemplate = false, isInput = false;
@@ -60,6 +62,10 @@ public class NodeFull extends Node {
 
 		// inputs
 		inputs = api.getInputs(uri.toString(), false);
+		
+		if (!isTemplate())
+			classType = api.getClassForType(uri);
+			
 	}
 
 	public boolean isTemplate() {
@@ -79,6 +85,8 @@ public class NodeFull extends Node {
 			data.addProperty("type", this.type.toString());
 			relevantUris.add(this.type.toString());
 			data.addProperty("isNodeTemplate", isTemplate);
+			if (!isTemplate() && classType != null)
+				data.addProperty("class", classType);
 		}
 		// properties
 		JsonArray array = new JsonArray();

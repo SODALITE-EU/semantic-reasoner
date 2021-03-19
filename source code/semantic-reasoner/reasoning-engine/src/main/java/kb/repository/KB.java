@@ -47,6 +47,10 @@ public class KB {
     public static final String SODA_DUL_PREFIXES = "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/> \r\n" +
 			"PREFIX DUL: <http://www.loa-cnr.it/ontologies/DUL.owl#> \r\n";
     
+    public static final String OWL_PREFIX = "PREFIX owl: <http://www.w3.org/2002/07/owl#>\r\n";
+    public static final String SODA_PREFIX = "PREFIX soda: <https://www.sodalite.eu/ontologies/sodalite-metamodel/>\r\n";		
+
+    
     public static final String DCTERMS = "http://purl.org/dc/terms/";
     public static final String DUL = "http://www.loa-cnr.it/ontologies/DUL.owl#";
     public static final String TOSCA = "https://www.sodalite.eu/ontologies/tosca/";
