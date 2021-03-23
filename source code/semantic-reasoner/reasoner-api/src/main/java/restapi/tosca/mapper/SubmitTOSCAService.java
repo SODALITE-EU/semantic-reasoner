@@ -10,6 +10,8 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -20,7 +22,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpRequest;
 
+import httpclient.AuthConsts;
+import httpclient.AuthUtil;
+import httpclient.dto.AuthResponse;
 import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +40,7 @@ import kb.repository.KB;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.ValidationModel;
 import restapi.AbstractService;
+import restapi.util.SharedUtil;
 import tosca.mapper.TOSCAMappingService;
 
 
@@ -60,7 +67,6 @@ public class SubmitTOSCAService extends AbstractService {
 	 * @param rmURI  A unique rm uri
 	 * @param rmNamespace The namespace where the resource model will be saved
 	 * @param aadmNamespace The namespace where the aadm will be saved
-	 * @param token The token
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
 	 * @throws IOException If your input format is invalid
@@ -78,8 +84,18 @@ public class SubmitTOSCAService extends AbstractService {
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @DefaultValue("") @FormParam("rmURI") String rmURI,
 			@ApiParam(value = "namespace for rm", required = false) @DefaultValue("") @FormParam("rmNamespace") String rmNamespace,
 			@ApiParam(value = "namespace for aadm", required = false) @DefaultValue("") @FormParam("aadmNamespace") String aadmNamespace,
-			@ApiParam(value = "token") @FormParam("token") String token)
+			@Context HttpHeaders headers)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
+		
+		if(AuthUtil.authentication()) {
+			String token = AuthUtil.getTokenFromBearerHeader(headers.getRequestHeader(HttpHeaders.AUTHORIZATION));
+			
+			AuthResponse ares = SharedUtil.authForWriteRolesFromNamespaces(rmNamespace, aadmNamespace, token);
+			if (ares.getResponse() != null)
+				return ares.getResponse();
+		}
+		
+		
 		
 		JSONObject response = new JSONObject();
 		LOG.info("modelTOSCA = {}, rmNamespace = {}, aadmNamespace = {}", modelTOSCA, rmNamespace, aadmNamespace);

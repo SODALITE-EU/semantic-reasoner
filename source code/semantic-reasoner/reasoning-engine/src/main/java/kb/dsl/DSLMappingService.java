@@ -284,7 +284,7 @@ public class DSLMappingService {
 			validationModels.addAll(v.validate());
 			
 			ConstraintsPropertyValidation c = new ConstraintsPropertyValidation(templateName, fullTemplateType, propertyValuesForValidation, kb);
-			//validationModels.addAll(c.validate());
+			validationModels.addAll(c.validate());
 			
 			// attributes
 			definedAttributesForValidation.clear();

@@ -119,8 +119,8 @@ public class ConstraintsPropertyValidation {
 						case VALID_VALUES:
 							LOG.info("valid_values: {}",  c.list);
 							if (!ConstraintsEnum.VALID_VALUES.compare(templateValue, c.list, c.constType)) {
-								//models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
-									//	c.property, "template value: " + templateValue + " not less or equal than constraint definition: " + c.value));	
+								models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
+										c.property, "template value: " + templateValue + " not included in valid values: " + c.list));	
 							}
 						break;
 						default:
