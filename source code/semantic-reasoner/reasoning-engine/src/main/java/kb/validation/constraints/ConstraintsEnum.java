@@ -3,9 +3,6 @@ package kb.validation.constraints;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import kb.repository.KB;
 
 public enum ConstraintsEnum {
@@ -53,7 +50,7 @@ public enum ConstraintsEnum {
 				Set<String> validValuesItems = b.stream().map(String::valueOf).collect(Collectors.toSet());
 				
 				System.err.println("valid_values:" + validValuesItems);
-				return validValuesItems.contains(a.toString());
+				return validValuesItems.contains(a);
 				
 			}
 		

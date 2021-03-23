@@ -92,11 +92,11 @@ public class SharedUtil {
 	public static AuthResponse authForWriteRolesFromNamespaces(String rmNamespace, String aadmNamespace, String token) throws URISyntaxException {
 		List<String> roles = new ArrayList<>();
 		
-		rmNamespace = rmNamespace == null ? AuthConsts.GLOBAL:rmNamespace;
-		aadmNamespace = aadmNamespace == null ? AuthConsts.GLOBAL:aadmNamespace;
+		String localRmNamespace = rmNamespace == null ? AuthConsts.GLOBAL:rmNamespace;
+		String localAadmNamespace = aadmNamespace == null ? AuthConsts.GLOBAL:aadmNamespace;
 		
-		roles.addAll(AuthUtil.createRoleFromNamespace(rmNamespace, AuthConsts.RM_W));
-		roles.addAll(AuthUtil.createRoleFromNamespace(aadmNamespace, AuthConsts.AADM_W));
+		roles.addAll(AuthUtil.createRoleFromNamespace(localRmNamespace, AuthConsts.RM_W));
+		roles.addAll(AuthUtil.createRoleFromNamespace(localAadmNamespace, AuthConsts.AADM_W));
 	
 		return authorization(roles, token, true);
 	}
