@@ -21,10 +21,6 @@ public final class KBConsts {
 	public static final boolean AADM_JSON = true;
 	public static final boolean AADM = true;
 	
-	private KBConsts() {
-		throw new IllegalStateException("KBConsts class");
-	}	
-	
 	static {
        	TYPES.put("data","tosca.datatypes.Root");
        	TYPES.put("node", "tosca.nodes.Root");
@@ -33,4 +29,21 @@ public final class KBConsts {
        	TYPES.put("interface", "tosca.interfaces.Root");
        	TYPES.put("policy", "tosca.policies.Root");
      }
+	
+	public static final Map<String,String> AADM_JSON_CLASSES = new HashMap<String, String>();
+	static {
+		AADM_JSON_CLASSES.put("NodeType", "node_types");
+		AADM_JSON_CLASSES.put("DataType", "data_types");
+		AADM_JSON_CLASSES.put("GroupType", "group_types");
+		AADM_JSON_CLASSES.put("CapabilityType", "capability_types");
+		AADM_JSON_CLASSES.put("RelationshipType", "relationship_types");
+		AADM_JSON_CLASSES.put("InterfaceType", "interface_types");
+		AADM_JSON_CLASSES.put("PolicyType", "policy_types");
+		AADM_JSON_CLASSES.put("ArtifactType", "artifact_types");
+		
+	}
+	
+	private KBConsts() {
+		throw new IllegalStateException("KBConsts class");
+	}	
 }

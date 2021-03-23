@@ -190,7 +190,7 @@ public class MyUtils {
 	}
 	
 	/* resource: docker/sodalite.nodes.Dockerhost
-	 * https://www.sodalite.eu/ontologies/workspace/1/docker/ is returned
+	 * https://www.sodalite.eu/ontologies/workspace/1/docker/sodalite.nodes.Dockerhost is returned
 	*/
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;

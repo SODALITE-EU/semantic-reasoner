@@ -27,7 +27,7 @@ public class RMGenerator extends ModelGenerator {
 			LOG.info("node name = {}", n.getName());
 			LOG.info("node type = {}", n.getOfType());
 			
-			exchangeTypeModel += ExchangeConsts.TYPE_PREFIX + node_type_counter++ + "\n";
+			exchangeTypeModel += n.getClassType() + node_type_counter++ + "\n";
 			exchangeTypeModel += ExchangeConsts.EXCHANGE_RDF_TYPE;
 			exchangeTypeModel += ExchangeConsts.EXCHANGE_NAME + " \"" + n.getName() + "\" ;\n";
 			exchangeTypeModel += ExchangeConsts.EXCHANGE_DERIVES_FROM + " \"" + n.getOfType() + "\" ;\n";

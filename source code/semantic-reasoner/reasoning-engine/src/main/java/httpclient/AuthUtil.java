@@ -103,4 +103,17 @@ public class AuthUtil {
 		return roles;
 	}
 	
+	public static String getTokenFromBearerHeader(List<String> authHeaders) {
+		LOG.info("authHeaders", authHeaders.get(0));
+		String[] authparts = authHeaders.get(0).split(" ");
+		String token = null;
+		
+		if (!authparts[0].equals("Bearer"))
+			LOG.error("not bearer: {}", authparts[0]);
+		else
+			token = authparts[1];
+		LOG.info("token: {}", token);
+		return token;
+	}
+	
 }

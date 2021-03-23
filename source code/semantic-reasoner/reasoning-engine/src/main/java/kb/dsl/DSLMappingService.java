@@ -232,11 +232,12 @@ public class DSLMappingService {
 			
 			LOG.info("Name: {}, type: {}", templateName, templateType);
 			
-			NamedResource fullTemplateType = GetResources.setNamedResource(templatews, templateType);
+			NamedResource fullTemplateType = GetResources.setNamedResource(templatews, templateType, kb);
 			//this.namespaceOfType = n.getNamespace();
 			
 			templateType = fullTemplateType.getResource();
 			String resourceIRI = fullTemplateType.getResourceURI() ;
+			LOG.info("resourceIRI: {}", resourceIRI);
 			if (resourceIRI != null)
 				namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, resourceIRI);
 			
@@ -279,7 +280,7 @@ public class DSLMappingService {
 			}
 			// validation
 			RequiredPropertyValidation v = new RequiredPropertyValidation(templateName,
-					factory.createLiteral(templateType), definedPropertiesForValidation, kb);
+					factory.createIRI(resourceIRI), definedPropertiesForValidation, kb);
 			validationModels.addAll(v.validate());
 			
 			ConstraintsPropertyValidation c = new ConstraintsPropertyValidation(templateName, fullTemplateType, propertyValuesForValidation, kb);
@@ -466,7 +467,7 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());			
+			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);			
 			IRI kbTemplate = getKBTemplate(n);
 			if (kbTemplate == null) {
 				if (templateNames.contains(n.getResource()))
@@ -525,7 +526,7 @@ public class DSLMappingService {
 					.orElse(null);
 
 			if (value != null) { // this means there is no parameters
-				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
 				IRI kbTemplate = getKBTemplate(n);
 				if (kbTemplate == null) {
 					if (templateNames.contains(n.getResource()))
@@ -714,7 +715,7 @@ public class DSLMappingService {
 			
 			//in type:, there is a node type or a string. e.g. capabilities/network/type/tosca.capabilities.Network, or capabilities/os/type/linux, so no error to be thrown
 			if (capabilityProperty.getLocalName().equals("type")) {			
-				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
 				IRI kbTemplate = getKBTemplate(n);
 				if (kbTemplate == null) {
 					if (templateNames.contains(n.getResource())) {
@@ -806,7 +807,7 @@ public class DSLMappingService {
 
 		if (value != null) { // this means there is no parameters
 			if (triggerName.equals("node")) {
-				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
 				IRI kbNode = getKBTemplate(n);
 				if (kbNode == null) {
 					if (templateNames.contains(n.getResource()))
@@ -872,7 +873,7 @@ public class DSLMappingService {
 			aadmBuilder.add(list, RDF.TYPE, "tosca:List");
 			
 			
-			NamedResource n = GetResources.setNamedResource(templatews, l.getLabel());
+			NamedResource n = GetResources.setNamedResource(templatews, l.getLabel(), kb);
 			IRI kbNode = getKBTemplate(n);
 			if (kbNode == null) {
 				if (templateNames.contains(n.getResource()))

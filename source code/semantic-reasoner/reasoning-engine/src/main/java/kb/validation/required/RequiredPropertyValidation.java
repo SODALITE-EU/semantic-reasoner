@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
@@ -20,7 +19,7 @@ import kb.validation.exceptions.models.RequiredPropertyAttributeModel;
 public class RequiredPropertyValidation {
 	private static final Logger LOG = LoggerFactory.getLogger(RequiredPropertyValidation.class.getName());
 
-	Literal templateType;
+	IRI templateType;
 	String templateName;
 	Set<String> exchangeProperties;
 	KB kb;
@@ -28,7 +27,7 @@ public class RequiredPropertyValidation {
 
 	List<RequiredPropertyAttributeModel> models = new ArrayList<RequiredPropertyAttributeModel>();
 
-	public RequiredPropertyValidation(String templateName, Literal templateType, Set<String> exchangeProperties,
+	public RequiredPropertyValidation(String templateName, IRI templateType, Set<String> exchangeProperties,
 			KB kb) {
 		this.templateType = templateType;
 		this.templateName = templateName;
@@ -41,7 +40,7 @@ public class RequiredPropertyValidation {
 		// for each node template, find the node type and get the required properties
 		String query = KB.PREFIXES + optionalPropertiesQuery;
 		List<String> schemaProperties = Iterations
-				.asSet(QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("var", templateType)))
+				.asSet(QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("resource", templateType)))
 				.stream()
 				.map(x -> ((IRI) x.getBinding("property").getValue()).getLocalName()).collect(Collectors.toList());
 
@@ -69,7 +68,6 @@ public class RequiredPropertyValidation {
 	private String optionalPropertiesQuery = "select distinct ?property\r\n" +
 			"where {\r\n" +
 			"	?resource soda:hasInferredContext ?context .\r\n" +
-			"	FILTER (strends(str(?resource), ?var)).\r\n" +
 			"	?context tosca:properties ?concept .\r\n" +
 			"	?concept DUL:classifies ?property .\r\n" +
 			"	{\r\n" +

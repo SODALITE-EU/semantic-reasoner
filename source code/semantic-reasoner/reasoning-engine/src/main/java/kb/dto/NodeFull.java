@@ -30,6 +30,8 @@ public class NodeFull extends Node {
 	Set<Property> inputs;	
 	Optimization optimization;
 
+	//only for types
+	String classType;
 
 
 	public boolean isTemplate = false, isInput = false;
@@ -60,6 +62,10 @@ public class NodeFull extends Node {
 
 		// inputs
 		inputs = api.getInputs(uri.toString(), false);
+		
+		if (!isTemplate())
+			classType = api.getClassForType(uri);
+			
 	}
 
 	public boolean isTemplate() {
@@ -79,6 +85,8 @@ public class NodeFull extends Node {
 			data.addProperty("type", this.type.toString());
 			relevantUris.add(this.type.toString());
 			data.addProperty("isNodeTemplate", isTemplate);
+			if (!isTemplate() && classType != null)
+				data.addProperty("class", classType);
 		}
 		// properties
 		JsonArray array = new JsonArray();
@@ -112,7 +120,21 @@ public class NodeFull extends Node {
 		// capabilities
 		array = new JsonArray();
 		for (Capability c : capabilities) {
-			array.add(c.serialise());
+			if (isTemplate && c.getProperties() != null) {
+				JsonArray propArray = new JsonArray();
+				for (Property p : c.getProperties()) {
+					propArray.add(p.serialise());
+					relevantUris.addAll(p.relevantUris);
+				}
+				
+				JsonObject propsWithinCaps = new JsonObject();
+				propsWithinCaps.add("properties", propArray);
+				JsonObject cap =  new JsonObject();
+				cap.add(c.getUri(), propsWithinCaps);
+				array.add(cap);
+			} else {
+				array.add(c.serialise());
+			}
 			relevantUris.addAll(c.relevantUris);
 		}
 		if (!capabilities.isEmpty())

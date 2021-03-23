@@ -14,18 +14,33 @@ public class Node extends Resource {
 	Set<Operation> operations;*/
 	
 	String ofType;
+	//needed for adding the class info in the ontology - node_types, relationship_types
+	String classType;
 	
 		
 	public Node(String name) {
 		super(name);
 	}
 
+	public Node(String name, String classType) {
+		super(name);
+		this.classType = classType;
+	}
+	
 	public String getOfType() {
 		return this.ofType;
 	}
 	
 	public void setOfType(String ofType) {
 		this.ofType = ofType;
+	}
+	
+	public String getClassType() {
+		return this.classType;
+	}
+	
+	public void setClassType(String classType) {
+		this.classType = classType;
 	}
 	
 	public Set<Property> getProperties() {

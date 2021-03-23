@@ -195,7 +195,7 @@ public class DSLRMMappingService {
 	private void createTypes() throws MappingException {
 		for (Resource _node : rmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Type"))
 				.subjects()) {
-			IRI node = (IRI) _node;
+			IRI node = (IRI) _node;			
 			
 			Optional<Literal> _nodeName = Models
 					.objectLiteral(rmModel.filter(node, factory.createIRI(KB.EXCHANGE + "name"), null));
@@ -223,8 +223,9 @@ public class DSLRMMappingService {
 			
 			LOG.info("Name: {}, type: {}", nodeName, nodeType);
 			
-			NamedResource n = GetResources.setNamedResource(nodews, nodeType);
+			NamedResource n = GetResources.setNamedResource(nodews, nodeType, kb);
 			String resourceIRI = n.getResourceURI() ;
+			LOG.info("resourceIRI: {}", resourceIRI);
 			if (resourceIRI != null)
 				namespacesOfType = GetResources.getInheritedNamespacesFromType(kb, resourceIRI);
 			nodeType = n.getResource();
@@ -235,6 +236,10 @@ public class DSLRMMappingService {
 				// add node to the rm container instance
 				IRI nodeKB = factory.createIRI(namespace + nodeName); // this will be always new
 				nodeBuilder.add(nodeKB, factory.createIRI(KB.SODA + "hasName"), nodeName);
+				
+				//assign kind of type - node_types e.t.c needed by IaC builder
+				String kindOfType = MyUtils.getStringPattern(node.getLocalName(), "([A-Za-z]+)_\\d+");
+				nodeBuilder.add(nodeKB, factory.createIRI(KB.SODA + "hasClass"), KBConsts.AADM_JSON_CLASSES.get(kindOfType));
 			
 				IRI kbNodeType = GetResources.getKBNodeType(n , "tosca:tosca.entity.Root", kb);
 			
@@ -387,7 +392,7 @@ public class DSLRMMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
+			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
 			IRI kbNode = getKBNode(n);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
@@ -465,7 +470,7 @@ public class DSLRMMappingService {
 				if ((i = Ints.tryParse(value.stringValue())) != null) {
 					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 				} else {
-						NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
+						NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
 						IRI kbNode = getKBNode(n);
 						if (kbNode == null) {
 							// throw new Exception("Cannot find node: " + value);
@@ -521,7 +526,7 @@ public class DSLRMMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
+			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
 			IRI kbNode = getKBNode(n);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
@@ -600,7 +605,7 @@ public class DSLRMMappingService {
 
 		if (value != null) { // this means there is no parameters
 			if (interfaceName!=null && (interfaceName.equals("type"))) {
-				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
@@ -686,7 +691,7 @@ public class DSLRMMappingService {
 		if (value != null) { // this means there is no parameters
 			//probably for capability and requirement different handling needed, check event_fitler_definition in tosca yaml 1.3
 			if (triggerName!=null && triggerName.equals("node")) {
-				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
@@ -778,7 +783,7 @@ public class DSLRMMappingService {
 			LOG.info("-----ListValue---- = {}", listValue);
 			
 			if (value != null) { // this means there is no parameters
-				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel());
+				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
 				LOG.info("namespacews = {}", nodews);
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
@@ -795,7 +800,7 @@ public class DSLRMMappingService {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 				nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 				nodeBuilder.add(list, RDF.TYPE, "tosca:List");
-				NamedResource n = GetResources.setNamedResource(nodews, listValue.getLabel());
+				NamedResource n = GetResources.setNamedResource(nodews, listValue.getLabel(), kb);
 				IRI kbNode = getKBNode(n);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
@@ -895,7 +900,7 @@ public class DSLRMMappingService {
 				String value = _values.iterator().next();
 
 				IRI kbNode = null;
-				NamedResource n = GetResources.setNamedResource(nodews, value);
+				NamedResource n = GetResources.setNamedResource(nodews, value, kb);
 				//Check if the node object exists in this local resource model
 				if (propertyName.equals("type") && nodeNames.contains(n.getResource())) {
 					kbNode = factory.createIRI(namespace + factory.createLiteral(n.getResource()).getLabel());
@@ -972,7 +977,7 @@ public class DSLRMMappingService {
 		for (Literal l:listValues) {
 			nodeBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");			
 			
-			NamedResource n = GetResources.setNamedResource(nodews, l.getLabel());
+			NamedResource n = GetResources.setNamedResource(nodews, l.getLabel(), kb);
 			IRI kbNode = getKBNode(n);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))

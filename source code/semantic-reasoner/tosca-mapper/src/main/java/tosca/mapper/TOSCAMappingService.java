@@ -63,11 +63,16 @@ public class TOSCAMappingService {
 	            	case "description":
 	            		break;
 	            	case "data_types":
+	            		nodes.addAll(parseTypes(v, ":DataType_"));
+	            		break;
 	            	case "node_types":
+	            		nodes.addAll(parseTypes(v, ":NodeType_"));
+	            		break;
 	            	case "capability_types":
+	            		nodes.addAll(parseTypes(v, ":CapabilityType_"));
+	            		break;
 	            	case "relationship_types":
-	            		Set<Node> nodesPerCategory = parseTypes(v);
-	            		nodes.addAll(nodesPerCategory);
+	            		nodes.addAll(parseTypes(v, ":RelationshipType_"));
 	            		break;
 	            	case "topology_template":
 	            		Map<?,?> templatesMap =  (Map<?,?>) v;
@@ -90,13 +95,13 @@ public class TOSCAMappingService {
 		
 	 }
 	 
-	public Set<Node> parseTypes(Object value) {
+	public Set<Node> parseTypes(Object value, String classType) {
 		Set<Node> nodes = new HashSet<>();
-		System.err.println("parseTypes");
+		LOG.info("parseTypes: " + classType);
 		Map<?,?> typeMap =  (Map<?,?>) value;
 		typeMap.forEach((k, v) -> {
 				String name = k.toString();
-				Node node = new Node(name);
+				Node node = new Node(name, classType);
 				Map<?,?> descriptionMap =  (Map<?,?>) v;
 				descriptionMap.forEach((k2, v2) ->  {
 	            	String key2 = k2.toString();
@@ -135,7 +140,7 @@ public class TOSCAMappingService {
 	
 	public Set<Node> parseTemplates(Object value) {
 		Set<Node> nodes = new HashSet<>();
-		System.err.println("parseTemplates");
+		LOG.info("parseTemplates");
 		Map<?,?> typeMap =  (Map<?,?>) value;
 		typeMap.forEach((k, v) -> {
 				String name = k.toString();
@@ -246,39 +251,72 @@ public class TOSCAMappingService {
 	}
 	 
 	public <T> void valueOrParameter(Object v, Parameter p, Set<T> concepts) {
+		LOG.info("Object: {}, Parameter: {}, concepts: {} ",  v, p , concepts);
+		
 		Set<Parameter> parameters = new HashSet<>();
 		if (v instanceof Map) {
-			p.setParameters(parseParameters(v));
+			LOG.info("MAP: {} ",  v);
+			//for {get_property=[SELF, network, name]} , arraylist within Map
+			Map<?,?> map = (Map<?,?>) v;
+			Object value = map.entrySet().iterator().next().getValue();
+			if (value instanceof ArrayList) {
+				LOG.info("MAP, ARRAYLIST: {} ",  value);
+				p.setValues((ArrayList<String>)value);
+			} else {
+				LOG.info("set parameters: {} ",  value);
+				p.setParameters(parseParameters(v));
+			}
 		} else if (v instanceof ArrayList) {
 			//constraints is a list
 			ArrayList<?> list = (ArrayList<?>)v;
 			LOG.info("ARRAYLIST: {} ",  v);
-			list.forEach((l)-> {
-				if (l instanceof Map) {
-					
-					Map<?,?> paramMap =  (Map<?,?>) l;
-					LOG.info("MAP: {}", l);
-					paramMap.forEach((key, val) -> {
-						Parameter p2 = new Parameter(key.toString());
-						if (val instanceof ArrayList) {
-							p2.setValues((ArrayList<String>)val);
-						} else {
-							p2.setValue(val.toString());
-						}
-						parameters.add(p2);
-					});
-				}
-			});
-			p.setParameters(parameters);
+			
+			/* example
+			 * volumes:
+				- /tmp/conf/config.json:/SnowWatch-SODALITE/config.json
+				- "snow_volume_daily_shots:/SnowWatch-SODALITE/data/daily_shots"
+			 */
+			if (listOfPrimitives(list)) {
+				p.setValues((ArrayList<String>)list);
+			} else {			
+				list.forEach((l)-> {
+					if (l instanceof Map) {
+					/*   constraints:  
+				            - valid_values: ['tcp', 'udp', 'icmp']*/
+						Map<?,?> paramMap =  (Map<?,?>) l;
+						LOG.info("MAP: {}", l);
+						paramMap.forEach((key, val) -> {
+							Parameter p2 = new Parameter(key.toString());
+							if (val instanceof ArrayList) {
+								p2.setValues((ArrayList<String>)val);
+							} else {
+								p2.setValue(val.toString());
+							}
+							parameters.add(p2);
+						});
+					}
+				});
+				p.setParameters(parameters);
+			}
 		} else {
 			p.setValue(v.toString());
 			p.setParameters(parameters);
 		}
-		
+		LOG.info("class: {}, v: {}",  v.getClass(), v.toString());
 		concepts.add((T) p);
 	 }
 	 
 
+	public boolean listOfPrimitives(ArrayList<?> list) {
+		for (Object l: list) {
+			if (l instanceof Map) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public String getExchangeAADM() {
 		if (!nodeTemplates.isEmpty()) {
 			AADMGenerator aadm = new AADMGenerator(nodeTemplates, inputs);
