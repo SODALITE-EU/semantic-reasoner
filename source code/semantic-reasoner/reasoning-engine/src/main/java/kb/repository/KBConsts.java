@@ -21,10 +21,6 @@ public final class KBConsts {
 	public static final boolean AADM_JSON = true;
 	public static final boolean AADM = true;
 	
-	private KBConsts() {
-		throw new IllegalStateException("KBConsts class");
-	}	
-	
 	static {
        	TYPES.put("data","tosca.datatypes.Root");
        	TYPES.put("node", "tosca.nodes.Root");
@@ -47,4 +43,7 @@ public final class KBConsts {
 		
 	}
 	
+	private KBConsts() {
+		throw new IllegalStateException("KBConsts class");
+	}	
 }
