@@ -246,24 +246,25 @@ public class TOSCAMappingService {
 		paramMap.forEach((k, v) -> {
 			Parameter p = new Parameter(k.toString()); 
 			valueOrParameter(v, p, parameters);
+			System.err.println("k = " + k + ", v = " + v);
 		});
 		return parameters;
 	}
 	 
 	public <T> void valueOrParameter(Object v, Parameter p, Set<T> concepts) {
 		LOG.info("Object: {}, Parameter: {}, concepts: {} ",  v, p , concepts);
-		
+		LOG.info("class: {}, v: {}",  v.getClass(), v.toString());
 		Set<Parameter> parameters = new HashSet<>();
 		if (v instanceof Map) {
 			LOG.info("MAP: {} ",  v);
 			//for {get_property=[SELF, network, name]} , arraylist within Map
 			Map<?,?> map = (Map<?,?>) v;
 			Object value = map.entrySet().iterator().next().getValue();
-			if (value instanceof ArrayList) {
+			if (value instanceof ArrayList && map.size() == 1) {
 				LOG.info("MAP, ARRAYLIST: {} ",  value);
 				p.setValues((ArrayList<String>)value);
 			} else {
-				LOG.info("set parameters: {} ",  value);
+				LOG.info("set parameters:v= {}, value: {} ", v, value);
 				p.setParameters(parseParameters(v));
 			}
 		} else if (v instanceof ArrayList) {
@@ -302,12 +303,13 @@ public class TOSCAMappingService {
 			p.setValue(v.toString());
 			p.setParameters(parameters);
 		}
-		LOG.info("class: {}, v: {}",  v.getClass(), v.toString());
+		//LOG.info("class: {}, v: {}",  v.getClass(), v.toString());
 		concepts.add((T) p);
 	 }
 	 
 
 	public boolean listOfPrimitives(ArrayList<?> list) {
+		LOG.info("listOfPrimitives: {}", list);
 		for (Object l: list) {
 			if (l instanceof Map) {
 				return false;

@@ -61,7 +61,7 @@ public class ModelGenerator extends ExchangeGenerator {
 					exchangeParameterModel += ExchangeConsts.CONCEPTS.get(ExchangeConsts.PARAMETER_PREFIX);
 					exchangeParameters.add(exchangeParameter);
 					exchangeParameterModel += ExchangeConsts.EXCHANGE_NAME + " \"" + par.getName() + "\" ;\n";
-					if (par.getValue() == null) {
+					if (par.getValue() == null && par.getValues() == null) {
 						LOG.info("par:{}", par.getName());
 						Set<String> exchangeParameterConcepts = convertConceptToExchange(par.getParameters(), ExchangeConsts.PARAMETER_PREFIX);
 						for (String name: exchangeParameterConcepts)
