@@ -246,7 +246,6 @@ public class TOSCAMappingService {
 		paramMap.forEach((k, v) -> {
 			Parameter p = new Parameter(k.toString()); 
 			valueOrParameter(v, p, parameters);
-			System.err.println("k = " + k + ", v = " + v);
 		});
 		return parameters;
 	}
@@ -303,7 +302,6 @@ public class TOSCAMappingService {
 			p.setValue(v.toString());
 			p.setParameters(parameters);
 		}
-		//LOG.info("class: {}, v: {}",  v.getClass(), v.toString());
 		concepts.add((T) p);
 	 }
 	 
