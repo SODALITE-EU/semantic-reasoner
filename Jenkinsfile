@@ -82,7 +82,7 @@ pipeline {
       steps {
         sh  """ #!/bin/bash
                 cd "source code/semantic-reasoner"
-                mvn clean install
+                mvn clean install -Ddefault.min.distinct.threshold=104857600
             """
         //archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }

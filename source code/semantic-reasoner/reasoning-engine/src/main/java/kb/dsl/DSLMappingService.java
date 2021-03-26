@@ -187,9 +187,8 @@ public class DSLMappingService {
 			if ("".equals(aadmDSL)) {
 				//mappingModels.add(new MappingValidationModel("AADM", "aadmDSL", "No 'DSL' defined for the aadm model"));
 				LOG.info("No 'DSL' defined for the rm model");
-			} else {
-				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasDSL"), aadmDSL);
-			}
+			} 
+			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasDSL"), aadmDSL);
 			
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasName"), name);
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasNamespace"), MyUtils.getNamespaceFromContext(namespace.toString()));

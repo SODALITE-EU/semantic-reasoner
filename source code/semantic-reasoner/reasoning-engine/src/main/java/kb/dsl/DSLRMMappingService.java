@@ -144,9 +144,8 @@ public class DSLRMMappingService {
 			if ("".equals(rmDSL)) {
 				//mappingModels.add(new MappingValidationModel("RM", "rmDSL", "No 'DSL' defined for the rm model"));
 				LOG.info("No 'DSL' defined for the rm model");
-			} else {
-				resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasDSL"), rmDSL);
-			}
+			} 
+			resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasDSL"), rmDSL);
 			
 			resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasName"), name);			
 		}
