@@ -252,7 +252,8 @@ public class TOSCAMappingService {
 	 
 	public <T> void valueOrParameter(Object v, Parameter p, Set<T> concepts) {
 		LOG.info("Object: {}, Parameter: {}, concepts: {} ",  v, p , concepts);
-		LOG.info("class: {}, v: {}",  v.getClass(), v.toString());
+		if(v != null)
+			LOG.info("class: {}, v: {}",  v.getClass(), v.toString());
 		Set<Parameter> parameters = new HashSet<>();
 		if (v instanceof Map) {
 			LOG.info("MAP: {} ",  v);
@@ -299,7 +300,11 @@ public class TOSCAMappingService {
 				p.setParameters(parameters);
 			}
 		} else {
-			p.setValue(v.toString());
+			//empty value might be sent. e.g. group_description: 
+			if (v != null)
+				p.setValue(v.toString());
+			else
+				p.setValue("");
 			p.setParameters(parameters);
 		}
 		concepts.add((T) p);

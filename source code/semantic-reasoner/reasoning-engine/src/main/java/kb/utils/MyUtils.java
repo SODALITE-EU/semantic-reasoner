@@ -8,12 +8,14 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -21,6 +23,8 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
@@ -36,6 +40,8 @@ public class MyUtils {
 		throw new IllegalStateException("MyUtils class");
 	}
 
+	private static final Logger LOG = LoggerFactory.getLogger(MyUtils.class.getName());
+	
 	public static String fileToString(String file) throws IOException {
 		InputStream resourceAsStream = MyUtils.class.getClassLoader().getResourceAsStream(file);
 		return IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8.name());
@@ -152,19 +158,31 @@ public class MyUtils {
 		
 	}
 	
+	/*e.g. input: https://www.sodalite.eu/ontologies/workspace/1/vehicleiotrefac/
+	 *     output: vehicleiotrefac */
+	public static String getNamespaceFromFullIRI(String iri) {
+		return getStringPattern(iri, ".*\\/([a-zA-Z0-9_]+)");
+	}
+	
 	/*namespace: docker
 	 * https://www.sodalite.eu/ontologies/workspace/1/docker/ is returned*/
 	public static String getFullNamespaceIRI(KB kb, String namespace) {
-		String uri = null;
+		final String[] uri = {null};
 		
 		List<Resource> list = Iterations.asList(kb.connection.getContextIDs());
+		Map<String,String> namespaces = list.stream().
+												collect(Collectors.toMap(
+												x -> x.toString(),
+												x -> getNamespaceFromFullIRI(x.toString())
+												));
 		
-		for (Resource l : list) {
-			if (l.toString().contains(namespace)) {
-				uri = l.toString();
+		namespaces.forEach((key, val) -> {
+			if (namespace.equals(val)) {
+				uri[0] = key;
 			}
-		}
-		return uri;
+		});
+		
+		return uri[0];
 	}
 	
 	/*
@@ -198,8 +216,9 @@ public class MyUtils {
 		String namespace = getNamespaceFromReference(resource);
 		String name = getReferenceFromNamespace(resource);
 		
-		if (namespace != null)
+		if (namespace != null) {
 			resourceIRI = getFullNamespaceIRI(kb, namespace) + name;
+		}
 		else {
 			if (hasPattern(resource, "^tosca."))
 				resourceIRI = KB.TOSCA + resource;

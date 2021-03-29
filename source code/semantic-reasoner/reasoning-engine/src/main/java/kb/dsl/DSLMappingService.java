@@ -187,9 +187,8 @@ public class DSLMappingService {
 			if ("".equals(aadmDSL)) {
 				//mappingModels.add(new MappingValidationModel("AADM", "aadmDSL", "No 'DSL' defined for the aadm model"));
 				LOG.info("No 'DSL' defined for the rm model");
-			} else {
-				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasDSL"), aadmDSL);
-			}
+			} 
+			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasDSL"), aadmDSL);
 			
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasName"), name);
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasNamespace"), MyUtils.getNamespaceFromContext(namespace.toString()));
@@ -424,10 +423,14 @@ public class DSLMappingService {
 		}
 		
 		try {
-			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString(), aadmKB);
+			
 			//THIS SHOULD BE CORRECTED
-			if (!aadmURI.isEmpty())
-				VerifySingularity.removeInputs(kb, aadmURI);
+			if (!aadmURI.isEmpty()) {
+				//VerifySingularity.removeInputs(kb, aadmURI);
+				KBApi api = new KBApi(kb);
+				api.deleteModel(aadmURI);
+			}
+			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString(), aadmKB);
 		} catch (IOException e) {
 			LOG.error(e.getMessage(),e);
 		}
@@ -558,6 +561,7 @@ public class DSLMappingService {
 		}
 //		Optional<Literal> _value = Models
 //				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "value"), null));
+		IRI propertyClassifierKB = null;
 
 		Set<String> _values = Models.getPropertyStrings(aadmModel, exchangeParameter,
 				factory.createIRI(KB.EXCHANGE + "value"));
@@ -582,7 +586,6 @@ public class DSLMappingService {
 				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
 		String parameterType = MyUtils.getStringValue(_parameterType.get());
 		
-		IRI propertyClassifierKB = null;
 		switch (parameterType) {
 			case KBConsts.ATTRIBUTE:
 				propertyClassifierKB = factory.createIRI(namespace + KBConsts.ATTR_CLASSIFIER + MyUtils.randomString());
@@ -600,6 +603,11 @@ public class DSLMappingService {
 				LOG.info("parameterType = {} does not exist", parameterType);
 		}
 
+		Optional<String> description = Models.getPropertyString(aadmModel, exchangeParameter,
+				factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
+		if (description.isPresent())
+			aadmBuilder.add(propertyClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
+		
 		// create rdf:property
 		if (propertyName != null) {
 			//maybe local namespace should be passed in type

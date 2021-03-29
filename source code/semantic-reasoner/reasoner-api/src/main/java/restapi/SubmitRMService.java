@@ -78,7 +78,7 @@ public class SubmitRMService extends AbstractService  {
 	@ApiOperation(value = "Stores submitted node types in the KB")
 	public Response saveRM(@ApiParam(value = "The TTL of RM", required = true) @FormParam("rmTTL") String rmTTL,
 			@ApiParam(value = "An id to uniquely identify a submission", required = true)  @DefaultValue("") @FormParam("rmURI") String rmURI,
-			@ApiParam(value = "The rm in DSL", required = true) @FormParam("rmDSL") String rmDSL,
+			@ApiParam(value = "The rm in DSL", required = true) @DefaultValue("") @FormParam("rmDSL") String rmDSL,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
 			@ApiParam(value = "token") @FormParam("token") String token)
