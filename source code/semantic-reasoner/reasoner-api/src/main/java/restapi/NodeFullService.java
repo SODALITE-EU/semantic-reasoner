@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,10 @@ public class NodeFullService extends AbstractService {
 
 		KBApi api = new KBApi();
 		
-		NodeFull nodeFull = api.getNode(api.getResourceIRI(resource), true);
+		String resourceIRI = api.getResourceIRI(resource);
+		LOG.info("api.getResourceIRI(resource): {}", resourceIRI);
+		
+		NodeFull nodeFull = api.getNode(resourceIRI, true);
 		
 		JsonElement serialise = nodeFull.serialise();
 

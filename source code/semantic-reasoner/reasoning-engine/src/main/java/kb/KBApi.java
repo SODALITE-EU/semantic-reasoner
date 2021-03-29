@@ -78,6 +78,10 @@ public class KBApi {
 		kb.shutDown();
 	}
 	
+	public KB getKB() {
+		return this.kb;
+	}
+	
 	public String getResourceIRI(String resource) {
 		return MyUtils.getFullResourceIRI(resource, kb);
 	}
@@ -1404,6 +1408,7 @@ public class KBApi {
 			a.setUser(user);
 			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			a.setDsl(dsl.toString());
+			
 			a.setName(name.toString());
 			
 			models.add(a);
