@@ -64,6 +64,8 @@ public class SubmitTOSCAService extends AbstractService {
 	 * @param aadmURI A unique aadm uri
 	 * @param rmURI  A unique rm uri
 	 * @param rmNamespace The namespace where the resource model will be saved
+	 * @param aadmName The file name for aadm
+	 * @param rmName The file name for rm
 	 * @param aadmNamespace The namespace where the aadm will be saved
 	 * @throws RDFParseException A parse exception that can be thrown by a parser when it encounters an error
 	 * @throws UnsupportedRDFormatException   RuntimeException indicating that a specific RDF format is not supported.
@@ -82,6 +84,8 @@ public class SubmitTOSCAService extends AbstractService {
 			@ApiParam(value = "An id to uniquely identify a submission", required = true) @DefaultValue("") @FormParam("rmURI") String rmURI,
 			@ApiParam(value = "namespace for rm", required = false) @DefaultValue("") @FormParam("rmNamespace") String rmNamespace,
 			@ApiParam(value = "namespace for aadm", required = false) @DefaultValue("") @FormParam("aadmNamespace") String aadmNamespace,
+			@ApiParam(value = "file name for rm", required = false) @DefaultValue("") @FormParam("rmName") String rmName,
+			@ApiParam(value = "file name for aadm", required = false) @DefaultValue("") @FormParam("aadmName") String aadmName,
 			@Context HttpHeaders headers)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
@@ -96,7 +100,7 @@ public class SubmitTOSCAService extends AbstractService {
 		
 		
 		JSONObject response = new JSONObject();
-		LOG.info("modelTOSCA = {}, rmNamespace = {}, aadmNamespace = {}", modelTOSCA, rmNamespace, aadmNamespace);
+		LOG.info("modelTOSCA = {}, rmNamespace = {}, aadmNamespace = {}, rmName = {}, aadmName = {}", modelTOSCA, rmNamespace, aadmNamespace, rmName, aadmName);
 		
 		//4 slashes for \n. Two slashes since in string with two slashes you have one. But also two more slashes since, \ is an escape char also in regex 
 		String finalModelTOSCA = modelTOSCA.replaceAll("\\\\n",System.getProperty("line.separator"));
@@ -115,9 +119,9 @@ public class SubmitTOSCAService extends AbstractService {
 		DSLMappingService aadm = null;
 		//platform discovery service does not need file names for the resource and application models
 		if (rmTTL != null)
-			 rm = new DSLRMMappingService(kb, rmTTL, rmURI, rmNamespace, "", "");
+			 rm = new DSLRMMappingService(kb, rmTTL, rmURI, rmNamespace, "", rmName);
 		if (aadmTTL != null)
-			aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, aadmNamespace, "", "");
+			aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, aadmNamespace, "", aadmName);
 
 		IRI rmUri = null;
 		IRI aadmUri = null;
