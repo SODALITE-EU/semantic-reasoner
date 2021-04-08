@@ -11,7 +11,7 @@ python3 -m venv venv
 python3 -m pip install --upgrade pip
 python3 -m pip install opera[openstack]==0.6.4 docker
 ansible-galaxy install -r openstack-blueprint/requirements.yml --force
-git clone -b 3.2.1 https://github.com/SODALITE-EU/iac-modules.git openstack-blueprint/modules/
+git clone -b 3.4.1 https://github.com/SODALITE-EU/iac-modules.git openstack-blueprint/modules/
 envsubst < openstack-blueprint/input.yaml.tmpl > openstack-blueprint/input.yaml
 cd openstack-blueprint
 opera deploy service.yaml -i input.yaml               
