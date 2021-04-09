@@ -101,7 +101,7 @@ public class TOSCAMappingService {
 		Map<?,?> typeMap =  (Map<?,?>) value;
 		typeMap.forEach((k, v) -> {
 				String name = k.toString();
-				String finalName =  getNameFromNodeName(name);
+				String finalName =  getNameFromFullNodeName(name);
 				Node node = new Node(finalName, classType);
 				Map<?,?> descriptionMap =  (Map<?,?>) v;
 				descriptionMap.forEach((k2, v2) ->  {
@@ -145,7 +145,7 @@ public class TOSCAMappingService {
 		Map<?,?> typeMap =  (Map<?,?>) value;
 		typeMap.forEach((k, v) -> {
 				String name = k.toString();
-				String finalName =  getNameFromNodeName(name);
+				String finalName =  getNameFromFullNodeName(name);
 				Node node = new Node(finalName);
 				Map<?,?> descriptionMap =  (Map<?,?>) v;
 				descriptionMap.forEach((k2, v2) ->  {
@@ -324,7 +324,11 @@ public class TOSCAMappingService {
 		return true;
 	}
 	
-	public static String getNameFromNodeName(String resource) {
+	/* For having a valid TOSCA, we permit names with the namespace included
+	 * e.g. testpds/sodalite.nodes.Openstack.SecurityRules
+	 * name without the namespace is returned
+	 */
+	public static String getNameFromFullNodeName(String resource) {
 		String[] split = resource.split("\\/");
 		if (split.length > 1)
 			return split[1];
