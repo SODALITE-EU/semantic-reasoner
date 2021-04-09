@@ -101,7 +101,8 @@ public class TOSCAMappingService {
 		Map<?,?> typeMap =  (Map<?,?>) value;
 		typeMap.forEach((k, v) -> {
 				String name = k.toString();
-				Node node = new Node(name, classType);
+				String finalName =  getNameFromNodeName(name);
+				Node node = new Node(finalName, classType);
 				Map<?,?> descriptionMap =  (Map<?,?>) v;
 				descriptionMap.forEach((k2, v2) ->  {
 	            	String key2 = k2.toString();
@@ -144,7 +145,8 @@ public class TOSCAMappingService {
 		Map<?,?> typeMap =  (Map<?,?>) value;
 		typeMap.forEach((k, v) -> {
 				String name = k.toString();
-				Node node = new Node(name);
+				String finalName =  getNameFromNodeName(name);
+				Node node = new Node(finalName);
 				Map<?,?> descriptionMap =  (Map<?,?>) v;
 				descriptionMap.forEach((k2, v2) ->  {
 	            	String key2 = k2.toString();
@@ -320,6 +322,13 @@ public class TOSCAMappingService {
 		}
 		
 		return true;
+	}
+	
+	public static String getNameFromNodeName(String resource) {
+		String[] split = resource.split("\\/");
+		if (split.length > 1)
+			return split[1];
+		return resource;
 	}
 	
 	public String getExchangeAADM() {
