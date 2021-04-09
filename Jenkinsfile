@@ -180,7 +180,7 @@ pipeline {
                     python3 -m pip install opera[openstack]==0.6.4 docker
                     ansible-galaxy install -r openstack-blueprint/requirements.yml --force
                     rm -r -f openstack-blueprint/modules/
-                    git clone -b 3.2.1 https://github.com/SODALITE-EU/iac-modules.git openstack-blueprint/modules/
+                    git clone -b 3.4.1 https://github.com/SODALITE-EU/iac-modules.git openstack-blueprint/modules/
                     cp ${ca_crt_file} openstack-blueprint/modules/docker/artifacts/ca.crt
                     cp ${ca_crt_file} openstack-blueprint/modules/misc/tls/artifacts/ca.crt
                     cp ${ca_key_file} openstack-blueprint/modules/docker/artifacts/ca.key
