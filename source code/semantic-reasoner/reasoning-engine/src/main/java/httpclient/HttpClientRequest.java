@@ -120,6 +120,12 @@ public class HttpClientRequest {
 
 		map.add("token", token);
 		
+		if(token == null) {
+			List<AuthErrorModel> errors = new ArrayList<>();
+			errors.add(new AuthErrorModel(LocalDateTime.now(),  "Access Token is not provided", HttpStatus.UNAUTHORIZED, 401));
+			throw new AuthException(errors);
+		}
+		
 		String result = sendFormURLEncodedMessage(new URI(url), HttpMethod.POST, map, String.class, new KeycloakCustomErrorHandler(), keycloakClientId, keycloakClientSecret);
 		
 		JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);

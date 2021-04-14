@@ -36,8 +36,8 @@ public class AuthErrorModel extends AuthModel {
 		JSONObject errorObj = new JSONObject();
 		
 		errorObj.put("timestamp", timestamp.toString());
-		errorObj.put("api", DownstreamApi.KEYCLOAK_API);
-		errorObj.put("statusCode", statusCode);
+		errorObj.put("api", DownstreamApi.KEYCLOAK_API.toString());
+		errorObj.put("statusCode", rawStatus);
 		errorObj.put("description", description);
 		
 		return errorObj;
