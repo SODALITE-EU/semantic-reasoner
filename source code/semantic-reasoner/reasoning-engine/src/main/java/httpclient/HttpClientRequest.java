@@ -119,9 +119,9 @@ public class HttpClientRequest {
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 
 		map.add("token", token);
+		List<AuthErrorModel> errors = new ArrayList<>();
 		
 		if(token == null) {
-			List<AuthErrorModel> errors = new ArrayList<>();
 			errors.add(new AuthErrorModel(LocalDateTime.now(),  "Access Token is not provided", HttpStatus.UNAUTHORIZED, 401));
 			throw new AuthException(errors);
 		}
@@ -133,7 +133,6 @@ public class HttpClientRequest {
 		boolean active = jsonObject.get("active").getAsBoolean();
 		
 		if(!active) {
-			List<AuthErrorModel> errors = new ArrayList<>();
 			errors.add(new AuthErrorModel(LocalDateTime.now(),  "Access Token not active", HttpStatus.UNAUTHORIZED, 401));
 			throw new AuthException(errors);
 		}
