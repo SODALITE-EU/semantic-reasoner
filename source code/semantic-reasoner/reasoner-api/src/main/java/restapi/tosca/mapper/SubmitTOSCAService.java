@@ -90,7 +90,10 @@ public class SubmitTOSCAService extends AbstractService {
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
 		if(AuthUtil.authentication()) {
-			String token = AuthUtil.getTokenFromBearerHeader(headers.getRequestHeader(HttpHeaders.AUTHORIZATION));
+			List<String> header = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			String token = null;
+			if (header != null)
+				token = AuthUtil.getTokenFromBearerHeader(header);
 			
 			AuthResponse ares = SharedUtil.authForWriteRolesFromNamespaces(rmNamespace, aadmNamespace, token);
 			if (ares.getResponse() != null)
