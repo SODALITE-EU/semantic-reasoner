@@ -423,8 +423,8 @@
 .
 :Requirement_1
   rdf:type exchange:Requirement ;
-  exchange:name "host" ;
-  exchange:value 'snow/workstation' ;  
+  exchange:name "protected_by" ;
+  exchange:value 'snow/snow-security-rules' ;  
 .
 :Attribute_10
   rdf:type exchange:Attribute ;

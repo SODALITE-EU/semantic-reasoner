@@ -91,14 +91,20 @@ public class DSLMappingService {
 	boolean complete;
 	
 	private String currentTemplate;
+	private IRI currentType;
 	public List<String> namespacesOfType = new ArrayList<>();
 	
 
 	// Validation
 	public Set<String> definedPropertiesForValidation = new HashSet<String>(),
 			definedAttributesForValidation = new HashSet<String>();
-	
+	//for constraints
 	public Map<String, String> propertyValuesForValidation = new HashMap<String, String>();
+	
+	//for requirements;
+	Set<HashMap<String, IRI>> templateRequirements = new HashSet<>();
+	HashMap<IRI, IRI> templateTypes = new HashMap<>();
+	HashMap<String, IRI> tempReq;
 
 	public List<ValidationModel> validationModels = new ArrayList<>();
 	public List<ValidationModel> modifiedModels = new ArrayList<>();
@@ -254,6 +260,10 @@ public class DSLMappingService {
 					mappingModels.add(new MappingValidationModel(templateName, templateType, "'type' not found "));
 				} else {
 					templateBuilder.add(templateKB, RDF.TYPE, kbNodeType);
+					//needed for requirement Validation
+			
+					templateTypes.put(templateKB, kbNodeType);
+					currentType = kbNodeType;
 				}
 				
 				if (aadmKB != null) 
@@ -305,6 +315,8 @@ public class DSLMappingService {
 				if (templateDescriptionKB != null)
 					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "requirements"),
 							requirementClassifierKB);
+
+				this.templateRequirements.add(tempReq);
 
 			}
 
@@ -418,6 +430,20 @@ public class DSLMappingService {
 		if (!mappingModels.isEmpty()) {
 			throw new MappingException(mappingModels);
 		}
+		
+		for (HashMap<String, IRI> t: templateRequirements) {
+			LOG.info("template = {}", t.get("template"));
+			LOG.info("type = {}", t.get("templateType"));
+			LOG.info("r_a = {}", t.get("r_a"));
+			LOG.info("node = {}", t.get("node"));
+			LOG.info("capability = {}", t.get("capability"));
+		}
+		
+		
+		//Sommelier validations
+		ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"), this.templateRequirements, this.templateTypes, kb);
+		validationModels.addAll(v.validate());
+				
 		if (!validationModels.isEmpty()) {
 			throw new ValidationException(validationModels);
 		}
@@ -428,6 +454,7 @@ public class DSLMappingService {
 			if (!aadmURI.isEmpty()) {
 				//VerifySingularity.removeInputs(kb, aadmURI);
 				KBApi api = new KBApi(kb);
+				//deleteModel also deletes the inputs
 				api.deleteModel(aadmURI);
 			}
 			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString(), aadmKB);
@@ -440,6 +467,7 @@ public class DSLMappingService {
 	}
 
 	private IRI createRequirementKBModel(IRI requirement) throws MappingException {
+		tempReq = new HashMap<String, IRI>();
 		Optional<Literal> _requirementName = Models
 				.objectLiteral(aadmModel.filter(requirement, factory.createIRI(KB.EXCHANGE + "name"), null));
 		
@@ -448,6 +476,9 @@ public class DSLMappingService {
 			mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "No 'name' defined for requirement"));
 		else
 			requirementName = _requirementName.get().getLabel();
+		
+		tempReq.put("template", kb.factory.createIRI(this.templatews + this.currentTemplate));
+		tempReq.put("templateType", this.currentType);
 
 		// create classifier
 		IRI requirementClassifierKB = factory.createIRI(namespace + "ReqClassifier_" + MyUtils.randomString());
@@ -459,6 +490,7 @@ public class DSLMappingService {
 			if (requirementProperty == null) {
 				mappingModels.add(new MappingValidationModel(currentTemplate, requirementName, "Cannot find requirement property"));
 			}
+			tempReq.put("r_a", requirementProperty);
 		}
 		
 		if (requirementProperty != null)
@@ -539,6 +571,12 @@ public class DSLMappingService {
 				}
 				if (kbTemplate != null)
 					templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+				
+				//assign values for requirement validation
+				if (parameterName.equals("node"))
+					tempReq.put("node", kbTemplate);
+				else if (parameterName.equals("capability"))
+					tempReq.put("capability", kbTemplate);
 			} else {
 
 				IRI root = createParameterKBModel(parameter);
@@ -1000,23 +1038,25 @@ public class DSLMappingService {
 		RequirementExistenceValidation r = new RequirementExistenceValidation(aadmId, complete, kb, namespace.toString(), context);
 		//Check for required omitted requirements
 		validationModels.addAll(r.validate());
-		if (!validationModels.isEmpty()) {
+		//if (!validationModels.isEmpty()) {
 			//Set<IRI> templatesIRIs = MyUtils.getResourceIRIs(this.kb, this.namespace, this.templateNames);
-			KBApi api = new KBApi(kb);
+	/*		KBApi api = new KBApi(kb);
 			api.deleteModel(aadmId);
 			throw new ValidationException(validationModels);
-		}
+		}*/
 		
 		suggestedModels.addAll(r.getSuggestions());
 		modifiedModels.addAll(r.getModifiedModels());
 		
 		//Sommelier validations
-		//ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"));
-		/*validationModels.addAll(v.validate());
+		/*ValidationService v = new ValidationService(aadmId, this.templateRequirements, this.templateTypes);
+		validationModels.addAll(v.validate());*/
+		
 		if (!validationModels.isEmpty()) {
-			kb.connection.clear(context);
+			KBApi api = new KBApi(kb);
+			api.deleteModel(this.aadmKB.toString());
 			throw new ValidationException(validationModels);
-		}*/
+		}
 		
 	}
 }

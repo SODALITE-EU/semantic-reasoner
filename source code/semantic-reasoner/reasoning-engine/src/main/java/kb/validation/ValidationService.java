@@ -2,12 +2,16 @@ package kb.validation;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 
+import kb.repository.KB;
 import kb.utils.MyFileUtil;
 import kb.validation.exceptions.CapabilityMismatchValidationException;
 import kb.validation.exceptions.NoRequirementDefinitionValidationException;
@@ -24,8 +28,8 @@ public class ValidationService {
 		requirementValidation = new RequirementValidation(model);
 	}
 	
-	public ValidationService(String aadmId) {
-		requirementValidation = new RequirementValidation(aadmId);
+	public ValidationService(String aadmId, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, KB kb) {
+		requirementValidation = new RequirementValidation(aadmId, templateRequirements, templateTypes, kb);
 	}
 
 	public List<RequirementModel> validate() {
@@ -43,9 +47,10 @@ public class ValidationService {
 		} catch (CapabilityMismatchValidationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/ finally {
+		} finally {
+			// kb is used in VerifySingularity so it should not be closed here
 			requirementValidation.shutDown();
-		}
+		}*/
 		return models;
 	}
 

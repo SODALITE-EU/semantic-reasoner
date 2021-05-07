@@ -1,9 +1,9 @@
 # template, r_a, ctx
 select *
 where {
-    ?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a; DUL:hasRegion ?r_a_node]] .
-    ?r_a_node sesame:directType ?type_r_a_node.
-    ?type_r_a_node rdfs:subClassOf tosca:tosca.entity.Root .
+   # ?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a; DUL:hasRegion ?r_a_node]] .
+   # ?r_a_node sesame:directType ?type_r_a_node.
+   # ?type_r_a_node rdfs:subClassOf tosca:tosca.entity.Root .
 
     ?type_r_a_node soda:hasInferredContext ?ctx2;
         rdfs:subClassOf tosca:tosca.entity.Root. 

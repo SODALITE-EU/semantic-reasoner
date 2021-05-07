@@ -58,7 +58,7 @@ public class NamespaceService extends AbstractService {
 	public Response getNamespaces(@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 			throws IOException, URISyntaxException {
 		
-		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
+		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 		List<Resource> cList = Iterations.asList(kb.connection.getContextIDs());
 		kb.shutDown();
 		

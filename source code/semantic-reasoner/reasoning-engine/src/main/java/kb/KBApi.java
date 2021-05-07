@@ -1,6 +1,7 @@
 package kb;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.repository.RepositoryResult;
@@ -67,7 +69,7 @@ public class KBApi {
 	}
 	
 	public KBApi() {
-		kb = new KB(configInstance.getGraphdb(), "TOSCA");
+		kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 	}
 	
 	public KBApi(KB kb) {
@@ -549,11 +551,11 @@ public class KBApi {
 		String queryg = KB.PREFIXES + sparqlg;
 		
 		LOG.info(queryg);
-
+		
 		for(NodeType nt: types) {
 			IRI node = kb.factory.createIRI(nt.getUri());
-			//
 			TupleQueryResult resultg = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryg, new SimpleBinding("var", node));
+				
 			_setNodes(resultg, nodes);
 		
 			if(!imports.isEmpty()) {
@@ -565,8 +567,9 @@ public class KBApi {
 					_setNodes(result, nodes);
 				}
 			}
+			
 		}	
-		
+				
 		return nodes;
 	}
 
@@ -599,14 +602,16 @@ public class KBApi {
 	}
 	
 	private void _setNodes(TupleQueryResult result, Set<Node> nodes) throws IOException {
-		while (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			IRI node = (IRI) bindingSet.getBinding("node").getValue();
-			String description = bindingSet.hasBinding("description")
-					? bindingSet.getBinding("description").getValue().stringValue()
+		List<BindingSet> results = QueryResults.asList(result);
+		
+		
+		results.parallelStream().forEach(bs -> { 			
+			IRI node = (IRI) bs.getBinding("node").getValue();
+			String description = bs.hasBinding("description")
+					? bs.getBinding("description").getValue().stringValue()
 					: null;
-			IRI superclass = (IRI) bindingSet.getBinding("superclass").getValue();
-			IRI _namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
+			IRI superclass = (IRI) bs.getBinding("superclass").getValue();
+			IRI _namespace = bs.hasBinding("g") ? (IRI) bs.getBinding("g").getValue() : null;
 
 			Node n = new Node(node);
 			n.setDescription(description);
@@ -619,10 +624,9 @@ public class KBApi {
 				n.setNamespaceOfType(kb.factory.createIRI(_superNamespace));
 
 			nodes.add(n);
-		}
-
+		});
+		
 		result.close();
-
 	}
 
 	/*
@@ -642,7 +646,7 @@ public class KBApi {
 
 		IRI req_cap = getRequirementCapability(requirement, _nodeType);
 		LOG.info("req_cap: {}", req_cap);
-		
+				
 		if (req_cap != null) {
 			Set<IRI> _capTypes = getValidSourceTypes(requirement, req_cap, kb.factory.createIRI(_nodeType), imports);
 		
