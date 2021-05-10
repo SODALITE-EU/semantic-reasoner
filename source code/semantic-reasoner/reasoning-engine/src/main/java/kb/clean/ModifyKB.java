@@ -297,7 +297,7 @@ public class ModifyKB {
 	
 	
 	public static void main(String[] args) throws IOException {
-		new ModifyKB(new KB(configInstance.getGraphdb(), "TOSCA")).deleteModel("https://www.sodalite.eu/ontologies/workspace/1/qds7gkq5hvjte7sf5er6arq4ju/RM_8e7aj4rv1nm4vk4tvi22g0ks42", "https://www.sodalite.eu/ontologies/workspace/1/snow/");
+		new ModifyKB(new KB(configInstance.getGraphdb(), KB.REPOSITORY)).deleteModel("https://www.sodalite.eu/ontologies/workspace/1/qds7gkq5hvjte7sf5er6arq4ju/RM_8e7aj4rv1nm4vk4tvi22g0ks42", "https://www.sodalite.eu/ontologies/workspace/1/snow/");
 	}
 }
 

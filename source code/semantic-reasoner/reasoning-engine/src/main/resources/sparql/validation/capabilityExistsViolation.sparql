@@ -1,7 +1,7 @@
 # template, r_a, ctx
 select *
 where {
-    ?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies tosca:capability; DUL:hasRegion ?templateCapabilityType]]] .
+   # ?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies tosca:capability; DUL:hasRegion ?templateCapabilityType]]] .
 
 	?ctx tosca:requirements [DUL:classifies ?r_a; DUL:hasParameter [DUL:classifies tosca:capability; DUL:hasRegion ?r_d_capability]] .
     FILTER NOT EXISTS {?templateCapabilityType rdfs:subClassOf ?r_d_capability .}

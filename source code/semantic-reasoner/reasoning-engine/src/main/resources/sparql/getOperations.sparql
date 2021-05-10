@@ -1,4 +1,4 @@
-select distinct ?concept ?property
+select distinct ?concept ?property ?resource
 where {
 	?resource soda:hasInferredContext ?context .
 	#FILTER (strends(str(?resource), ?var)).

@@ -108,7 +108,7 @@ public class SubmitTOSCAService extends AbstractService {
 		//4 slashes for \n. Two slashes since in string with two slashes you have one. But also two more slashes since, \ is an escape char also in regex 
 		String finalModelTOSCA = modelTOSCA.replaceAll("\\\\n",System.getProperty("line.separator"));
 		
-		KB kb = new KB(configInstance.getGraphdb(), "TOSCA");
+		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 		
 		TOSCAMappingService toscaMapper = new TOSCAMappingService(finalModelTOSCA);
 		toscaMapper.parse();
