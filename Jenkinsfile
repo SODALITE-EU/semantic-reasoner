@@ -130,7 +130,7 @@ pipeline {
                 allOf {
                     expression{tag "*"}
                     expression{
-                        TAG_PRODUCTION == 'true'
+                        TAG_PRODUCTION == 'true' || tag "graphdb-*"
                     }
                 }
 			//branch "master"  
