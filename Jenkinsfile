@@ -110,10 +110,10 @@ pipeline {
         build job: 'defect-prediction/master', wait: false
       }
     }
-   stage('Build docker images') {
+   stage('Build reasoner docker image') {
             when {  // Only on production tags
                // branch "master" 
-			         allOf {
+                allOf {
                     expression{tag "*"}
                     expression{
                         TAG_PRODUCTION == 'true'
@@ -122,6 +122,16 @@ pipeline {
             }
             steps {
                 sh "cd source\\ code/semantic-reasoner; docker build -t semantic_web -f  ./docker/web/Dockerfile ."
+            }
+   }
+   stage('Build graphdb docker image') {
+            when {  // Only on production tags
+               // branch "master" 
+	        allOf {
+                    expression{tag "graphdb-*"}
+                } 
+            }
+            steps {
                 sh "cd source\\ code/semantic-reasoner; docker build -t graph_db -f  ./docker/graph-db/Dockerfile ."
             }
    }
@@ -130,7 +140,7 @@ pipeline {
                 allOf {
                     expression{tag "*"}
                     expression{
-                        TAG_PRODUCTION == 'true' || tag "graphdb-*"
+                        TAG_PRODUCTION == 'true'
                     }
                 }
 			//branch "master"  
