@@ -45,6 +45,7 @@ import kb.dsl.exceptions.models.MappingValidationModel;
 import kb.dsl.utils.GetResources;
 import kb.dsl.utils.NamedResource;
 import kb.dsl.verify.singularity.VerifySingularity;
+import kb.dto.PropertyMap;
 import kb.repository.KB;
 import kb.repository.KBConsts;
 import kb.utils.MyUtils;
@@ -58,6 +59,7 @@ import kb.validation.exceptions.NoRequirementDefinitionValidationException;
 import kb.validation.exceptions.NodeMismatchValidationException;
 import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.RequiredPropertyAttributeModel;
+import kb.validation.exceptions.models.RequirementExistenceModel;
 import kb.validation.exceptions.models.ValidationModel;
 import kb.validation.required.RequiredPropertyValidation;
 
@@ -101,7 +103,16 @@ public class DSLMappingService {
 	//for constraints
 	public Map<String, String> propertyValuesForValidation = new HashMap<String, String>();
 	
-	//for requirements;
+	//properties of type: map
+	/*Example:
+	* ports:  
+	*  component_ports:
+	*	port_range_max: 8081 */
+	public List<PropertyMap> propertyMapValuesForValidation = new ArrayList<PropertyMap>();
+	PropertyMap tempPropertyMap;
+	String currentPropertyMap;
+	
+	//for requirements Sommelier validation;
 	Set<HashMap<String, IRI>> templateRequirements = new HashSet<>();
 	HashMap<IRI, IRI> templateTypes = new HashMap<>();
 	HashMap<String, IRI> tempReq;
@@ -160,7 +171,7 @@ public class DSLMappingService {
 		}
 	}
 	
-	public IRI start() throws MappingException, ValidationException  {
+	public IRI start() throws MappingException, ValidationException, IOException  {
 
 		// AADM
 		aadmKB = null;
@@ -279,6 +290,7 @@ public class DSLMappingService {
 					factory.createIRI(KB.EXCHANGE + "properties"));
 			definedPropertiesForValidation.clear();
 			propertyValuesForValidation.clear();
+			propertyMapValuesForValidation.clear();
 			for (Resource _property : _properties) {
 				IRI property = (IRI) _property;
 				IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
@@ -287,12 +299,19 @@ public class DSLMappingService {
 				if (templateDescriptionKB != null)
 					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "properties"), propertyClassifierKB);
 			}
+			
+			for (PropertyMap pm: propertyMapValuesForValidation) {
+				LOG.info("propertyMapValuesForValidation: ");
+				LOG.info("propertyName: {}", pm.getName());
+				LOG.info("getMapProperties: {}", pm.getMapProperties());
+			}
+			
 			// validation
 			RequiredPropertyValidation v = new RequiredPropertyValidation(templateName,
 					factory.createIRI(resourceIRI), definedPropertiesForValidation, kb);
 			validationModels.addAll(v.validate());
 			
-			ConstraintsPropertyValidation c = new ConstraintsPropertyValidation(templateName, fullTemplateType, propertyValuesForValidation, kb);
+			ConstraintsPropertyValidation c = new ConstraintsPropertyValidation(templateName, fullTemplateType, propertyValuesForValidation, propertyMapValuesForValidation, kb);
 			validationModels.addAll(c.validate());
 			
 			// attributes
@@ -655,6 +674,7 @@ public class DSLMappingService {
 				templateBuilder.add(kbProperty, RDF.TYPE, "rdf:Property");
 			}
 			templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
+			
 		}
 		
 		if (!_values.isEmpty()) {
@@ -669,6 +689,12 @@ public class DSLMappingService {
 				} else
 					templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
 				propertyValuesForValidation.put(propertyName, value);
+				
+				// for constraints property map validation, assign the nested parameters
+				if (tempPropertyMap != null && tempPropertyMap.getMapProperties() != null) {
+					HashMap<String, String> _inPropertyMap = tempPropertyMap.getMapProperties().get(currentPropertyMap);
+					_inPropertyMap.put(propertyName, value);
+				}
 			} else {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 				templateBuilder.add(list, RDF.TYPE, "tosca:List");
@@ -700,14 +726,29 @@ public class DSLMappingService {
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, exchangeParameter,
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
-
+			
+			//create propertyMap with the corresponding leading name
+			if (tempPropertyMap == null && parameterType.equals(KBConsts.PROPERTY)) {
+				tempPropertyMap = new PropertyMap(propertyName);
+			}
 			for (Resource _parameter : _parameters) {
+				if (tempPropertyMap != null && parameterType.equals(KBConsts.PROPERTY)) {
+					Optional<Literal> propName = Models
+							.objectLiteral(aadmModel.filter(_parameter, factory.createIRI(KB.EXCHANGE + "name"), null));
+					tempPropertyMap.getMapProperties().put(propName.get().getLabel(), new HashMap<String, String>());
+					this.currentPropertyMap = propName.get().getLabel();
+				}
+				
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createPropertyOrAttributeKBModel(parameter);
-
+				
 				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
 			}
 
+			if (tempPropertyMap != null && parameterType.equals(KBConsts.PROPERTY)) {			
+				propertyMapValuesForValidation.add(tempPropertyMap);
+				tempPropertyMap = null;
+			}
 //			IRI root = createPropertyOrAttributeKBModel(exchangeParameter);
 //			builder.add(propertyClassifierKB, factory.createIRI("dul:hasParameter"), root);
 		}

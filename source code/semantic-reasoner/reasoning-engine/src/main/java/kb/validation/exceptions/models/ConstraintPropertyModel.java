@@ -6,13 +6,15 @@ public class ConstraintPropertyModel  extends ValidationModel {
 	public String templateName;
 	public String templateType;
 	public String property;
+	public String path;
 	public String description;
 	
-	public ConstraintPropertyModel(String templateName, String templateType, String property, String description) {
+	public ConstraintPropertyModel(String templateName, String templateType, String property, String path, String description) {
 		this.templateName = templateName;
 		this.templateType = templateType;
 		this.property = property;
-		this.description = description;
+		this.path = path;
+		this.description = description;	
 	}
 		
 
@@ -25,7 +27,8 @@ public class ConstraintPropertyModel  extends ValidationModel {
 		info.put("description", description);
 		info.put("name", property);
 		info.put("context", templateName);
-
+		info.put("path", path);
+		
 		json.put("info", info);
 
 		return json;

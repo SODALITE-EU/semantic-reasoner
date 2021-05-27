@@ -17,7 +17,7 @@
                                                                                              "http://example.org/owlim#" ;
                                              owlim:defaultNS                                 "" ;
                                              owlim:entity-index-size                         "10000000" ;
-                                             owlim:entity-id-size                            "40" ;
+                                             owlim:entity-id-size                            "32" ;
                                              owlim:imports                                   "" ;
                                              owlim:repository-type                           "file-repository" ;
                                              owlim:ruleset                                   "owl2-rl" ;

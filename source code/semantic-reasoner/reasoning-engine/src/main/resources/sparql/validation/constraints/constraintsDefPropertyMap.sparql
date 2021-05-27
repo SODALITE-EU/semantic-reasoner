@@ -1,0 +1,10 @@
+select distinct ?property ?constraint ?constr_type ?value ?entry_schema
+where { 
+	?var soda:hasInferredContext ?context . 
+	?context tosca:properties ?concept . 
+    ?concept DUL:classifies ?property .
+	?concept DUL:hasParameter [DUL:classifies tosca:constraints; DUL:hasParameter [DUL:classifies ?constraint; tosca:hasDataValue ?value]].
+	?concept DUL:hasParameter [DUL:classifies tosca:type; tosca:hasValue ?constr_type].
+	?concept DUL:hasParameter [DUL:classifies tosca:entry_schema; DUL:hasParameter [DUL:classifies tosca:type; tosca:hasObjectValue ?entry_schema]].
+    VALUES ?constraint {tosca:min_length tosca:length tosca:max_length}
+}

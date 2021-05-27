@@ -38,7 +38,22 @@ public enum ConstraintsEnum {
 	MIN_LENGTH{
 		@Override
         public <T> boolean compare(String a, Set<T> b, String constrType) {
-			return true;
+			String bs = b.iterator().next().toString();
+			return Integer.parseInt(a) >=  Integer.parseInt(bs);
+        }
+	},
+	LENGTH{
+		@Override
+        public <T> boolean compare(String a, Set<T> b, String constrType) {
+			String bs = b.iterator().next().toString();
+			return Integer.parseInt(a) ==  Integer.parseInt(bs);
+        }
+	},
+	MAX_LENGTH{
+		@Override
+        public <T> boolean compare(String a, Set<T> b, String constrType) {
+			String bs = b.iterator().next().toString();
+			return Integer.parseInt(a) <=  Integer.parseInt(bs);
         }
 	},
 	VALID_VALUES {

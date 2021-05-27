@@ -1,0 +1,15 @@
+select distinct ?constraint ?constr_type ?value ?listvalue 
+where
+{
+	?var soda:hasInferredContext ?context .
+	?context tosca:properties ?concept .
+	?concept DUL:classifies ?property .
+	{
+		?concept DUL:hasParameter [DUL:classifies tosca:constraints; DUL:hasParameter [DUL:classifies ?constraint; tosca:hasDataValue ?value]]. 
+	} UNION {
+		?concept DUL:hasParameter [DUL:classifies tosca:constraints; DUL:hasParameter [DUL:classifies ?constraint; tosca:hasValue ?listvalue]].
+		?listvalue rdf:type tosca:List .
+	}
+	?concept DUL:hasParameter [DUL:classifies tosca:type; tosca:hasValue ?constr_type].
+	FILTER (strends(str(?property), ?var_property)). 
+}
