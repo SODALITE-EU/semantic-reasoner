@@ -27,14 +27,15 @@ public class NodeFull extends Node {
 	Set<Trigger> triggers;
 	Set<IRI> targets;
 
-	Set<Property> inputs;	
+	Set<Property> inputs;
+	Set<Property> outputs;
 	Optimization optimization;
 
 	//only for types
 	String classType;
 
 
-	public boolean isTemplate = false, isInput = false;
+	public boolean isTemplate = false, isInput = false, isOutput = false;
 
 	public NodeFull(IRI iri, boolean isTemplate) {
 		super(iri);
@@ -61,7 +62,8 @@ public class NodeFull extends Node {
 		targets = api.getTargets(uri.toString(), isTemplate);
 
 		// inputs
-		inputs = api.getInputs(uri.toString(), false);
+		inputs = api.getInputsOutputs(uri.toString(), true);
+		outputs = api.getInputsOutputs(uri.toString(), false);
 		
 		if (!isTemplate())
 			classType = api.getClassForType(uri);
@@ -79,7 +81,7 @@ public class NodeFull extends Node {
 	@Override
 	public JsonElement serialise() {
 		JsonObject data = new JsonObject();
-		if (!isInput) {
+		if (!isInput && !isOutput) {
 			if (description != null)
 				data.addProperty("description", description);
 			data.addProperty("type", this.type.toString());
@@ -177,6 +179,15 @@ public class NodeFull extends Node {
 
 		if (!inputs.isEmpty())
 			data.add("inputs", array);
+		
+		array = new JsonArray();
+		for (Property p : outputs) {
+			array.add(p.serialise());
+			relevantUris.addAll(p.relevantUris);
+		}
+
+		if (!outputs.isEmpty())
+			data.add("outputs", array);
 
 		if(optimization != null)
 			data.addProperty("optimization", optimization.getJson());

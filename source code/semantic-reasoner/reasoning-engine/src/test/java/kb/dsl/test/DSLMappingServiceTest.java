@@ -315,7 +315,7 @@ class DSLMappingServiceTest {
 				input = n.getUri();
 		}
 		
-		Set<Property> inputs = api.getInputs(input, true);
+		Set<Property> inputs = api.getInputsOutputs(input, true);
 		assertTrue(inputs.size() == 0);
 		
 		LOG.info("Test Passed: removeInputs");

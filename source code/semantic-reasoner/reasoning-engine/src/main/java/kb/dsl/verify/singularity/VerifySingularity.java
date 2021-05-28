@@ -81,11 +81,11 @@ public class VerifySingularity {
 	public static void removeInputs(KB kb, String aadmURI) {
 		String sparql = "\r\nselect ?resource\r\n" + 
 						"where {\r\n" + 
-						"    ?m soda:includesInput ?resource .\r\n" + 
+						"    ?m soda:includesInput|soda:includesOutput ?resource .\r\n" + 
 						"}";
 		
 		String query = KB.SODA_DUL_PREFIXES + sparql;
-		LOG.info("removeInputs  query = {}\n", query);
+		LOG.info("removeInputsOutputs  query = {}\n", query);
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, 
 										new SimpleBinding("m", kb.getFactory().createIRI(aadmURI)));
 		

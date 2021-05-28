@@ -137,6 +137,12 @@
   rdfs:range :SodaliteSituation ;
   rdfs:subPropertyOf DUL:isSettingFor ;
 .
+:includesOutput
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain :AbstractApplicationDeployment ;
+  rdfs:range :SodaliteSituation ;
+  rdfs:subPropertyOf DUL:isSettingFor ;
+.
 :includesTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:domain :AbstractApplicationDeployment ;
@@ -174,10 +180,5 @@
 :hasNamespace
   rdf:type owl:DatatypeProperty ;
   rdf:domain :AbstractApplicationDeployment;
-  rdfs:range xsd:string ;
-.
-:hasClass
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain :SodaliteSituation;
   rdfs:range xsd:string ;
 .
