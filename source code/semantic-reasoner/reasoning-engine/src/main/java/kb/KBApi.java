@@ -1357,16 +1357,6 @@ public class KBApi {
 				aadm.addTemplate(f);
 			}
 
-			/*if (!Strings.isNullOrEmpty(inputs)) {
-				split = inputs.split(" ");
-				for (String s : split) {
-					String[] split2 = s.split("\\|");
-					NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), false);
-					f.isInput = true;
-					f.setType(kb.getFactory().createIRI(split2[1]));
-					aadm.addTemplate(f);
-				}
-			}*/
 			fillInputsOrOutputs(aadm, inputs, KBConsts.IS_INPUT);
 			fillInputsOrOutputs(aadm, outputs, KBConsts.IS_OUTPUT);
 
