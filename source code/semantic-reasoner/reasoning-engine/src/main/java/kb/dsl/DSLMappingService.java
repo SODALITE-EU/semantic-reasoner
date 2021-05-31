@@ -385,60 +385,9 @@ public class DSLMappingService {
 		}
 
 		// Inputs
-		Set<Resource> inputs = aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Input")).subjects();
-		if (inputs.size() > 0) {
-			IRI inputKB = factory.createIRI(namespace + "topology_template_inputs_" + MyUtils.randomString());
-			templateBuilder.add(inputKB, RDF.TYPE, factory.createIRI(KB.TOSCA + "Input"));
-			if (aadmKB!=null)
-				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "includesInput"), inputKB);
-
-			// create description
-			IRI inputDescriptionKB = factory.createIRI(namespace + "Desc_" + MyUtils.randomString());
-			templateBuilder.add(inputDescriptionKB, RDF.TYPE, "soda:SodaliteDescription");
-			templateBuilder.add(inputKB, factory.createIRI(KB.SODA + "hasContext"), inputDescriptionKB);
-			templateBuilder.add(inputKB, factory.createIRI(KB.SODA + "hasName"), "topology_template_inputs");
-			
-			for (Resource _input : inputs) {
-				IRI input = (IRI) _input;
-				Optional<Literal> _inputName = Models
-						.objectLiteral(aadmModel.filter(input, factory.createIRI(KB.EXCHANGE + "name"), null));
-				
-				String inputName = null;
-				if (!_inputName.isPresent())
-					mappingModels.add(new MappingValidationModel(currentTemplate, input.getLocalName(), "No 'name' defined for input"));
-				else {
-					inputName = _inputName.get().getLabel();
-					LOG.info("Input name: {}",  inputName);
-				}
-
-				// for each tosca input we need to have a Feature
-				IRI inputFeatureKB = factory.createIRI(namespace + "Input_" + MyUtils.randomString());
-				templateBuilder.add(inputFeatureKB, RDF.TYPE, "tosca:Feature");
-
-				if (inputName != null) {
-					IRI kbProperty = GetResources.getKBProperty(inputName, this.namespacesOfType, kb);
-					if (kbProperty == null) {
-						kbProperty = factory.createIRI(namespace + inputName);
-						templateBuilder.add(kbProperty, RDF.TYPE, "rdf:Property");
-					}
-					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
-				}
-				templateBuilder.add(inputDescriptionKB, factory.createIRI(KB.TOSCA + "input"), inputFeatureKB);
-
-				Set<Resource> _parameters = Models.getPropertyResources(aadmModel, _input,
-						factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
-
-				// TODO: HERE WE NEED TO IMPLEMENT RECURSION
-				for (Resource _parameter : _parameters) {
-					IRI parameter = (IRI) _parameter;
-					IRI propertyClassifierKB = createPropertyOrAttributeKBModel(parameter);
-
-					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), propertyClassifierKB);
-				}
-
-			}
-		}
-
+		createInputOutputKBModel(KBConsts.IS_INPUT);
+		// Outputs
+		createInputOutputKBModel(KBConsts.IS_OUTPUT);
 		
 		LOG.info("Mapping error models:");
 
@@ -450,6 +399,7 @@ public class DSLMappingService {
 			throw new MappingException(mappingModels);
 		}
 		
+		LOG.info("templateRequirements");
 		for (HashMap<String, IRI> t: templateRequirements) {
 			LOG.info("template = {}", t.get("template"));
 			LOG.info("type = {}", t.get("templateType"));
@@ -976,7 +926,75 @@ public class DSLMappingService {
 		
 		return parameterClassifierKB;		
 	}
+	
+	private void createInputOutputKBModel(boolean isInput) throws MappingException {
+		LOG.info("isInput: {}",  isInput);
+		final String classUsed = isInput ? "Input" : "Output";
+		final String id = isInput ? "topology_template_inputs_" : "topology_template_outputs_";
+		final String specificationProperty = isInput ? "includesInput" : "includesOutput";
+		final String conceptProperty = isInput ? "input" : "output";
+		
+		Set<Resource> inputs = aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + classUsed)).subjects();
+		if (inputs.size() > 0) {
+			IRI inputKB = factory.createIRI(namespace + id + MyUtils.randomString());
+			templateBuilder.add(inputKB, RDF.TYPE, factory.createIRI(KB.TOSCA + classUsed));
+			if (aadmKB!=null)
+				aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + specificationProperty), inputKB);
 
+			// create description
+			IRI inputDescriptionKB = factory.createIRI(namespace + "Desc_" + MyUtils.randomString());
+			templateBuilder.add(inputDescriptionKB, RDF.TYPE, "soda:SodaliteDescription");
+			templateBuilder.add(inputKB, factory.createIRI(KB.SODA + "hasContext"), inputDescriptionKB);
+			templateBuilder.add(inputKB, factory.createIRI(KB.SODA + "hasName"), id);
+			
+			for (Resource _input : inputs) {
+				IRI input = (IRI) _input;
+				Optional<Literal> _inputName = Models
+						.objectLiteral(aadmModel.filter(input, factory.createIRI(KB.EXCHANGE + "name"), null));
+				
+				String inputName = null;
+				if (!_inputName.isPresent())
+					mappingModels.add(new MappingValidationModel(currentTemplate, input.getLocalName(), "No 'name' defined for output"));
+				else {
+					inputName = _inputName.get().getLabel();
+					LOG.info("Input/Output name: {}",  inputName);
+				}
+				
+				// for each tosca input we need to have a Feature
+				IRI inputFeatureKB = factory.createIRI(namespace + classUsed + "_" + MyUtils.randomString());
+				templateBuilder.add(inputFeatureKB, RDF.TYPE, "tosca:Feature");
+
+				if (inputName != null) {
+					IRI kbProperty = GetResources.getKBProperty(inputName, this.namespacesOfType, kb);
+					if (kbProperty == null) {
+						kbProperty = factory.createIRI(namespace + inputName);
+						templateBuilder.add(kbProperty, RDF.TYPE, "rdf:Property");
+					}
+					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
+				}
+				templateBuilder.add(inputDescriptionKB, factory.createIRI(KB.TOSCA + conceptProperty), inputFeatureKB);
+				
+				Optional<String> description = Models.getPropertyString(aadmModel, input,
+						factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
+				if (description.isPresent())
+					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
+
+				Set<Resource> _parameters = Models.getPropertyResources(aadmModel, _input,
+						factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
+
+				// TODO: HERE WE NEED TO IMPLEMENT RECURSION
+				for (Resource _parameter : _parameters) {
+					IRI parameter = (IRI) _parameter;
+					IRI propertyClassifierKB = createPropertyOrAttributeKBModel(parameter);
+
+					templateBuilder.add(inputFeatureKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), propertyClassifierKB);
+				}
+
+			}
+		}
+		
+	}
+	
 	private IRI getKBTemplate(NamedResource n) {
 		LOG.info("getKBTemplate label={}, namespace ={} ", n.getResource(), n.getNamespace());
 		String namespace = n.getNamespace();

@@ -55,7 +55,7 @@ public class ModifyKB {
 					"{?s ?p ?o }";
 
 	public static final List<String> propertyList = Arrays.asList(new String [] {
-		        KB.TOSCA + "properties", KB.TOSCA + "requirements", KB.TOSCA + "interfaces", KB.TOSCA + "attributes", KB.TOSCA + "input",  KB.TOSCA + "capabilities"
+		        KB.TOSCA + "properties", KB.TOSCA + "requirements", KB.TOSCA + "interfaces", KB.TOSCA + "attributes", KB.TOSCA + "input",  KB.TOSCA + "output", KB.TOSCA + "capabilities"
 		        , KB.TOSCA + "triggers", KB.TOSCA + "targets"});
 	
 	public ModifyKB(KB kb) {
@@ -242,7 +242,7 @@ public class ModifyKB {
 						"\t} UNION {\r\n" + 
 						"\t\t?m a soda:AbstractApplicationDeployment .\r\n" + 
 						"\t}\r\n" + 
-						"\t?m soda:includesType|soda:includesTemplate|soda:includesInput ?x .\r\n" + 
+						"\t?m soda:includesType|soda:includesTemplate|soda:includesInput|soda:includesOutput ?x .\r\n" + 
 						"}";
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), queryDM, new SimpleBinding("m", modelUri));
 		

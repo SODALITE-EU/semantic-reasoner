@@ -2,11 +2,8 @@ select distinct ?concept ?property ?value  ?description
 where {
 	?resource soda:hasContext ?context .
 	#FILTER (strends(str(?resource), ?var)).
-	?context tosca:input ?concept .
+	?context tosca:output ?concept .
 	?concept DUL:classifies ?property .
-	OPTIONAL {?concept tosca:hasValue ?value .} 
+	OPTIONAL {?concept tosca:hasValue ?value .}
 	OPTIONAL {?resource dcterms:description ?description .}	
 }
-
-
-                

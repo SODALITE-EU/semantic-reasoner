@@ -225,11 +225,11 @@ public class KBApi {
 		return names;
 	}
 
-	public Set<Property> getInputs(String resource, boolean isTemplate) throws IOException {
-		LOG.info("getInputs: {}", resource);
+	public Set<Property> getInputsOutputs(String resource, boolean isInput) throws IOException {
+		LOG.info("getInputsOutputs: {}, {}", resource, isInput);
 		
 		Set<Property> inputs = new HashSet<>();
-		String sparql = MyUtils.fileToString("sparql/getInputs.sparql");
+		String sparql = isInput ? MyUtils.fileToString("sparql/getInputs.sparql") : MyUtils.fileToString("sparql/getOutputs.sparql");
 		String query = KB.PREFIXES + sparql;
 
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
@@ -240,11 +240,15 @@ public class KBApi {
 			IRI p1 = (IRI) bindingSet.getBinding("property").getValue();
 			IRI concept = (IRI) bindingSet.getBinding("concept").getValue();
 			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
+			String description = bindingSet.hasBinding("description") ? bindingSet.getBinding("description").getValue().stringValue() : null;
 
 			Property a = new Property(p1);
 			a.setClassifiedBy(concept);
 			if (_value != null)
 				a.setValue(_value, kb);
+			
+			if (description != null)
+				a.setDescription(description);
 
 			inputs.add(a);
 		}
@@ -1337,6 +1341,7 @@ public class KBApi {
 			String namespace = bindingSet.getBinding("namespace").getValue().stringValue();
 			String templates = bindingSet.getBinding("templates").getValue().stringValue();
 			String inputs = bindingSet.getBinding("inputs").getValue().stringValue();
+			String outputs = bindingSet.getBinding("outputs").getValue().stringValue();
 
 			aadm = new AADM(kb.getFactory().createIRI(aadmId));
 			aadm.setUser(user);
@@ -1346,22 +1351,14 @@ public class KBApi {
 			String[] split = templates.split(" ");
 			for (String s : split) {
 				String[] split2 = s.split("\\|");
-				boolean isInput = split2[1].endsWith("Input");
-				NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), true && !isInput);
+				boolean isInputOrOutput = split2[1].endsWith("Input") || split2[1].endsWith("Output");
+				NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), true && !isInputOrOutput);
 				f.setType(kb.getFactory().createIRI(split2[1]));
 				aadm.addTemplate(f);
 			}
 
-			if (!Strings.isNullOrEmpty(inputs)) {
-				split = inputs.split(" ");
-				for (String s : split) {
-					String[] split2 = s.split("\\|");
-					NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), false);
-					f.isInput = true;
-					f.setType(kb.getFactory().createIRI(split2[1]));
-					aadm.addTemplate(f);
-				}
-			}
+			fillInputsOrOutputs(aadm, inputs, KBConsts.IS_INPUT);
+			fillInputsOrOutputs(aadm, outputs, KBConsts.IS_OUTPUT);
 
 //			aadm.setTemplates(
 //					Arrays.stream(templates.split(" ")).map(x -> kb.getFactory().createIRI(x)).map(x -> new NodeFull(x))
@@ -1379,6 +1376,23 @@ public class KBApi {
 		return aadm;
 	}
 
+	private void fillInputsOrOutputs(AADM aadm, String inputsOrOutputs, boolean isInput) {
+		if (!Strings.isNullOrEmpty(inputsOrOutputs)) {
+			String[] split = inputsOrOutputs.split(" ");
+			for (String s : split) {
+				String[] split2 = s.split("\\|");
+				NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), false);
+				if (isInput) 
+					f.isInput = true;
+				else
+					f.isOutput = true;
+				f.setType(kb.getFactory().createIRI(split2[1]));
+				aadm.addTemplate(f);
+			}
+		}
+	}
+	
+	
 	public Set<SodaliteAbstractModel> getModels(String type, String namespace) throws IOException {
 		LOG.info("getModels for {} type, {} namespace", type, namespace);
 		Set<SodaliteAbstractModel> models = new HashSet<>();

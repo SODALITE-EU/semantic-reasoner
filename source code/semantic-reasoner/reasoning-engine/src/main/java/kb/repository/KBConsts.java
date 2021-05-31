@@ -21,6 +21,9 @@ public final class KBConsts {
 	public static final boolean AADM_JSON = true;
 	public static final boolean AADM = true;
 	
+	public static final boolean IS_INPUT = true;
+	public static final boolean IS_OUTPUT = false;
+	
 	static {
        	TYPES.put("data","tosca.datatypes.Root");
        	TYPES.put("node", "tosca.nodes.Root");
