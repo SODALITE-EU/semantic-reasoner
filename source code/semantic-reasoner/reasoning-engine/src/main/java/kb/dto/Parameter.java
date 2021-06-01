@@ -1,5 +1,7 @@
 package kb.dto;
 
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map.Entry;
 import org.slf4j.Logger;
@@ -59,6 +61,15 @@ public class Parameter extends Resource {
 				} else {
 					
 					if(value.startsWith("[")) {
+						//Retrieve the individual values of a list
+						ArrayList<String> values = MyUtils.getGson(false).fromJson(value, ArrayList.class);
+						//Add only the values that are resources to the aadm json
+						values.stream().forEach((l) -> {
+							if (MyUtils.isValidURL(l)) {
+								relevantUris.add(l);
+							}
+						});
+						
 						JsonArray fromJson = MyUtils.getGson(false).fromJson(value, JsonArray.class);
 						parameter.add(label, fromJson);
 					} else {
@@ -141,7 +152,7 @@ public class Parameter extends Resource {
 			IRI v = (IRI) value;
 			List<String> collect = Iterations.asList(
 					kb.connection.getStatements(v, kb.factory.createIRI(KB.TOSCA + "hasValue"), null))
-					.stream().map(x -> MyUtils.getStringValue(x.getObject())).collect(Collectors.toList());
+					.stream().map(x -> x.getObject().stringValue()).collect(Collectors.toList());
 			if (collect.isEmpty() && !v.stringValue().contains("List")) { //this could be [], i.e. an instance of List without values...
 				LOG.info("collect.isEmpty() {}", collect);
 				this.valueUri = v.toString();

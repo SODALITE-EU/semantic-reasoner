@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -242,5 +243,17 @@ public class MyUtils {
 	 */
 	public static String getNamespaceFromContext(String context) {
 		return MyUtils.getStringPattern(context, "^"+ KB.BASE_NAMESPACE + "(.*)/");
+	}
+	
+	public static boolean isValidURL(String url) {
+		/* Try creating a valid URL */
+		try {
+			new URL(url).toURI();
+			return true;
+		}// If there was an Exception
+		// while creating URL object
+		catch (Exception e) {
+			return false;
+		}
 	}
 }

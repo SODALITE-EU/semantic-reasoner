@@ -126,7 +126,7 @@ public class AADM extends Resource {
 			JsonElement serialise = nodeFull.serialise();
 			aadm.add(nodeFull.uri, serialise);
 
-//			System.out.println("---->" + nodeFull.relevantUris);
+			LOG.info("Relevant Uris: {}", nodeFull.relevantUris);
 			if (!this.forRefactorer)
 				list.addAll(getNodes(nodeFull.relevantUris));
 			LOG.info("list: {}", list.size());
