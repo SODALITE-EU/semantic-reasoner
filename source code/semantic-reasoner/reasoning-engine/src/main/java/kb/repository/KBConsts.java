@@ -24,6 +24,7 @@ public final class KBConsts {
 	public static final boolean IS_INPUT = true;
 	public static final boolean IS_OUTPUT = false;
 	
+	
 	static {
        	TYPES.put("data","tosca.datatypes.Root");
        	TYPES.put("node", "tosca.nodes.Root");
@@ -45,6 +46,16 @@ public final class KBConsts {
 		AADM_JSON_CLASSES.put("ArtifactType", "artifact_types");
 		
 	}
+	
+	
+	public static final Map<String,String> TEMPLATE_CLASSES = new HashMap<String, String>();
+	static {
+		TEMPLATE_CLASSES.put("Template", "node_templates");
+		TEMPLATE_CLASSES.put("PolicyTemplate", "policy_templates");
+		
+	}
+	
+
 	
 	private KBConsts() {
 		throw new IllegalStateException("KBConsts class");

@@ -42,6 +42,7 @@ import kb.clean.ModifyKB;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.dsl.exceptions.models.MappingValidationModel;
+import kb.dsl.utils.ErrorConsts;
 import kb.dsl.utils.GetResources;
 import kb.dsl.utils.NamedResource;
 import kb.dsl.verify.singularity.VerifySingularity;
@@ -95,6 +96,10 @@ public class DSLMappingService {
 	private String currentTemplate;
 	private IRI currentType;
 	public List<String> namespacesOfType = new ArrayList<>();
+	
+	//for mapping errors, contains e.g. node_templates
+	String currentPrefixTemplate;
+	String subMappingPath = "";
 	
 
 	// Validation
@@ -228,7 +233,7 @@ public class DSLMappingService {
 			String templateName = null;
 			
 			if (!_templateName.isPresent())
-				mappingModels.add(new MappingValidationModel("", template.getLocalName(), "No 'name' defined for template: "));
+				mappingModels.add(new MappingValidationModel(currentPrefixTemplate + ErrorConsts.SLASH, template.getLocalName(), "No 'name' defined for template: "));
 			else 
 				templateName = _templateName.get().getLabel();
 			
@@ -240,7 +245,7 @@ public class DSLMappingService {
 			
 			//errors like this are syntactic errors - prevented from ide
 			if (!_templateType.isPresent()) {
-				mappingModels.add(new MappingValidationModel("type", currentTemplate, "No 'type' defined for template: "));
+				mappingModels.add(new MappingValidationModel(currentPrefixTemplate + ErrorConsts.SLASH + templateName, currentTemplate, "No 'type' defined for template: "));
 				throw new MappingException(mappingModels);
 			}
 			else
@@ -265,10 +270,13 @@ public class DSLMappingService {
 				IRI templateKB = factory.createIRI(namespace + templateName); // this will be always new
 				templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasName"), templateName);
 				
+				String kindOfTtemplate = MyUtils.getStringPattern(template.getLocalName(), "([A-Za-z]+)_\\d+");
+				currentPrefixTemplate = KBConsts.TEMPLATE_CLASSES.get(kindOfTtemplate);
+				
 				IRI kbNodeType = GetResources.getKBNodeType(fullTemplateType, "tosca:tosca.entity.Root", kb);
 
 				if (kbNodeType == null) {
-					mappingModels.add(new MappingValidationModel(templateName, templateType, "'type' not found "));
+					mappingModels.add(new MappingValidationModel(currentPrefixTemplate + ErrorConsts.SLASH + templateName, templateType, "'type' not found "));
 				} else {
 					templateBuilder.add(templateKB, RDF.TYPE, kbNodeType);
 					//needed for requirement Validation
@@ -294,6 +302,9 @@ public class DSLMappingService {
 			for (Resource _property : _properties) {
 				IRI property = (IRI) _property;
 				IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
+				
+				//clear context path needed for Mapping errors
+				subMappingPath = "";
 
 				// add property classifiers to the template context
 				if (templateDescriptionKB != null)
@@ -320,6 +331,10 @@ public class DSLMappingService {
 					factory.createIRI(KB.EXCHANGE + "attributes"))) {
 				IRI attribute = (IRI) _attribute;
 				IRI attributesClassifierKB = createPropertyOrAttributeKBModel(attribute);
+				
+				//clear context path needed for Mapping errors
+				subMappingPath = "";
+				
 				if (templateDescriptionKB != null)
 					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "attributes"), attributesClassifierKB);
 			}
@@ -329,6 +344,9 @@ public class DSLMappingService {
 					factory.createIRI(KB.EXCHANGE + "requirements"))) {
 				IRI requirement = (IRI) _requirement;
 				IRI requirementClassifierKB = createRequirementKBModel(requirement);
+				
+				//clear context path needed for Mapping errors
+				subMappingPath = "";
 
 				// add attribute classifiers to the template context
 				if (templateDescriptionKB != null)
@@ -344,6 +362,9 @@ public class DSLMappingService {
 					factory.createIRI(KB.EXCHANGE + "capabilities"))) {
 				IRI capability = (IRI) _capability;
 				IRI capabilityClassifierKB = createCapabilityKBModel(capability);
+				
+				//clear context path needed for Mapping errors
+				subMappingPath = "";
 
 				// add attribute classifiers to the template context
 				if (templateDescriptionKB != null)
@@ -366,6 +387,9 @@ public class DSLMappingService {
 					factory.createIRI(KB.EXCHANGE + "triggers"))) {
 				IRI trigger = (IRI) _trigger;
 				IRI triggerClassifierKB = createTriggerKBModel(trigger);
+				
+				//clear context path needed for Mapping errors
+				subMappingPath = "";
 				// add property classifiers to the template context
 				if (templateDescriptionKB != null)
 					aadmBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "triggers"), triggerClassifierKB);
@@ -377,6 +401,8 @@ public class DSLMappingService {
 						
 			if (!_targets.isEmpty()) {
 				IRI targetClassifierKB = createTargetKBModel((IRI)_targets.get());
+				//clear context path needed for Mapping errors
+				subMappingPath = "";
 				if (templateDescriptionKB != null)	
 					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "targets"),
 								targetClassifierKB);
@@ -386,8 +412,11 @@ public class DSLMappingService {
 
 		// Inputs
 		createInputOutputKBModel(KBConsts.IS_INPUT);
+		//clear context path needed for Mapping errors
+		subMappingPath = "";
 		// Outputs
 		createInputOutputKBModel(KBConsts.IS_OUTPUT);
+		
 		
 		LOG.info("Mapping error models:");
 
@@ -442,9 +471,11 @@ public class DSLMappingService {
 		
 		String requirementName = null;
 		if (!_requirementName.isPresent())
-			mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "No 'name' defined for requirement"));
-		else
+			mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "No 'name' defined for requirement"));
+		else {
 			requirementName = _requirementName.get().getLabel();
+			subMappingPath += ErrorConsts.SLASH + requirementName;
+		}
 		
 		tempReq.put("template", kb.factory.createIRI(this.templatews + this.currentTemplate));
 		tempReq.put("templateType", this.currentType);
@@ -457,7 +488,7 @@ public class DSLMappingService {
 		if (requirementName != null) {
 			requirementProperty = GetResources.getKBProperty(requirementName, this.namespacesOfType, kb);
 			if (requirementProperty == null) {
-				mappingModels.add(new MappingValidationModel(currentTemplate, requirementName, "Cannot find requirement property"));
+				mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirementName, "Cannot find requirement property"));
 			}
 			tempReq.put("r_a", requirementProperty);
 		}
@@ -477,7 +508,7 @@ public class DSLMappingService {
 				if (templateNames.contains(n.getResource()))
 					kbTemplate = factory.createIRI(namespace + n.getResource());
 				else
-					mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
+					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
 			}
 			if (kbTemplate != null)
 				templateBuilder.add(requirementClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
@@ -499,7 +530,7 @@ public class DSLMappingService {
 				factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 		IRI parameter = null;
 		if (!_parameter.isPresent()) {
-			mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "Cannot find requirement parameter"));
+			mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find requirement parameter"));
 		} else {
 			parameter = (IRI) _parameter.get();
 		
@@ -508,9 +539,10 @@ public class DSLMappingService {
 			Optional<Literal> _parameterName = Models
 					.objectLiteral(aadmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "name"), null));
 			if (!_parameter.isPresent()) {
-				mappingModels.add(new MappingValidationModel(currentTemplate, parameter.getLocalName() , "No 'name' defined for requirement parameter"));
+				mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), parameter.getLocalName() , "No 'name' defined for requirement parameter"));
 			} else {
 				parameterName = _parameterName.get().getLabel();
+				subMappingPath += ErrorConsts.SLASH + parameterName;
 			}
 		
 			// create classifier
@@ -519,7 +551,7 @@ public class DSLMappingService {
 			if (parameterName != null) {
 				IRI paramProperty = GetResources.getKBProperty(parameterName, this.namespacesOfType, kb);
 				if (paramProperty == null) 
-					mappingModels.add(new MappingValidationModel(currentTemplate, parameterName , "Cannot find requirement parameter"));
+					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), parameterName , "Cannot find requirement parameter"));
 				else 
 					templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.DUL + "classifies"), paramProperty);
 			}
@@ -536,7 +568,7 @@ public class DSLMappingService {
 					if (templateNames.contains(n.getResource()))
 						kbTemplate = factory.createIRI(namespace + n.getResource());
 					else
-						mappingModels.add(new MappingValidationModel(currentTemplate, requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
+						mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
 				}
 				if (kbTemplate != null)
 					templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
@@ -562,9 +594,10 @@ public class DSLMappingService {
 
 		String propertyName = null;
 		if (!_propertyName.isPresent())
-			mappingModels.add(new MappingValidationModel(currentTemplate, exchangeParameter.getLocalName(), "No 'name' defined for property"));
+			mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.PROPERTIES), exchangeParameter.getLocalName(), "No 'name' defined for property"));
 		else {
 			propertyName = _propertyName.get().getLabel();
+			subMappingPath += ErrorConsts.SLASH + propertyName;
 		}
 //		Optional<Literal> _value = Models
 //				.objectLiteral(aadmModel.filter(exchangeParameter, factory.createIRI(KB.EXCHANGE + "value"), null));
@@ -803,6 +836,7 @@ public class DSLMappingService {
 				.objectLiteral(aadmModel.filter(trigger, factory.createIRI(KB.EXCHANGE + "name"), null));
 		
 		String triggerName = _triggerName.get().getLabel();
+		subMappingPath += ErrorConsts.SLASH + triggerName;
 		
 		IRI triggerProperty = null;
 		triggerProperty = GetResources.getKBProperty(triggerName, this.namespacesOfType, kb);
@@ -850,7 +884,7 @@ public class DSLMappingService {
 					if (templateNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
 					else {
-						mappingModels.add(new MappingValidationModel(currentTemplate, trigger.getLocalName(), "Cannot find Template: " + value.getLabel() + " for trigger = " + triggerName));
+						mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.TRIGGERS), trigger.getLocalName(), "Cannot find Template: " + value.getLabel() + " for trigger = " + triggerName));
 						LOG.warn("{}: Cannot find template: {} for trigger {}", currentTemplate, value.getLabel(), triggerName);
 					}
 				}
@@ -916,7 +950,7 @@ public class DSLMappingService {
 				if (templateNames.contains(n.getResource()))
 					kbNode = factory.createIRI(namespace + n.getResource());
 				else {
-					mappingModels.add(new MappingValidationModel(currentTemplate, "targets", "Cannot find target: " + l.getLabel()));
+					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.TARGETS), "targets", "Cannot find target: " + l.getLabel()));
 					LOG.warn("{}: Cannot find Node: {} ", currentTemplate, l.getLabel());
 				}
 			}
@@ -954,7 +988,7 @@ public class DSLMappingService {
 				
 				String inputName = null;
 				if (!_inputName.isPresent())
-					mappingModels.add(new MappingValidationModel(currentTemplate, input.getLocalName(), "No 'name' defined for output"));
+					mappingModels.add(new MappingValidationModel(isInput ? "inputs" : "outputs", input.getLocalName(), "No 'name' defined for " + conceptProperty));
 				else {
 					inputName = _inputName.get().getLabel();
 					LOG.info("Input/Output name: {}",  inputName);
@@ -993,6 +1027,11 @@ public class DSLMappingService {
 			}
 		}
 		
+	}
+	
+	//for the context path of Mapping errors
+	private  String getContextPath(String entity) {
+		return currentPrefixTemplate + ErrorConsts.SLASH + currentTemplate + ErrorConsts.SLASH + entity + subMappingPath;
 	}
 	
 	private IRI getKBTemplate(NamedResource n) {
@@ -1047,8 +1086,8 @@ public class DSLMappingService {
 			
 		return x;
 	}
-	
-	
+
+
 	public IRI getNamespace() {
 		return this.namespace;
 	}
