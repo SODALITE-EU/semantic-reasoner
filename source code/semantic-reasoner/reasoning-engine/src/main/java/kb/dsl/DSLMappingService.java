@@ -98,7 +98,7 @@ public class DSLMappingService {
 	public List<String> namespacesOfType = new ArrayList<>();
 	
 	//for mapping errors, contains e.g. node_templates
-	String prefixTemplate;
+	String currentPrefixTemplate;
 	String subMappingPath = "";
 	
 
@@ -233,7 +233,7 @@ public class DSLMappingService {
 			String templateName = null;
 			
 			if (!_templateName.isPresent())
-				mappingModels.add(new MappingValidationModel(prefixTemplate + ErrorConsts.SLASH, template.getLocalName(), "No 'name' defined for template: "));
+				mappingModels.add(new MappingValidationModel(currentPrefixTemplate + ErrorConsts.SLASH, template.getLocalName(), "No 'name' defined for template: "));
 			else 
 				templateName = _templateName.get().getLabel();
 			
@@ -245,7 +245,7 @@ public class DSLMappingService {
 			
 			//errors like this are syntactic errors - prevented from ide
 			if (!_templateType.isPresent()) {
-				mappingModels.add(new MappingValidationModel(prefixTemplate + ErrorConsts.SLASH + templateName, currentTemplate, "No 'type' defined for template: "));
+				mappingModels.add(new MappingValidationModel(currentPrefixTemplate + ErrorConsts.SLASH + templateName, currentTemplate, "No 'type' defined for template: "));
 				throw new MappingException(mappingModels);
 			}
 			else
@@ -271,12 +271,12 @@ public class DSLMappingService {
 				templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasName"), templateName);
 				
 				String kindOfTtemplate = MyUtils.getStringPattern(template.getLocalName(), "([A-Za-z]+)_\\d+");
-				prefixTemplate = KBConsts.TEMPLATE_CLASSES.get(kindOfTtemplate);
+				currentPrefixTemplate = KBConsts.TEMPLATE_CLASSES.get(kindOfTtemplate);
 				
 				IRI kbNodeType = GetResources.getKBNodeType(fullTemplateType, "tosca:tosca.entity.Root", kb);
 
 				if (kbNodeType == null) {
-					mappingModels.add(new MappingValidationModel(prefixTemplate + ErrorConsts.SLASH + templateName, templateType, "'type' not found "));
+					mappingModels.add(new MappingValidationModel(currentPrefixTemplate + ErrorConsts.SLASH + templateName, templateType, "'type' not found "));
 				} else {
 					templateBuilder.add(templateKB, RDF.TYPE, kbNodeType);
 					//needed for requirement Validation
@@ -1031,7 +1031,7 @@ public class DSLMappingService {
 	
 	//for the context path of Mapping errors
 	private  String getContextPath(String entity) {
-		return prefixTemplate + ErrorConsts.SLASH + currentTemplate + ErrorConsts.SLASH + entity + subMappingPath;
+		return currentPrefixTemplate + ErrorConsts.SLASH + currentTemplate + ErrorConsts.SLASH + entity + subMappingPath;
 	}
 	
 	private IRI getKBTemplate(NamedResource n) {

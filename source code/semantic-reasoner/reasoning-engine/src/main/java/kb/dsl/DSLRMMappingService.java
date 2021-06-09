@@ -82,7 +82,8 @@ public class DSLRMMappingService {
 	
 	Set<String> nodeNames = new HashSet<>();
 	
-	String prefixType;
+	//for mapping errors, contains e.g. node_types
+	String currentPrefixType;
 	String subMappingPath = "";
 
 	public DSLRMMappingService(KB kb, String rmTTL, String rmURI, String namespace, String rmDSL, String name) throws RDFParseException, UnsupportedRDFormatException, IOException {
@@ -204,7 +205,7 @@ public class DSLRMMappingService {
 			
 			String nodeName = null;
 			if (!_nodeName.isPresent()) {				
-				mappingModels.add(new MappingValidationModel(prefixType + ErrorConsts.SLASH , node.getLocalName(), "No 'name' defined for type "));
+				mappingModels.add(new MappingValidationModel(currentPrefixType + ErrorConsts.SLASH , node.getLocalName(), "No 'name' defined for type "));
 				throw new MappingException(mappingModels);
 			}
 			else 
@@ -217,7 +218,7 @@ public class DSLRMMappingService {
 			
 			String nodeType = null;
 			if (!_nodeType.isPresent()) {
-				mappingModels.add(new MappingValidationModel(prefixType + ErrorConsts.SLASH + currentType , node.getLocalName(), "No 'derivesFrom' defined for node"));
+				mappingModels.add(new MappingValidationModel(currentPrefixType + ErrorConsts.SLASH + currentType , node.getLocalName(), "No 'derivesFrom' defined for node"));
 				throw new MappingException(mappingModels);
 			}
 			else 
@@ -241,7 +242,7 @@ public class DSLRMMappingService {
 				
 				//assign kind of type - node_types e.t.c needed by IaC builder
 				String kindOfType = MyUtils.getStringPattern(node.getLocalName(), "([A-Za-z]+)_\\d+");
-				prefixType = KBConsts.AADM_JSON_CLASSES.get(kindOfType);
+				currentPrefixType = KBConsts.AADM_JSON_CLASSES.get(kindOfType);
 				nodeBuilder.add(nodeKB, factory.createIRI(KB.SODA + "hasClass"), KBConsts.AADM_JSON_CLASSES.get(kindOfType));
 			
 				IRI kbNodeType = GetResources.getKBNodeType(n , "tosca:tosca.entity.Root", kb);
@@ -251,7 +252,7 @@ public class DSLRMMappingService {
 						kbNodeType = factory.createIRI(namespace + nodeType);
 					else {
 						LOG.info("Cannot find Node type, currentType: {}, nodeType: {}",currentType, nodeType);
-						mappingModels.add(new MappingValidationModel(prefixType + ErrorConsts.SLASH + currentType + ErrorConsts.SLASH  + "derived_from" , nodeType, "Cannot find Node type"));
+						mappingModels.add(new MappingValidationModel(currentPrefixType + ErrorConsts.SLASH + currentType + ErrorConsts.SLASH  + "derived_from" , nodeType, "Cannot find Node type"));
 					}
 				} 
 				
@@ -1037,7 +1038,7 @@ public class DSLRMMappingService {
 				if (nodeNames.contains(n.getResource()))
 					kbNode = factory.createIRI(namespace + n.getResource());
 				else {
-					mappingModels.add(new MappingValidationModel(prefixType + ErrorConsts.SLASH + currentType + ErrorConsts.SLASH + ErrorConsts.TARGETS, "targets", "Cannot find target: " + l.getLabel()));
+					mappingModels.add(new MappingValidationModel(currentPrefixType + ErrorConsts.SLASH + currentType + ErrorConsts.SLASH + ErrorConsts.TARGETS, "targets", "Cannot find target: " + l.getLabel()));
 					LOG.warn( "{}: Cannot find Node: {}", l.getLabel());
 				}
 			}
@@ -1123,7 +1124,7 @@ public class DSLRMMappingService {
 	
 	//for the context path of Mapping errors
 	private  String getContextPath(String entity) {
-		return prefixType + ErrorConsts.SLASH + currentType + ErrorConsts.SLASH + entity + subMappingPath;
+		return currentPrefixType + ErrorConsts.SLASH + currentType + ErrorConsts.SLASH + entity + subMappingPath;
 	}
 	
 	private IRI getKBNode(NamedResource n) {
