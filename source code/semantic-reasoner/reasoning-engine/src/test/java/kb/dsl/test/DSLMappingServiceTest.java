@@ -110,7 +110,7 @@ class DSLMappingServiceTest {
 				
 				DSLMappingService m = null;
 				String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3.ttl");
-				m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+				m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
 				aadmIRI = m.start();
 				assertNotNull(aadmIRI);
 				m.save();
@@ -142,7 +142,7 @@ class DSLMappingServiceTest {
 		DSLMappingService m = null;
 		try {
 			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_required_property_missing.ttl");
-			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
 			try {
 				m.start();
 			} catch (ValidationException e) {	
@@ -173,7 +173,7 @@ class DSLMappingServiceTest {
 		DSLMappingService m = null;
 		try {
 			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_mapping_exception.ttl");
-			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
 			try {
 				m.start();
 				m.save();

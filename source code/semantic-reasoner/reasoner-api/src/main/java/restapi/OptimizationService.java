@@ -104,7 +104,7 @@ public class OptimizationService extends AbstractService {
 		
 		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 		
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name);
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name, "");
 		IRI aadmUri = null;
 
 		//Contains the final response

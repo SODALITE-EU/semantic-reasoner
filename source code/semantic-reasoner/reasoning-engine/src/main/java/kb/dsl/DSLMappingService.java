@@ -90,6 +90,7 @@ public class DSLMappingService {
 	//e.g.docker or openstack
 	public IRI namespace;
 	public String name;
+	public String version;
 	
 	boolean complete;
 	
@@ -130,7 +131,7 @@ public class DSLMappingService {
 	public Set<String> templateNames = new HashSet<>();
 	
 
-	public DSLMappingService(KB kb, String aadmTTL, String aadmURI, boolean complete, String namespace, String aadmDSL, String name)
+	public DSLMappingService(KB kb, String aadmTTL, String aadmURI, boolean complete, String namespace, String aadmDSL, String name, String version)
 			throws RDFParseException, UnsupportedRDFormatException, IOException {
 		super();
 		this.kb = kb;
@@ -160,6 +161,8 @@ public class DSLMappingService {
 		
 		this.aadmDSL = aadmDSL;
 		this.name = name;
+		
+		this.version = version;
 	}
 
 	public void retrieveLocalTemplates() throws MappingException {
@@ -197,6 +200,11 @@ public class DSLMappingService {
 
 			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(aadmws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
 			//context = aadmKB;
+			
+			//Append version
+			if (!version.isEmpty())
+				aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(aadmws + "AADM_" + MyUtils.randomString() +  "/" + version) : factory.createIRI(aadmURI + "/" + version);
+			
 			aadmBuilder.add(aadmKB, RDF.TYPE, "soda:AbstractApplicationDeployment");
 
 			if (userId != null) {

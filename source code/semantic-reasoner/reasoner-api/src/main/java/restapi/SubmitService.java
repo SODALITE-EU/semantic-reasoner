@@ -89,6 +89,7 @@ public class SubmitService extends AbstractService {
 			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
+			@ApiParam(value = "version", required = false) @DefaultValue("") @FormParam("version") String version,
 			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
@@ -100,7 +101,7 @@ public class SubmitService extends AbstractService {
 					
 		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 		
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name);
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name, version);
 		IRI aadmUri = null;
 		//Contains the final response
 		JSONObject response = new JSONObject();
