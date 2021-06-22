@@ -276,7 +276,12 @@ public class DSLMappingService {
 			// add template to the aadm container instance
 			if (templateName != null && templateType != null) {
 				IRI templateKB = factory.createIRI(namespace + templateName); // this will be always new
-				templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasName"), templateName);
+				if (!version.isEmpty()) {
+					templateKB = factory.createIRI(namespace + KBConsts.SLASH + version + KBConsts.SLASH + templateName);
+					templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasName"), version + KBConsts.SLASH + templateName);
+				}
+				else
+					templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasName"), templateName);
 				
 				String kindOfTtemplate = MyUtils.getStringPattern(template.getLocalName(), "([A-Za-z]+)_\\d+");
 				currentPrefixTemplate = KBConsts.TEMPLATE_CLASSES.get(kindOfTtemplate);
