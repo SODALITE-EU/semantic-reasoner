@@ -174,7 +174,10 @@ public class DSLMappingService {
 					.objectLiteral(aadmModel.filter(template, factory.createIRI(KB.EXCHANGE + "name"), null));
 			
 			if (templateName.isPresent()) {
-				templateNames.add(templateName.get().getLabel());
+				if (!version.isEmpty())
+					templateNames.add(version + KBConsts.SLASH + templateName.get().getLabel());
+				else
+					templateNames.add(templateName.get().getLabel());
 			}
 		}
 	}
@@ -277,7 +280,7 @@ public class DSLMappingService {
 			if (templateName != null && templateType != null) {
 				IRI templateKB = factory.createIRI(namespace + templateName); // this will be always new
 				if (!version.isEmpty()) {
-					templateKB = factory.createIRI(namespace + KBConsts.SLASH + version + KBConsts.SLASH + templateName);
+					templateKB = factory.createIRI(namespace + version + KBConsts.SLASH + templateName);
 					templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasName"), version + KBConsts.SLASH + templateName);
 				}
 				else
