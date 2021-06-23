@@ -25,6 +25,7 @@ import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -205,9 +206,10 @@ public class DSLMappingService {
 			//context = aadmKB;
 			
 			//Append version
-			if (!version.isEmpty())
+			if (!version.isEmpty()) {
 				aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(aadmws + "AADM_" + MyUtils.randomString() +  "/" + version) : factory.createIRI(aadmURI + "/" + version);
-			
+				aadmBuilder.add(aadmKB, OWL.VERSIONINFO, version);
+			}
 			aadmBuilder.add(aadmKB, RDF.TYPE, "soda:AbstractApplicationDeployment");
 
 			if (userId != null) {
@@ -469,7 +471,7 @@ public class DSLMappingService {
 				//VerifySingularity.removeInputs(kb, aadmURI);
 				KBApi api = new KBApi(kb);
 				//deleteModel also deletes the inputs
-				api.deleteModel(aadmURI);
+				api.deleteModel(aadmURI, version, false);
 			}
 			VerifySingularity.removeExistingDefinitions(kb, templateNames, namespace.toString(), aadmKB);
 		} catch (IOException e) {
@@ -519,15 +521,8 @@ public class DSLMappingService {
 
 		if (value != null) { // this means there is no parameters
 			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);			
-			IRI kbTemplate = getKBTemplate(n);
-			if (kbTemplate == null) {
-				if (templateNames.contains(n.getResource()))
-					kbTemplate = factory.createIRI(namespace + n.getResource());
-				else
-					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
-			}
-			if (kbTemplate != null)
-				templateBuilder.add(requirementClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+			if (findTemplateReference(n, requirementClassifierKB) == null)
+				mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));			
 		} else {
 
 			IRI root = createParameterKBModel(requirement);
@@ -579,15 +574,9 @@ public class DSLMappingService {
 
 			if (value != null) { // this means there is no parameters
 				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
-				IRI kbTemplate = getKBTemplate(n);
-				if (kbTemplate == null) {
-					if (templateNames.contains(n.getResource()))
-						kbTemplate = factory.createIRI(namespace + n.getResource());
-					else
-						mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
-				}
-				if (kbTemplate != null)
-					templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+				IRI kbTemplate = findTemplateReference(n, parameterClassifierKB);
+				if (kbTemplate == null)
+					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
 				
 				//assign values for requirement validation
 				if (parameterName.equals("node"))
@@ -804,11 +793,13 @@ public class DSLMappingService {
 				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
 				IRI kbTemplate = getKBTemplate(n);
 				if (kbTemplate == null) {
-					if (templateNames.contains(n.getResource())) {
+					if (version.isEmpty() && templateNames.contains(n.getResource())) {
 						kbTemplate = factory.createIRI(namespace + n.getResource());
 						templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
-					}
-					else {
+					} else if ((!version.isEmpty() && templateNames.contains(version + KBConsts.SLASH + n.getResource()))) {
+						kbTemplate = factory.createIRI(namespace + version + KBConsts.SLASH + n.getResource());
+						templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+					} else {
 						//e.g. os/type/linux
 						templateBuilder.add(capabilityClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), valueString);
 						//mappingModels.add(new MappingValidationModel(currentTemplate, capability.getLocalName(), "Cannot find Template: " + value.getLabel()));
@@ -893,20 +884,17 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			if (triggerName.equals("node")) {
-				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
-				IRI kbNode = getKBTemplate(n);
-				if (kbNode == null) {
-					if (templateNames.contains(n.getResource()))
-						kbNode = factory.createIRI(namespace + n.getResource());
-					else {
+				if (triggerName.equals("node")) {
+					NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);				
+					IRI kbNode = findTemplateReference(n, triggerClassifierKB);
+			
+					if (kbNode == null) {
 						mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.TRIGGERS), trigger.getLocalName(), "Cannot find Template: " + value.getLabel() + " for trigger = " + triggerName));
 						LOG.warn("{}: Cannot find template: {} for trigger {}", currentTemplate, value.getLabel(), triggerName);
 					}
 				}
-				if(kbNode != null)
-					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-			} /*else if (triggerName.equals("capability") || triggerName.equals("requirement")) {
+		
+		 /*else if (triggerName.equals("capability") || triggerName.equals("requirement")) {
 				IRI req_cap = GetResources.getReqCapFromEventFilter(kb, value.getLabel());
 				if (req_cap != null) {
 					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), req_cap);
@@ -914,7 +902,8 @@ public class DSLMappingService {
 					mappingModels.add(new MappingValidationModel(currentTemplate, trigger.getLocalName(), "Cannot find " + value.getLabel() + " for trigger = " + triggerName));
 					LOG.log(Level.WARNING, "{0}: Cannot find template: {1} for trigger {2}", new Object[] {currentTemplate, value.getLabel(), triggerName});
 				}		
-			} */else {
+			} */
+			else {
 				Object i = null;
 				if ((i = Ints.tryParse(value.toString())) != null)
 					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
@@ -961,17 +950,12 @@ public class DSLMappingService {
 			
 			
 			NamedResource n = GetResources.setNamedResource(templatews, l.getLabel(), kb);
-			IRI kbNode = getKBTemplate(n);
-			if (kbNode == null) {
-				if (templateNames.contains(n.getResource()))
-					kbNode = factory.createIRI(namespace + n.getResource());
-				else {
-					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.TARGETS), "targets", "Cannot find target: " + l.getLabel()));
-					LOG.warn("{}: Cannot find Node: {} ", currentTemplate, l.getLabel());
-				}
+			IRI kbNode = findTemplateReference(n, list);
+			if (kbNode != null) {		
+				mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.TARGETS), "targets", "Cannot find target: " + l.getLabel()));
+				LOG.warn("{}: Cannot find Node: {} ", currentTemplate, l.getLabel());
 			}
-			if(kbNode != null)
-				aadmBuilder.add(list, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+			
 		}
 		
 		return parameterClassifierKB;		
@@ -1102,6 +1086,20 @@ public class DSLMappingService {
 			
 		return x;
 	}
+	
+	private IRI findTemplateReference(NamedResource n, IRI classifier) {
+		IRI kbTemplate = getKBTemplate(n);
+		if (kbTemplate == null) {
+			if (version.isEmpty() && templateNames.contains(n.getResource())) {
+				kbTemplate = factory.createIRI(namespace + n.getResource());
+			} else if (!version.isEmpty() && templateNames.contains(version + KBConsts.SLASH + n.getResource())) {
+				kbTemplate = factory.createIRI(namespace + version + KBConsts.SLASH + n.getResource());
+			} else
+				return null;
+			templateBuilder.add(classifier, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+		}			
+		return kbTemplate;
+	}
 
 
 	public IRI getNamespace() {
@@ -1168,7 +1166,7 @@ public class DSLMappingService {
 		
 		if (!validationModels.isEmpty()) {
 			KBApi api = new KBApi(kb);
-			api.deleteModel(this.aadmKB.toString());
+			api.deleteModel(this.aadmKB.toString(), version, false);
 			throw new ValidationException(validationModels);
 		}
 		

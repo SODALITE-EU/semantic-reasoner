@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -39,6 +40,7 @@ public class DeleteModelService extends AbstractService {
 	  * Delete a model in KB
 	  * Internal Note: Check for changing the operation from GET to DELETE
 	  * @param uri The uri of the model
+	  * @param version The version of the model
 	  * @throws IOException If your input format is invalid
 	  * @return Success or not
 	 * @throws URISyntaxException 
@@ -49,6 +51,11 @@ public class DeleteModelService extends AbstractService {
 			value = "Delete a model in Knowledge Base")
 //			response = String.class)
 	public Response deleteModel(@ApiParam(value = "uri", required = true) @QueryParam("uri") String uri,
+			@ApiParam(value = "version", required = false) @QueryParam("version") String version,
+			@ApiParam(
+					value = "boolean value representing if it is called from the refactorer or the IaC builder",
+					required = false,
+					defaultValue = "false") @QueryParam("hard") boolean hard,
 			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 			throws IOException, URISyntaxException {
 		LOG.info( "Delete model uri={}",  uri);
@@ -56,7 +63,7 @@ public class DeleteModelService extends AbstractService {
 		KBApi api = new KBApi();
 		
 		if (AuthUtil.authentication()) {
-			SodaliteAbstractModel model = api.getModelFromURI(uri);
+			SodaliteAbstractModel model = api.getModelFromURI(uri, version);
 			if (model != null) {
 				String shortNamespace = model.getNamespace() == null ? "global" : MyUtils.getNamespaceFromContext(model.getNamespace());
 				LOG.info( "Model from URI shortNamespace = {}",  shortNamespace);
@@ -66,7 +73,7 @@ public class DeleteModelService extends AbstractService {
 			}
 		}
 		
-		boolean res = api.deleteModel(uri);
+		boolean res = api.deleteModel(uri, version, hard);
 		api.shutDown();
 
 		JsonObject _result = new JsonObject();

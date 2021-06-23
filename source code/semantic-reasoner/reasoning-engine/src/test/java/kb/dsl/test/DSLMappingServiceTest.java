@@ -392,7 +392,7 @@ class DSLMappingServiceTest {
 	void testGetModelForResource()  {
 		LOG.info("testGetModel");
 		try {
-			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/");
+			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/", "");
 			assertEquals(model.getUri(), rmIRI3.toString());
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
@@ -409,7 +409,7 @@ class DSLMappingServiceTest {
 	void testGetModelForURI()  {
 		LOG.info("testGetModelForURI");
 		try {
-			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString());
+			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString(), "");
 			assertEquals(model.getUri(), rmIRI3.toString());
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);

@@ -93,6 +93,7 @@ public class OptimizationService extends AbstractService {
 			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
+			@ApiParam(value = "version", required = false) @DefaultValue("") @FormParam("version") String version,
 			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 					throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException  {
 		
@@ -131,7 +132,7 @@ public class OptimizationService extends AbstractService {
 		} catch (MyRestTemplateException e) {
 			if (aadmUri != null) {
 				KBApi api = new KBApi(kb);
-				api.deleteModel(aadmUri.toString());
+				api.deleteModel(aadmUri.toString(), version, false);
 			}
 			
 			HttpRequestErrorModel erm = e.error_model;

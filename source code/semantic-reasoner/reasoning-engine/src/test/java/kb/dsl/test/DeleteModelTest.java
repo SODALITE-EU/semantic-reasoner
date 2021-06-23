@@ -68,7 +68,7 @@ public class DeleteModelTest {
 	void testDeleteModel() throws IOException {
 		LOG.info("testDeleteModel");
 		try {
-			boolean success = api.deleteModel(rmIRI1.toString());
+			boolean success = api.deleteModel(rmIRI1.toString(), "", false);
 			assertTrue(success);
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);

@@ -9,11 +9,13 @@ import org.eclipse.rdf4j.model.IRI;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import kb.utils.MyUtils;
+
 public class SodaliteAbstractModel extends Resource {
 
 		IRI user;
 		ZonedDateTime createdAt;
-		String version;
+		String version = "";
 		String dsl;
 		String name;
 		boolean isAADM;
@@ -21,6 +23,11 @@ public class SodaliteAbstractModel extends Resource {
 
 		public SodaliteAbstractModel(IRI iri) {
 			super(iri);
+		}
+		
+		public SodaliteAbstractModel(IRI iri, String version) {
+			super(iri);
+			this.version = version;
 		}
 
 		@Override
@@ -31,6 +38,8 @@ public class SodaliteAbstractModel extends Resource {
 			model.addProperty("createdAt", createdAt.toString());
 			model.addProperty("dsl", dsl);
 			model.addProperty("name", name);
+			if (version != null)
+				model.addProperty("version", version);
 			return model;
 		}
 
