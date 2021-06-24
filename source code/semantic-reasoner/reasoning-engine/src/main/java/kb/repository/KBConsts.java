@@ -24,6 +24,10 @@ public final class KBConsts {
 	public static final boolean IS_INPUT = true;
 	public static final boolean IS_OUTPUT = false;
 	
+	public static final String SLASH = "/";
+	
+	public static final String PROPERTIES = "properties";
+	
 	
 	static {
        	TYPES.put("data","tosca.datatypes.Root");
