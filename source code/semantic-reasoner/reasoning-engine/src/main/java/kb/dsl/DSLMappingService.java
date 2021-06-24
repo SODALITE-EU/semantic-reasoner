@@ -322,7 +322,7 @@ public class DSLMappingService {
 					factory.createIRI(resourceIRI), definedPropertiesForValidation, kb);
 			validationModels.addAll(v.validate());
 			
-			ConstraintsPropertyValidation c = new ConstraintsPropertyValidation(templateName, fullTemplateType, propertyValuesForValidation, propertyMapValuesForValidation, kb);
+			ConstraintsPropertyValidation c = new ConstraintsPropertyValidation(currentPrefixTemplate, templateName, fullTemplateType, propertyValuesForValidation, propertyMapValuesForValidation, kb);
 			validationModels.addAll(c.validate());
 			
 			// attributes

@@ -18,16 +18,18 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
-
+import kb.dsl.utils.ErrorConsts;
 import kb.dsl.utils.NamedResource;
 import kb.dto.PropertyMap;
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
 import kb.validation.exceptions.models.ConstraintPropertyModel;
 
 public class ConstraintsPropertyValidation {
 	private static final Logger LOG = LoggerFactory.getLogger(ConstraintsPropertyValidation.class.getName());
+	private String kindOfTemplate;
 	private String templateName;
 	private NamedResource templateType;
 	private Map<String, String> exchangePropertyValues;
@@ -59,7 +61,8 @@ public class ConstraintsPropertyValidation {
 			"\t\t?var tosca:hasDataValue ?value\r\n" + 
 			"\t}\r\n";
 	
-	public ConstraintsPropertyValidation(String templateName, NamedResource templateType, Map<String, String> exchangePropertyValues, List<PropertyMap> exchangePropertyMapValues, KB kb) {
+	public ConstraintsPropertyValidation(String kindOfTemplate, String templateName, NamedResource templateType, Map<String, String> exchangePropertyValues, List<PropertyMap> exchangePropertyMapValues, KB kb) {
+		this.kindOfTemplate = kindOfTemplate;
 		this.templateName = templateName;
 		this.templateType = templateType;
 		this.exchangePropertyValues = exchangePropertyValues;
@@ -202,19 +205,19 @@ public class ConstraintsPropertyValidation {
 					switch (constraint) {
 						case MIN_LENGTH:
 							if (!ConstraintsEnum.MIN_LENGTH.compare(String.valueOf(numOfMaps) , new HashSet<>(Arrays.asList(c.value)), c.constType)) {
-								models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
+								models.add(new ConstraintPropertyModel(getBaseContextPath() + c.property , templateType.getResource(), 
 										c.property, c.property, "Map count: " + numOfMaps + " not greater or equal than MIN_LENGTH constraint definition: " + c.value));
 							}
 						break;
 						case LENGTH:
 							if (!ConstraintsEnum.LENGTH.compare(String.valueOf(numOfMaps) , new HashSet<>(Arrays.asList(c.value)), c.constType)) {
-								models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
+								models.add(new ConstraintPropertyModel(getBaseContextPath() + c.property, templateType.getResource(), 
 										c.property, c.property, "Map count: " + numOfMaps + " not equal LENGTH constraint definition: " + c.value));
 							}
 						break;
 						case MAX_LENGTH:
 							if (!ConstraintsEnum.MAX_LENGTH.compare(String.valueOf(numOfMaps) , new HashSet<>(Arrays.asList(c.value)), c.constType)) {
-								models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
+								models.add(new ConstraintPropertyModel(getBaseContextPath() + c.property, templateType.getResource(), 
 										c.property, c.property, "Map count: " + numOfMaps + "  greater than MAX_LENGTH constraint definition: " + c.value));
 							}
 						break;
@@ -260,20 +263,20 @@ public class ConstraintsPropertyValidation {
 		switch (constraint) {
 			case GREATER_OR_EQUAL:
 				if (!ConstraintsEnum.GREATER_OR_EQUAL.compare(templateValue, new HashSet<>(Arrays.asList(c.value)), c.constType)) {
-					models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
+					models.add(new ConstraintPropertyModel(getBaseContextPath()  + path, templateType.getResource(), 
 							c.property, path, "template value: " + templateValue + " not greater or equal than constraint definition: " + c.value));
 				}
 			break;
 			case LESS_OR_EQUAL:
 				if (!ConstraintsEnum.LESS_OR_EQUAL.compare(templateValue, new HashSet<>(Arrays.asList(c.value)), c.constType)) {
-					models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
+					models.add(new ConstraintPropertyModel(getBaseContextPath() + path, templateType.getResource(), 
 							c.property, path,"template value: " + templateValue + " not less or equal than constraint definition: " + c.value));	
 				}
 			break;
 			case VALID_VALUES:
 				LOG.info("valid_values: {}",  c.list);
 				if (!ConstraintsEnum.VALID_VALUES.compare(templateValue, c.list, c.constType)) {
-					models.add(new ConstraintPropertyModel(templateName, templateType.getResource(), 
+					models.add(new ConstraintPropertyModel(getBaseContextPath() + path, templateType.getResource(), 
 							c.property, path, "template value: " + templateValue + " not included in valid values: " + c.list));	
 				}
 			break;
@@ -282,6 +285,9 @@ public class ConstraintsPropertyValidation {
 		}
 	}
 	
+	private String getBaseContextPath() {
+		return kindOfTemplate + KBConsts.SLASH + templateName +  KBConsts.SLASH + KBConsts.PROPERTIES + KBConsts.SLASH;
+	}
 	
 	private class ConstraintResult {
 		private String property;
