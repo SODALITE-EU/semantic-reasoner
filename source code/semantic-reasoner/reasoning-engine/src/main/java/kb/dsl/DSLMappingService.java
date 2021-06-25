@@ -662,9 +662,20 @@ public class DSLMappingService {
 			
 		}
 		
+		
+		
 		if (!_values.isEmpty()) {
 
 			if (_values.size() == 1) {
+				
+				/*Just assign all properties to property maps, so as to detect properties of type map that have no parameter.
+				 IDE assigns an empty value "" to the property.*/
+				if (tempPropertyMap == null && parameterType.equals(KBConsts.PROPERTY)) {
+					tempPropertyMap = new PropertyMap(propertyName);
+					propertyMapValuesForValidation.add(tempPropertyMap);
+					tempPropertyMap = null;
+				}
+				
 				Object i = null;
 				String value = _values.iterator().next();
 				if ((i = Ints.tryParse(value)) != null) {
@@ -676,7 +687,7 @@ public class DSLMappingService {
 				propertyValuesForValidation.put(propertyName, value);
 				
 				// for constraints property map validation, assign the nested parameters
-				if (tempPropertyMap != null && tempPropertyMap.getMapProperties() != null) {
+				if (tempPropertyMap != null && tempPropertyMap.getMapProperties() != null && parameterType.equals(KBConsts.PARAMETER)) {
 					HashMap<String, String> _inPropertyMap = tempPropertyMap.getMapProperties().get(currentPropertyMap);
 					_inPropertyMap.put(propertyName, value);
 				}
@@ -713,9 +724,10 @@ public class DSLMappingService {
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			
 			//create propertyMap with the corresponding leading name
-			if (tempPropertyMap == null && parameterType.equals(KBConsts.PROPERTY)) {
+			/*if (tempPropertyMap == null && parameterType.equals(KBConsts.PROPERTY)) {
 				tempPropertyMap = new PropertyMap(propertyName);
-			}
+			}*/
+			
 			for (Resource _parameter : _parameters) {
 				if (tempPropertyMap != null && parameterType.equals(KBConsts.PROPERTY)) {
 					Optional<Literal> propName = Models
