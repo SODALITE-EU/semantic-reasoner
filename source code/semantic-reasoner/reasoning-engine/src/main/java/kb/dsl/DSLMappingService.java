@@ -479,6 +479,8 @@ public class DSLMappingService {
 		
 		tempReq.put("template", kb.factory.createIRI(this.templatews + this.currentTemplate));
 		tempReq.put("templateType", this.currentType);
+		//base IRI has been added only because other type is not permitted. It is converted to String in RequirementValidation
+		tempReq.put("kindOfTemplate", kb.factory.createIRI(KB.BASE_NAMESPACE + this.currentPrefixTemplate));
 
 		// create classifier
 		IRI requirementClassifierKB = factory.createIRI(namespace + "ReqClassifier_" + MyUtils.randomString());

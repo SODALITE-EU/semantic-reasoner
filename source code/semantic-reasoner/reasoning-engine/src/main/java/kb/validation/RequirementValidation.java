@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import kb.dsl.verify.singularity.VerifySingularity;
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.InferencesUtil;
 import kb.utils.MyUtils;
 import kb.utils.QueryUtil;
@@ -45,6 +46,7 @@ public class RequirementValidation extends ValidationManager {
 
 	public RequirementValidation(String aadmId, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, KB kb) {
 		super(kb);
+		
 		this.aadmId = aadmId;
 		this.templateRequirements = templateRequirements;
 		this.templateTypes = templateTypes;
@@ -64,11 +66,14 @@ public class RequirementValidation extends ValidationManager {
 		}
 		for (HashMap<String, IRI> templateRequirement : templateRequirements) {// template, templateType, r_a
 			IRI template = templateRequirement.get("template");
+			String kindOfTemplate = MyUtils.getStringValue(templateRequirement.get("kindOfTemplate"));
 			IRI r_a = templateRequirement.get("r_a");
 			IRI node = templateRequirement.get("node");
 			IRI capability = templateRequirement.get("capability");
 			
-			System.err.println("type template = " + node);
+			String context_base_path = kindOfTemplate + KBConsts.SLASH + MyUtils.getStringValue(template) + KBConsts.SLASH + KBConsts.REQUIREMENTS + KBConsts.SLASH;
+			
+			LOG.error("type template: {}", node);
 			
 			LOG.info("RequirementValidation {}, r_a = {}", templateRequirement.get("template").toString(), r_a.toString());
 			// 1.1 + 1.2 (check if rd.node exists)
@@ -76,7 +81,7 @@ public class RequirementValidation extends ValidationManager {
 			
 			if (hasRequirementDefinition == false) {
 				//throw new NoRequirementDefinitionValidationException(template, r_a);
-				models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a),"NoRequirementDefinition"));
+				models.add(new RequirementModel(context_base_path + MyUtils.getStringValue(r_a), MyUtils.getStringValue(template), MyUtils.getStringValue(r_a),"NoRequirementDefinition"));
 			}
 
 			HashMap<String, IRI> requirementDefinition = getRequirementContexts(templateRequirement);
@@ -96,7 +101,7 @@ public class RequirementValidation extends ValidationManager {
 					if (!nodeMismatch.isEmpty()) {
 						//throw new NodeMismatchValidationException(nodeMismatch.get("type_r_a_node"), template,
 							//nodeMismatch.get("r_d_node"));
-						models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a) + "/node", typeOfNode.toString(), MyUtils.getStringValue(nodeMismatch.get("r_d_node")), "NodeMismatch"));		
+						models.add(new RequirementModel(context_base_path + MyUtils.getStringValue(r_a) + "/node" , MyUtils.getStringValue(template), MyUtils.getStringValue(r_a) + "/node", typeOfNode.toString(), MyUtils.getStringValue(nodeMismatch.get("r_d_node")), "NodeMismatch"));		
 					}
 				}
 
@@ -107,7 +112,7 @@ public class RequirementValidation extends ValidationManager {
 						IRI typeOfCapability = getTypeofTemplate(capability);
 						HashMap<String, IRI> capabilityExistsMismatch = capabilityExistsMismatch(this.templateTypes.get(capability), r_a, capCtx);
 						if (!capabilityExistsMismatch.isEmpty()) {
-							models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a) + "/capability", typeOfCapability.toString(), MyUtils.getStringValue(capabilityExistsMismatch.get("r_d_capability")),  MyUtils.getStringValue(nodeType), "CapabilityExistsMismatch"));		
+							models.add(new RequirementModel(context_base_path + MyUtils.getStringValue(r_a) + "/capability", MyUtils.getStringValue(template), MyUtils.getStringValue(r_a) + "/capability", typeOfCapability.toString(), MyUtils.getStringValue(capabilityExistsMismatch.get("r_d_capability")),  MyUtils.getStringValue(nodeType), "CapabilityExistsMismatch"));		
 						}
 					}
 				
@@ -118,7 +123,7 @@ public class RequirementValidation extends ValidationManager {
 						if (!capabilityMatch.isEmpty()) {
 							/*throw new CapabilityMismatchValidationException(template, r_a, nodeType,
 								capabilityMatch.get("templateCapabilityType"), capabilityMatch.get("r_d_capability"));*/
-							models.add(new RequirementModel(MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), typeOfNode.toString(), MyUtils.getStringValue(capabilityMatch.get("r_d_capability")),  MyUtils.getStringValue(nodeType), "CapabilityMismatch"));		
+							models.add(new RequirementModel(context_base_path + MyUtils.getStringValue(r_a), MyUtils.getStringValue(template), MyUtils.getStringValue(r_a), typeOfNode.toString(), MyUtils.getStringValue(capabilityMatch.get("r_d_capability")),  MyUtils.getStringValue(nodeType), "CapabilityMismatch"));		
 						}
 					}
 				}
