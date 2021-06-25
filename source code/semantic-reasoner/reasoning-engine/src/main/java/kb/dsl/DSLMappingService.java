@@ -662,19 +662,19 @@ public class DSLMappingService {
 			
 		}
 		
+		/*Just assign all properties to property maps, so as to detect properties of type map that have no parameter.
+		 IDE assigns an empty value "" to the property.*/
+		if (tempPropertyMap == null && parameterType.equals(KBConsts.PROPERTY)) {
+			tempPropertyMap = new PropertyMap(propertyName);
+			propertyMapValuesForValidation.add(tempPropertyMap);
+			tempPropertyMap = null;
+		}
 		
 		
 		if (!_values.isEmpty()) {
 
 			if (_values.size() == 1) {
 				
-				/*Just assign all properties to property maps, so as to detect properties of type map that have no parameter.
-				 IDE assigns an empty value "" to the property.*/
-				if (tempPropertyMap == null && parameterType.equals(KBConsts.PROPERTY)) {
-					tempPropertyMap = new PropertyMap(propertyName);
-					propertyMapValuesForValidation.add(tempPropertyMap);
-					tempPropertyMap = null;
-				}
 				
 				Object i = null;
 				String value = _values.iterator().next();
@@ -722,11 +722,6 @@ public class DSLMappingService {
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, exchangeParameter,
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
-			
-			//create propertyMap with the corresponding leading name
-			/*if (tempPropertyMap == null && parameterType.equals(KBConsts.PROPERTY)) {
-				tempPropertyMap = new PropertyMap(propertyName);
-			}*/
 			
 			for (Resource _parameter : _parameters) {
 				if (tempPropertyMap != null && parameterType.equals(KBConsts.PROPERTY)) {
