@@ -70,7 +70,7 @@ public class PolicyMappingTest {
 			
 			
 			rm1  = new DSLRMMappingService(kb, rmTTL1,"", "radon","DSL","");
-			aadm1  = new DSLMappingService(kb, aadmTTL1,"", false,  "radon","DSL","");
+			aadm1  = new DSLMappingService(kb, aadmTTL1,"", false,  "radon","DSL", "", "");
 			
 			try {
 				rmIRI1 = rm1.start();

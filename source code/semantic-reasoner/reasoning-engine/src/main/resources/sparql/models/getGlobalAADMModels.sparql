@@ -1,4 +1,4 @@
-SELECT ?m ?time ?user ?dsl ?name {
+SELECT ?m ?time ?user ?dsl ?name ?version {
 		?m a soda:AbstractApplicationDeployment .
 		?m soda:createdAt ?time .
 		?m soda:createdBy ?user .
@@ -13,4 +13,5 @@ SELECT ?m ?time ?user ?dsl ?name {
 		}
     
 		?n soda:hasContext ?c
-} group by ?m ?time ?user ?dsl ?name
+		OPTIONAL {?m owl:versionInfo ?version .} 
+} group by ?m ?time ?user ?dsl ?name ?version

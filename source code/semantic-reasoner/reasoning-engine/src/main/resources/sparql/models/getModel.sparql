@@ -9,8 +9,9 @@ SELECT distinct ?m ?time ?user ?dsl ?name ?isAADM ?g {
 		
 		?m DUL:isSettingFor ?resource
 		OPTIONAL{
-		GRAPH ?g {
-			?resource soda:hasContext ?ctx .
+			GRAPH ?g {
+				?resource soda:hasContext ?ctx .
+			}
 		}
-	}
+		
 } order by (!bound(?g)) asc(str(?g))

@@ -124,7 +124,7 @@ public class SubmitTOSCAService extends AbstractService {
 		if (rmTTL != null)
 			 rm = new DSLRMMappingService(kb, rmTTL, rmURI, rmNamespace, "", rmName);
 		if (aadmTTL != null)
-			aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, aadmNamespace, "", aadmName);
+			aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, aadmNamespace, "", aadmName, "");
 
 		IRI rmUri = null;
 		IRI aadmUri = null;

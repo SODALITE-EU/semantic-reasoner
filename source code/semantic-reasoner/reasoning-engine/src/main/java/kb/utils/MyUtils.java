@@ -256,4 +256,9 @@ public class MyUtils {
 			return false;
 		}
 	}
+	
+	public static String getAADMUriWithoutVersion(IRI aadmUri) {
+		
+		return MyUtils.getStringPattern(aadmUri.stringValue(), "(.*\\/AADM_[a-zA-Z0-9]+)");
+	}
 }

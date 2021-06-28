@@ -20,6 +20,7 @@ public final class KBConsts {
 	public static final String TOSCALIST = KB.TOSCA + "List";
 	public static final boolean AADM_JSON = true;
 	public static final boolean AADM = true;
+
 	
 	public static final boolean IS_INPUT = true;
 	public static final boolean IS_OUTPUT = false;

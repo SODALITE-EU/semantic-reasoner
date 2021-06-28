@@ -110,7 +110,7 @@ class DSLMappingServiceTest {
 				
 				DSLMappingService m = null;
 				String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3.ttl");
-				m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+				m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
 				aadmIRI = m.start();
 				assertNotNull(aadmIRI);
 				m.save();
@@ -142,7 +142,7 @@ class DSLMappingServiceTest {
 		DSLMappingService m = null;
 		try {
 			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_required_property_missing.ttl");
-			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
 			try {
 				m.start();
 			} catch (ValidationException e) {	
@@ -173,7 +173,7 @@ class DSLMappingServiceTest {
 		DSLMappingService m = null;
 		try {
 			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_mapping_exception.ttl");
-			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
 			try {
 				m.start();
 				m.save();
@@ -392,7 +392,7 @@ class DSLMappingServiceTest {
 	void testGetModelForResource()  {
 		LOG.info("testGetModel");
 		try {
-			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/");
+			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/", "");
 			assertEquals(model.getUri(), rmIRI3.toString());
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
@@ -409,7 +409,7 @@ class DSLMappingServiceTest {
 	void testGetModelForURI()  {
 		LOG.info("testGetModelForURI");
 		try {
-			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString());
+			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString(), "");
 			assertEquals(model.getUri(), rmIRI3.toString());
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);

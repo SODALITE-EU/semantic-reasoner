@@ -1421,14 +1421,17 @@ public class KBApi {
 			IRI user = (IRI) bindingSet.getBinding("user").getValue();
 			Value dsl = bindingSet.getBinding("dsl").getValue();
 			Value name = bindingSet.getBinding("name").getValue();
+			Value _version = bindingSet.hasBinding("version") ? bindingSet.getBinding("version").getValue() : null;
 			
-			SodaliteAbstractModel a = new SodaliteAbstractModel(model);
+			SodaliteAbstractModel a;
+			a = (_version != null) ? new SodaliteAbstractModel(kb.factory.createIRI(MyUtils.getAADMUriWithoutVersion(model)) , _version.stringValue()) : new SodaliteAbstractModel(model);
+			
 			a.setUser(user);
 			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			a.setDsl(dsl.toString());
 			
 			a.setName(name.toString());
-			
+						
 			models.add(a);
 		}
 		
@@ -1436,25 +1439,28 @@ public class KBApi {
 		return models;
 	}
 	
-	public SodaliteAbstractModel getModelForResource(String resource, String namespace) throws IOException {
+	public SodaliteAbstractModel getModelForResource(String resource, String namespace, String version) throws IOException {
 		LOG.info("getModelForResource for {} resource, {} namespace", resource, namespace);
 		SodaliteAbstractModel a = null;
 		
 		String sparql = "";
 		String query;
 		TupleQueryResult result = null;
+		
+		String final_resource = version.isEmpty() ? resource : version + KBConsts.SLASH + resource;
+		
 		if ("".equals(namespace)) {
 			sparql += MyUtils.fileToString("sparql/models/getModelFromGlobalResource.sparql");
 			query = KB.SODA_DUL_PREFIXES + sparql;
 			LOG.info(query);
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-														new SimpleBinding("res_name", kb.getFactory().createLiteral(resource)));
+														new SimpleBinding("res_name", kb.getFactory().createLiteral(final_resource)));
 		} else {
 			sparql += MyUtils.fileToString("sparql/models/getModelFromNamedResource.sparql");
 			query = KB.SODA_DUL_PREFIXES + sparql;
 			LOG.info(query);
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding[] { new SimpleBinding("g", kb.getFactory().createIRI(namespace)),
-					new SimpleBinding("res_name", kb.getFactory().createLiteral(resource))});
+					new SimpleBinding("res_name", kb.getFactory().createLiteral(final_resource))});
 			
 		}
 			
@@ -1466,9 +1472,11 @@ public class KBApi {
 			Value dsl = bindingSet.getBinding("dsl").getValue();
 			Value name = bindingSet.getBinding("name").getValue();
 			String isAADM = bindingSet.getBinding("isAADM").getValue().stringValue();
+			Value _version = bindingSet.hasBinding("version") ? bindingSet.getBinding("version").getValue() : null;
 			
 			
-			a = new SodaliteAbstractModel(model);
+			
+			a = (_version != null) ? new SodaliteAbstractModel(kb.factory.createIRI(MyUtils.getAADMUriWithoutVersion(model)) , _version.stringValue()) : new SodaliteAbstractModel(model);
 			a.setUser(user);
 			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			a.setDsl(dsl.stringValue());
@@ -1480,15 +1488,20 @@ public class KBApi {
 		return a;
 	}
 	
-	public SodaliteAbstractModel getModelFromURI (String uri) throws IOException {
-		LOG.info("getModelFromURI for {} uri", uri);
+	public SodaliteAbstractModel getModelFromURI (String uri, String version) throws IOException {
+		LOG.info("getModelFromURI for {} uri, version: {}", uri, version);
 		SodaliteAbstractModel a = null;
 		
 		String sparql = MyUtils.fileToString("sparql/models/getModel.sparql");
 		String query = KB.SODA_DUL_PREFIXES + sparql;
 		LOG.info(query);
+		
+		String uriBound = uri;
+		if (!version.isEmpty())
+			uriBound += KBConsts.SLASH + version;
+		
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, 
-										new SimpleBinding("m", kb.getFactory().createIRI(uri)));
+										new SimpleBinding("m", kb.getFactory().createIRI(uriBound)));
 		
 			
 		if (result.hasNext()) {
@@ -1499,8 +1512,8 @@ public class KBApi {
 			Value dsl = bindingSet.getBinding("dsl").getValue();
 			Value name = bindingSet.getBinding("name").getValue();
 			IRI namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
-			
-			a = new SodaliteAbstractModel(model);
+						
+			a = (!version.isEmpty()) ? new SodaliteAbstractModel(kb.factory.createIRI(MyUtils.getAADMUriWithoutVersion(model)) , version) : new SodaliteAbstractModel(model);
 			a.setUser(user);
 			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			a.setDsl(dsl.stringValue());
@@ -1512,16 +1525,82 @@ public class KBApi {
 		return a;
 	}
 	
-	public boolean deleteModel (String uri) throws IOException {
-		LOG.info("deleteModel, uri = {}", uri);
-
-		SodaliteAbstractModel model = getModelFromURI(uri);
+	public Set<SodaliteAbstractModel> getAllModelsFromUri(String uri) throws IOException {
+		LOG.info("getAllModelsFromUri for {} uri}", uri);
+		Set<SodaliteAbstractModel> models = new HashSet<>();;
+		
+		String sparql = MyUtils.fileToString("sparql/models/getAllModelsForDelete.sparql");
+		String query = KB.SODA_DUL_PREFIXES + sparql;
+		LOG.info(query);
+		
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, 
+				new SimpleBinding("uri", kb.getFactory().createLiteral(uri)));
+		
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI model = (IRI) bindingSet.getBinding("m").getValue();
+			Value createdAt = bindingSet.getBinding("time").getValue();
+			IRI user = (IRI) bindingSet.getBinding("user").getValue();
+			Value dsl = bindingSet.getBinding("dsl").getValue();
+			Value name = bindingSet.getBinding("name").getValue();
+			IRI namespace = bindingSet.hasBinding("g") ? (IRI) bindingSet.getBinding("g").getValue() : null;
+			
+			Value _version = bindingSet.hasBinding("version") ? bindingSet.getBinding("version").getValue() : null;
+			
+			
+			
+			SodaliteAbstractModel a = (_version != null) ? new SodaliteAbstractModel(kb.factory.createIRI(MyUtils.getAADMUriWithoutVersion(model)) , _version.stringValue()) : new SodaliteAbstractModel(model);
+			a.setUser(user);
+			a.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
+			a.setDsl(dsl.stringValue());
+			a.setName(name.stringValue());
+			if(namespace != null)
+				a.setNamespace(namespace.toString());
+			
+			models.add(a);
+		}
+		
+		return models;
+	}
+	
+	public boolean deleteModel (String uri, String version, boolean hard) throws IOException {
+		LOG.info("deleteModel, uri = {}, version = {}, hard: {}", uri, version, hard);
+		boolean res = false;
+		
+		if (!hard) {
+			SodaliteAbstractModel model = getModelFromURI(uri, version);
+			deleteModelFromKB(model, version);
+			
+		} else {
+			Set<SodaliteAbstractModel> models = getAllModelsFromUri(uri);
+			models.forEach((m) -> { 				
+				try {
+					deleteModelFromKB(m, m.getVersion());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+					
+			});
+		}
+			
+		return res;
+	}
+	
+	private boolean deleteModelFromKB(SodaliteAbstractModel model, String version) throws IOException {
+		boolean res = false;
+		
 		String namespace = null;
 		if (model != null) {
 			namespace = model.getNamespace();
 		}
-		boolean res = new ModifyKB(kb).deleteModel(uri, namespace);
+		if (version.isEmpty())
+			res = new ModifyKB(kb).deleteModel(model.getUri(), namespace);
+		else
+			res = new ModifyKB(kb).deleteModel(model.getUri() + KBConsts.SLASH + version, namespace);
+		
 		return res;
+	
 	}
 		
 //	public Set<Constraint> getConstraints(IRI concept) throws IOException {

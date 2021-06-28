@@ -1,4 +1,4 @@
-SELECT ?m ?time ?user ?dsl ?name ?isAADM ?version {
+SELECT distinct ?m ?time ?user ?dsl ?name ?isAADM ?version ?g {
 		?m a ?modelType .
 		FILTER (?modelType  IN (soda:AbstractApplicationDeployment, soda:ResourceModel)) 
 		?m soda:createdAt ?time .
@@ -7,17 +7,14 @@ SELECT ?m ?time ?user ?dsl ?name ?isAADM ?version {
 		?m soda:hasName ?name .
         
 		?m DUL:isSettingFor ?n .
+		BIND (xsd:boolean(exists{?m a soda:AbstractApplicationDeployment}) AS ?isAADM)
         
-		?n soda:hasContext ?c .
-        ?n soda:hasName ?res_name .
-        
-        BIND (xsd:boolean(exists{?m a soda:AbstractApplicationDeployment}) AS ?isAADM)
-		  
-		FILTER NOT EXISTS
-		{ 
-			GRAPH ?g { ?n ?p ?o }
+		GRAPH ?g {
+			?n soda:hasContext ?c .
+			?n soda:hasName ?res_name
 		}
 		
 		OPTIONAL {?m owl:versionInfo ?version .} 
-    	
-}
+    	 FILTER (strstarts(str(?m), ?uri)). 
+
+} order by (!bound(?g)) asc(str(?g))

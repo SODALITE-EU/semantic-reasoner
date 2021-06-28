@@ -1,4 +1,4 @@
-SELECT ?m ?time ?user ?dsl ?name ?isAADM {
+SELECT ?m ?time ?user ?dsl ?name ?isAADM ?version {
 		?m a ?modelType .
 		FILTER (?modelType  IN (soda:AbstractApplicationDeployment, soda:ResourceModel)) 
 		?m soda:createdAt ?time .
@@ -13,5 +13,7 @@ SELECT ?m ?time ?user ?dsl ?name ?isAADM {
 			?n soda:hasContext ?c .
 			?n soda:hasName ?res_name
 		}
+		
+		OPTIONAL {?m owl:versionInfo ?version .} 
     	
 }

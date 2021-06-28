@@ -56,6 +56,7 @@ public class GetModelService extends AbstractService {
 	public Response getModel(@ApiParam(value = "resource name", required = false) @DefaultValue("") @QueryParam("resource") String resource,
 			@ApiParam(value = "empty or namespace value", required = false) @DefaultValue("") @QueryParam("namespace") String namespace,
 			@ApiParam(value = "uri", required = false)@DefaultValue("")  @QueryParam("uri") String uri,
+			@ApiParam(value = "version", required = false)@DefaultValue("")  @QueryParam("version") String version,
 			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 			throws IOException, URISyntaxException {
 		LOG.info( "getModel: resource= {}, namespace = {}, uri = {}",  resource, namespace, uri);
@@ -65,14 +66,14 @@ public class GetModelService extends AbstractService {
 		
 		KBApi api = new KBApi();
 		if (!"".equals(resource)) {
-			model = api.getModelForResource(resource, namespace);
+			model = api.getModelForResource(resource, namespace, version);
 			if(AuthUtil.authentication() && !"".equals(namespace)) {
 				String shortNamespace = MyUtils.getNamespaceFromContext(namespace);
 				ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
 				LOG.info( "Model for Resource shortNamespace = {}",  shortNamespace);
 			}
 		} else if (!"".equals(uri)) {
-			model = api.getModelFromURI(uri);
+			model = api.getModelFromURI(uri, version);
 			if(AuthUtil.authentication() && model != null && model.getNamespace() != null) {
 				String shortNamespace = MyUtils.getNamespaceFromContext(model.getNamespace());
 				ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
