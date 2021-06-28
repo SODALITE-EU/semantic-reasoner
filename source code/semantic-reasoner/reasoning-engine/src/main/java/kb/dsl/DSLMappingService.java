@@ -667,15 +667,12 @@ public class DSLMappingService {
 		if (tempPropertyMap == null && parameterType.equals(KBConsts.PROPERTY)) {
 			tempPropertyMap = new PropertyMap(propertyName);
 			propertyMapValuesForValidation.add(tempPropertyMap);
-			tempPropertyMap = null;
 		}
 		
 		
 		if (!_values.isEmpty()) {
 
-			if (_values.size() == 1) {
-				
-				
+			if (_values.size() == 1) {				
 				Object i = null;
 				String value = _values.iterator().next();
 				if ((i = Ints.tryParse(value)) != null) {
@@ -691,6 +688,8 @@ public class DSLMappingService {
 					HashMap<String, String> _inPropertyMap = tempPropertyMap.getMapProperties().get(currentPropertyMap);
 					_inPropertyMap.put(propertyName, value);
 				}
+				
+				
 			} else {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 				templateBuilder.add(list, RDF.TYPE, "tosca:List");
@@ -704,7 +703,9 @@ public class DSLMappingService {
 						templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
 				}
 				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
-			}			
+			}
+			
+			this.cleanTempPropertyMap(parameterType);
 		} else if (!listValues.isEmpty()) {
 			LOG.info("*****************************} else if (!listValues.isEmpty()) {");
 			IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
@@ -719,6 +720,8 @@ public class DSLMappingService {
 					templateBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), string);
 			}
 			templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+			
+			this.cleanTempPropertyMap(parameterType);
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, exchangeParameter,
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
@@ -737,14 +740,11 @@ public class DSLMappingService {
 				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
 			}
 
-			if (tempPropertyMap != null && parameterType.equals(KBConsts.PROPERTY)) {			
-				propertyMapValuesForValidation.add(tempPropertyMap);
-				tempPropertyMap = null;
-			}
+			this.cleanTempPropertyMap(parameterType);
 //			IRI root = createPropertyOrAttributeKBModel(exchangeParameter);
 //			builder.add(propertyClassifierKB, factory.createIRI("dul:hasParameter"), root);
 		}
-
+		
 		return propertyClassifierKB;
 
 	}
@@ -1127,6 +1127,11 @@ public class DSLMappingService {
 		if (kb != null) {
 			kb.shutDown();
 		}
+	}
+	
+	public void cleanTempPropertyMap(String parameterType) {
+		if (tempPropertyMap != null && parameterType.equals(KBConsts.PROPERTY))
+			tempPropertyMap = null;
 	}
 
 	public void save() throws ValidationException, IOException {
