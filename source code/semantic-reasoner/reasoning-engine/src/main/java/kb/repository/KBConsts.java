@@ -27,6 +27,7 @@ public final class KBConsts {
 	public static final String SLASH = "/";
 	
 	public static final String PROPERTIES = "properties";
+	public static final String REQUIREMENTS = "requirements";
 	
 	
 	static {

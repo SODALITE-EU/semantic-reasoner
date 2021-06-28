@@ -3,17 +3,19 @@ package kb.validation.exceptions.models;
 import org.json.simple.JSONObject;
 
 public class RequirementModel extends ValidationModel {
-	String templateName, requirement, type_r_a, r_d, nodeType, validationType;
+	String contextPath, templateName, requirement, type_r_a, r_d, nodeType, validationType;
 
-	public RequirementModel(String templateName, String requirement, String validationType) {
+	public RequirementModel(String contextPath, String templateName, String requirement, String validationType) {
 		super();
+		this.contextPath = contextPath;
 		this.templateName = templateName;
 		this.requirement = requirement;
 		this.validationType = validationType;
 	}
 	
-	public RequirementModel(String templateName, String requirement, String type_r_a, String r_d, String validationType) {
+	public RequirementModel(String contextPath, String templateName, String requirement, String type_r_a, String r_d, String validationType) {
 		super();
+		this.contextPath = contextPath;
 		this.templateName = templateName;
 		this.requirement = requirement;
 		this.type_r_a = type_r_a;
@@ -22,8 +24,9 @@ public class RequirementModel extends ValidationModel {
 	}
 	
 	//related to capabilities and relationships
-	public RequirementModel(String templateName, String requirement, String type_r_a, String r_d, String nodeType, String validationType) {
+	public RequirementModel(String contextPath, String templateName, String requirement, String type_r_a, String r_d, String nodeType, String validationType) {
 		super();
+		this.contextPath = contextPath;
 		this.templateName = templateName;
 		this.requirement = requirement;
 		this.type_r_a = type_r_a;
@@ -37,7 +40,7 @@ public class RequirementModel extends ValidationModel {
 		json.put("type", validationType);
 
 		JSONObject info = new JSONObject();
-		info.put("context", templateName);
+		info.put("context", contextPath);
 		switch (validationType) {
 			case "NoRequirementDefinition":
 				info.put("description", String.format("There is no requirement definition for %s of %s", requirement, templateName));
