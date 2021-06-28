@@ -1569,10 +1569,12 @@ public class KBApi {
 		
 		if (!hard) {
 			SodaliteAbstractModel model = getModelFromURI(uri, version);
-			deleteModelFromKB(model, version);
-			
+			res = deleteModelFromKB(model, version);
+			return res;
 		} else {
 			Set<SodaliteAbstractModel> models = getAllModelsFromUri(uri);
+			if (models.isEmpty())
+				return false;
 			models.forEach((m) -> { 				
 				try {
 					deleteModelFromKB(m, m.getVersion());
@@ -1582,9 +1584,8 @@ public class KBApi {
 				}
 					
 			});
+			return true;
 		}
-			
-		return res;
 	}
 	
 	private boolean deleteModelFromKB(SodaliteAbstractModel model, String version) throws IOException {

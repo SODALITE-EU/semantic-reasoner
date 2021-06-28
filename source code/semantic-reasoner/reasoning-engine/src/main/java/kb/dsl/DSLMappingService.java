@@ -180,6 +180,8 @@ public class DSLMappingService {
 				else
 					templateNames.add(templateName.get().getLabel());
 			}
+			System.err.println("templateNames = " + templateNames);
+			
 		}
 	}
 	
@@ -410,7 +412,7 @@ public class DSLMappingService {
 				subMappingPath = "";
 				// add property classifiers to the template context
 				if (templateDescriptionKB != null)
-					aadmBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "triggers"), triggerClassifierKB);
+					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "triggers"), triggerClassifierKB);
 			}
 			
 			// targets
@@ -653,7 +655,7 @@ public class DSLMappingService {
 		Optional<String> description = Models.getPropertyString(aadmModel, exchangeParameter,
 				factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
 		if (description.isPresent())
-			aadmBuilder.add(propertyClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
+			templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
 		
 		// create rdf:property
 		if (propertyName != null) {
@@ -770,11 +772,11 @@ public class DSLMappingService {
 		switch (type) {
 			case KBConsts.CAPABILITY:
 				capabilityClassifierKB = factory.createIRI(namespace + "CapabilityClassifier_" + MyUtils.randomString());
-				aadmBuilder.add(capabilityClassifierKB, RDF.TYPE, "tosca:Capability");
+				templateBuilder.add(capabilityClassifierKB, RDF.TYPE, "tosca:Capability");
 				break;
 			case KBConsts.PARAMETER:
 				capabilityClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
-				aadmBuilder.add(capabilityClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				templateBuilder.add(capabilityClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			default:
 				LOG.warn("type = {} does not exist", type);
@@ -858,7 +860,7 @@ public class DSLMappingService {
 		triggerProperty = GetResources.getKBProperty(triggerName, this.namespacesOfType, kb);
 		if (triggerProperty == null || triggerProperty.toString().equals(namespace + triggerName)) {
 				triggerProperty = factory.createIRI(namespace + triggerName);
-				aadmBuilder.add(triggerProperty, RDF.TYPE, "rdf:Property");
+				templateBuilder.add(triggerProperty, RDF.TYPE, "rdf:Property");
 		}
 		
 		Optional<Resource> _type  = Models.getPropertyResource(aadmModel, trigger,
@@ -869,23 +871,23 @@ public class DSLMappingService {
 		switch (type) {
 			case KBConsts.TRIGGER:
 				triggerClassifierKB = factory.createIRI(namespace + "TriggerClassifer_" + MyUtils.randomString());
-				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
+				templateBuilder.add(triggerClassifierKB, RDF.TYPE, "tosca:Trigger");
 				break;
 			case KBConsts.PARAMETER:
 				triggerClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
-				aadmBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				templateBuilder.add(triggerClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			default:
 				LOG.warn("type = " + type + " does not exist");
 		}
 		
 		if (triggerProperty != null)
-			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "classifies"), triggerProperty);
+			templateBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + "classifies"), triggerProperty);
 		
 		Optional<String> description = Models.getPropertyString(aadmModel, trigger,
 				factory.createIRI(KB.EXCHANGE + KBConsts.DESCRIPTION));
 		if (description.isPresent())
-			aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
+			templateBuilder.add(triggerClassifierKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description.get());
 
 		// check for direct values of parameters
 		Literal value = Models
@@ -915,9 +917,9 @@ public class DSLMappingService {
 			else {
 				Object i = null;
 				if ((i = Ints.tryParse(value.toString())) != null)
-					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+					templateBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 				else 
-					aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+					templateBuilder.add(triggerClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
 			}
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, trigger,
@@ -925,7 +927,7 @@ public class DSLMappingService {
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
 				IRI _p = createTriggerKBModel(parameter);
-				aadmBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				templateBuilder.add(triggerClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
 			}
 		}
 		return triggerClassifierKB;
@@ -950,17 +952,17 @@ public class DSLMappingService {
 		
 		IRI parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 		
-		aadmBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
-		aadmBuilder.add(list, RDF.TYPE, "tosca:List");
+		templateBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+		templateBuilder.add(list, RDF.TYPE, "tosca:List");
 		
 		for (Literal l:listValues) {
-			aadmBuilder.add(parameterClassifierKB, RDF.TYPE, "tosca:Target");
-			aadmBuilder.add(list, RDF.TYPE, "tosca:List");
+			templateBuilder.add(parameterClassifierKB, RDF.TYPE, "tosca:Target");
+			templateBuilder.add(list, RDF.TYPE, "tosca:List");
 			
 			
 			NamedResource n = GetResources.setNamedResource(templatews, l.getLabel(), kb);
 			IRI kbNode = findTemplateReference(n, list);
-			if (kbNode != null) {		
+			if (kbNode == null) {		
 				mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.TARGETS), "targets", "Cannot find target: " + l.getLabel()));
 				LOG.warn("{}: Cannot find Node: {} ", currentTemplate, l.getLabel());
 			}

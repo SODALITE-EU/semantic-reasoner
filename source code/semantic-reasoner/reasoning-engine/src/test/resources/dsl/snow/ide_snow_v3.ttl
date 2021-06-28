@@ -438,7 +438,7 @@
 .
 :Parameter_114
   rdf:type exchange:Parameter ;
-  exchange:listValue 'openstack/sodalite.nodes.OpenStack.VM' ; 
+  exchange:listValue 'snow/openstack_vm' ; 
 .
 :Template_1
   rdf:type exchange:Template ;
