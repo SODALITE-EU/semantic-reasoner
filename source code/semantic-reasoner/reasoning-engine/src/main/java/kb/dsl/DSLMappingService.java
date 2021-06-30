@@ -89,8 +89,10 @@ public class DSLMappingService {
 	public String aadmURI;
 	public String aadmDSL;
 	
-	//e.g.docker or openstack
+	//e.g. https://www.sodalite.eu/ontologies/docker/
 	public IRI namespace;
+	//docker
+	public String shortNamespace;
 	public String name;
 	public String version;
 	
@@ -156,8 +158,11 @@ public class DSLMappingService {
 		//ws += MyUtils.randomString() + "/";
 		this.complete = complete;
 		
-		if (!"".equals(namespace))
+		this.shortNamespace = "global";
+		if (!"".equals(namespace)) {
 			this.namespace = factory.createIRI(templatews + namespace + "/");
+			this.shortNamespace = namespace;
+		}
 		else
 			this.namespace = factory.createIRI(templatews + "global/");
 		
@@ -180,9 +185,7 @@ public class DSLMappingService {
 					templateNames.add(version + KBConsts.SLASH + templateName.get().getLabel());
 				else
 					templateNames.add(templateName.get().getLabel());
-			}
-			System.err.println("templateNames = " + templateNames);
-			
+			}			
 		}
 	}
 	
@@ -1105,9 +1108,13 @@ public class DSLMappingService {
 	
 	private IRI findTemplateReference(NamedResource n, IRI classifier) {
 		IRI kbTemplate = null;
+		/*If the model is versioned, then first check if the resource is local. If the resource is snow/snow-vm, only the snow-vm is checked.
+		* IDE does not know the version before saving, thus the assumption is that a reference without version is first checked against the local versioned ones */
 		if (version.isEmpty() && templateNames.contains(n.getResource())) {
 			kbTemplate = factory.createIRI(namespace + n.getResource());
-		} else if (!version.isEmpty() && templateNames.contains(version + KBConsts.SLASH + n.getResource())) {
+		} else if (!version.isEmpty() &&  templateNames.contains(version + KBConsts.SLASH + n.getResource())) {
+			/*If the model is versioned, then first check if the resource is local. If the resource is snow/snow-vm, only the snow-vm is checked.
+			* IDE does not know the version before saving, thus the assumption is that a reference without version is first checked against the local versioned ones */
 			kbTemplate = factory.createIRI(namespace + version + KBConsts.SLASH + n.getResource());
 		} else if ((kbTemplate = getKBTemplate(n)) != null) {
 			LOG.info("kbTemplate from getKBTemplate: {}", kbTemplate);

@@ -1565,13 +1565,18 @@ public class KBApi {
 		return models;
 	}
 	
+	/*
+	 * Three potential cases
+	 * A) Given only the uri (hard = false), the specific model gets deleted, 
+	 * B) Given the uri and the version hard = false, the versioned model gets deleted
+	 * C) Given the uri, and hard = true, all the versions of the model get deleted
+	 */
 	public boolean deleteModel (String uri, String version, boolean hard) throws IOException {
 		LOG.info("deleteModel, uri = {}, version = {}, hard: {}", uri, version, hard);
 		boolean res = false;
 		
 		if (!hard) {
 			SodaliteAbstractModel model = getModelFromURI(uri, version);
-			System.err.println("model = " + model);
 			if (model != null)
 				res = deleteModelFromKB(model, version);
 			return res;
@@ -1592,6 +1597,7 @@ public class KBApi {
 		}
 	}
 	
+	//The actual deletion
 	private boolean deleteModelFromKB(SodaliteAbstractModel model, String version) throws IOException {
 		boolean res = false;
 		

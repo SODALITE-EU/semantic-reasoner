@@ -213,8 +213,11 @@ public class MyUtils {
 		return null;
 	}
 	
-	/* resource: docker/sodalite.nodes.Dockerhost
+	/* A) resource: docker/sodalite.nodes.Dockerhost
 	 * https://www.sodalite.eu/ontologies/workspace/1/docker/sodalite.nodes.Dockerhost is returned
+	 * B) case versioned resource: snow/snow-vm@v1, 
+	 * https://www.sodalite.eu/ontologies/workspace/1/snow/v1/snow-vm is returned
+	 * The versioned resources are only for AADM resources
 	*/
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;
@@ -222,7 +225,6 @@ public class MyUtils {
 		
 		String namespace = getNamespaceFromReference(resource);
 		String name = getReferenceFromNamespace(resource);
-		System.err.println("name = " + name);
 		
 		if (namespace != null) {
 			String version = getVersionFromNamedResource(resource);
@@ -236,7 +238,7 @@ public class MyUtils {
 			}
 		}
 		
-		System.err.println("resourceIRI:" + resourceIRI);
+		LOG.info("getFullResourceIRI resourceIRI:" + resourceIRI);
 		
 		return resourceIRI;
 	}
@@ -268,14 +270,27 @@ public class MyUtils {
 		}
 	}
 	
+	/*
+	 * aadmUri: https://www.sodalite.eu/ontologies/workspace/1/dl1tesatvj9473bef35afqgg2i/AADM_tp0qm60qvengrg5aafg8d83gq/version1
+	 * https://www.sodalite.eu/ontologies/workspace/1/dl1tesatvj9473bef35afqgg2i/AADM_tp0qm60qvengrg5aafg8d83gq is returned
+	 */
 	public static String getAADMUriWithoutVersion(IRI aadmUri) {
 		return getStringPattern(aadmUri.stringValue(), "(.*\\/AADM_[a-zA-Z0-9]+)");
 	}
 	
+	/* resource = snow/snow-vm@v1
+	 * @ is the separator for the version
+	 * v1 is returned
+	 */
 	public static String getVersionFromNamedResource(String resource) {
 		return getStringPattern(resource,".*\\/[a-zA-Z0-9\\.\\-\\_]+@([a-zA-Z0-9]+)");
 	}
 	
+	/* Get version from a resource without namespace
+	 * resource = snow-vm@v1
+	 * @ is the separator for the version
+	 * v1 is returned
+	 */
 	public static String getVersionFromGlobalResource(String resource) {
 		return getStringPattern(resource,".*[a-zA-Z0-9.-_]+@([a-zA-Z0-9]+)");
 	}
