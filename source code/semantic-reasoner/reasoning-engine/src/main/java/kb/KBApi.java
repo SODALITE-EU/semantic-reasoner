@@ -1497,8 +1497,10 @@ public class KBApi {
 		LOG.info(query);
 		
 		String uriBound = uri;
-		if (!version.isEmpty())
+		if (!version.isEmpty()) {
 			uriBound += KBConsts.SLASH + version;
+			LOG.info("getModelFromURI versioned uriBound: {}", uriBound);
+		}
 		
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, 
 										new SimpleBinding("m", kb.getFactory().createIRI(uriBound)));
@@ -1569,7 +1571,9 @@ public class KBApi {
 		
 		if (!hard) {
 			SodaliteAbstractModel model = getModelFromURI(uri, version);
-			res = deleteModelFromKB(model, version);
+			System.err.println("model = " + model);
+			if (model != null)
+				res = deleteModelFromKB(model, version);
 			return res;
 		} else {
 			Set<SodaliteAbstractModel> models = getAllModelsFromUri(uri);
