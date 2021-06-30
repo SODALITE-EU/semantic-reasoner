@@ -102,13 +102,20 @@ public class GetResources {
 
 	
 	public static NamedResource setNamedResource (String namespace, String value, KB kb) {
+		NamedResource n = createNamedResource(namespace, value, kb);		
+		return n;
+	}
+		
+	private static NamedResource createNamedResource(String namespace, String value, KB kb) {
 		NamedResource n = new NamedResource();
 		
 		String namespaceRef = MyUtils.getNamespaceFromReference(value);
 		String resource = value;
+		System.err.println("namespaceRef = " + namespaceRef + ",resource = " + resource);
 		if (namespaceRef != null) {
 			namespaceRef = namespace + namespaceRef + "/";
 			resource = MyUtils.getReferenceFromNamespace(resource);
+			System.err.println("resource = " + resource);
 		}
 		n.setResourceURI(MyUtils.getFullResourceIRI(value, kb));
 		n.setNamespace(namespaceRef);

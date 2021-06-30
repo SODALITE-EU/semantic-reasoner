@@ -82,6 +82,8 @@ public class AttributeService extends AbstractService {
 		}
 		
 		KBApi api = new KBApi();
+		
+		
 		Set<Attribute> attributes = api.getAttributes(api.getResourceIRI(resource), template, !KBConsts.AADM_JSON);
 		api.shutDown();
 

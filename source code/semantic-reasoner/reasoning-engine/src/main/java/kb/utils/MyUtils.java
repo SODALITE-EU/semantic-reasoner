@@ -35,6 +35,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import kb.repository.KB;
+import kb.repository.KBConsts;
 
 public class MyUtils {
 	private MyUtils() {
@@ -203,8 +204,12 @@ public class MyUtils {
 	 */
 	public static String getReferenceFromNamespace(String resource) {
 		String[] split = resource.split("\\/");
-		if (split.length > 1)
+		if (split.length > 1) {
+			String[] res =  split[1].split("\\@");
+			if (res.length > 1) 
+				return res[0];
 			return split[1];
+		}
 		return null;
 	}
 	
@@ -214,18 +219,24 @@ public class MyUtils {
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;
 		
+		
 		String namespace = getNamespaceFromReference(resource);
 		String name = getReferenceFromNamespace(resource);
+		System.err.println("name = " + name);
 		
 		if (namespace != null) {
-			resourceIRI = getFullNamespaceIRI(kb, namespace) + name;
-		}
-		else {
+			String version = getVersionFromNamedResource(resource);
+			resourceIRI = (version == null) ?  getFullNamespaceIRI(kb, namespace) + name : getFullNamespaceIRI(kb, namespace) + version + KBConsts.SLASH + name;
+		} else {
 			if (hasPattern(resource, "^tosca."))
 				resourceIRI = KB.TOSCA + resource;
-			else
-				resourceIRI = KB.GLOBAL + resource;
+			else {
+				String version = getVersionFromGlobalResource(resource);
+				resourceIRI = (version == null) ? KB.GLOBAL + resource : KB.GLOBAL + KBConsts.SLASH + resource;
+			}
 		}
+		
+		System.err.println("resourceIRI:" + resourceIRI);
 		
 		return resourceIRI;
 	}
@@ -258,7 +269,14 @@ public class MyUtils {
 	}
 	
 	public static String getAADMUriWithoutVersion(IRI aadmUri) {
-		
-		return MyUtils.getStringPattern(aadmUri.stringValue(), "(.*\\/AADM_[a-zA-Z0-9]+)");
+		return getStringPattern(aadmUri.stringValue(), "(.*\\/AADM_[a-zA-Z0-9]+)");
+	}
+	
+	public static String getVersionFromNamedResource(String resource) {
+		return getStringPattern(resource,".*\\/[a-zA-Z0-9\\.\\-\\_]+@([a-zA-Z0-9]+)");
+	}
+	
+	public static String getVersionFromGlobalResource(String resource) {
+		return getStringPattern(resource,".*[a-zA-Z0-9.-_]+@([a-zA-Z0-9]+)");
 	}
 }

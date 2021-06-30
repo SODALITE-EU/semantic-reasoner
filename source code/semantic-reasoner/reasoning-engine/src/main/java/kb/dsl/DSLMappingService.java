@@ -29,6 +29,7 @@ import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
@@ -1046,10 +1047,11 @@ public class DSLMappingService {
 	}
 	
 	private IRI getKBTemplate(NamedResource n) {
-		LOG.info("getKBTemplate label={}, namespace ={} ", n.getResource(), n.getNamespace());
+		IRI foundTemplate = null;
+		LOG.info("getKBTemplate resource={}, namespace ={}, resourceURI= {} ", n.getResource(), n.getNamespace(), n.getResourceURI());
 		String namespace = n.getNamespace();
 		String resource = n.getResource();
-		String sparql = "select distinct ?x { \r\n" + 
+		String sparql = "select distinct ?m { \r\n" + 
 						"   ?m DUL:isSettingFor ?x .\r\n" + 
 						"	{        \r\n" + 
 						"		?x rdf:type ?type .\r\n" +
@@ -1066,17 +1068,17 @@ public class DSLMappingService {
 						"			?x soda:hasName ?name .\r\n" + 
 						"		   }\r\n" + 
 						"     }\r\n";
-		
-		sparql += 	" FILTER (strends(str(?x), \"" + resource + "\")). " +
-					"}";
+		sparql +=  "}";
+	/*	sparql += 	" FILTER (strends(str(?x), \"" + resource + "\")). " +
+					"}";*/
 		
 		
 		LOG.info(sparql);
 		String query = KB.PREFIXES + sparql;
 
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("resource", kb.getFactory().createIRI(n.getResourceURI())));
 
-		Set<IRI> xSet = new HashSet<IRI>();
+		/*Set<IRI> xSet = new HashSet<IRI>();
 		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			xSet.add((IRI) bindingSet.getBinding("x").getValue());
@@ -1093,22 +1095,27 @@ public class DSLMappingService {
 				if (!t.toString().contains("global"))
 					x = t;
 			}
-		}
+		}*/
+		
+		if (result.hasNext())
+			foundTemplate = kb.factory.createIRI(n.getResourceURI());
 			
-		return x;
+		return foundTemplate;
 	}
 	
 	private IRI findTemplateReference(NamedResource n, IRI classifier) {
-		IRI kbTemplate = getKBTemplate(n);
-		if (kbTemplate == null) {
-			if (version.isEmpty() && templateNames.contains(n.getResource())) {
-				kbTemplate = factory.createIRI(namespace + n.getResource());
-			} else if (!version.isEmpty() && templateNames.contains(version + KBConsts.SLASH + n.getResource())) {
-				kbTemplate = factory.createIRI(namespace + version + KBConsts.SLASH + n.getResource());
-			} else
-				return null;
-			templateBuilder.add(classifier, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+		IRI kbTemplate = null;
+		if (version.isEmpty() && templateNames.contains(n.getResource())) {
+			kbTemplate = factory.createIRI(namespace + n.getResource());
+		} else if (!version.isEmpty() && templateNames.contains(version + KBConsts.SLASH + n.getResource())) {
+			kbTemplate = factory.createIRI(namespace + version + KBConsts.SLASH + n.getResource());
+		} else if ((kbTemplate = getKBTemplate(n)) != null) {
+			LOG.info("kbTemplate from getKBTemplate: {}", kbTemplate);
 		}			
+		
+		if (kbTemplate != null)
+			templateBuilder.add(classifier, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbTemplate);
+		
 		return kbTemplate;
 	}
 
