@@ -15,11 +15,12 @@ public class SodaliteAbstractModel extends Resource {
 
 		IRI user;
 		ZonedDateTime createdAt;
-		String version = "";
+		String version;
 		String dsl;
 		String name;
 		boolean isAADM;
 		String namespace;
+		String description;
 
 		public SodaliteAbstractModel(IRI iri) {
 			super(iri);
@@ -40,6 +41,8 @@ public class SodaliteAbstractModel extends Resource {
 			model.addProperty("name", name);
 			if (version != null)
 				model.addProperty("version", version);
+			if (description != null)
+				model.addProperty("description", description);
 			return model;
 		}
 
@@ -104,5 +107,13 @@ public class SodaliteAbstractModel extends Resource {
 
 		public void setNamespace(String namespace) {
 			this.namespace = namespace;
+		}
+		
+		public String getDescription() {
+			return namespace;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
 		}
 }

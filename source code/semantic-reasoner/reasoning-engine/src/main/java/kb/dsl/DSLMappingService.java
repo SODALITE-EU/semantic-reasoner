@@ -165,7 +165,7 @@ public class DSLMappingService {
 		}
 		else
 			this.namespace = factory.createIRI(templatews + "global/");
-		
+				
 		this.aadmDSL = aadmDSL;
 		this.name = name;
 		
@@ -234,6 +234,14 @@ public class DSLMappingService {
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasName"), name);
 			aadmBuilder.add(aadmKB, factory.createIRI(KB.SODA + "hasNamespace"), MyUtils.getNamespaceFromContext(namespace.toString()));
 			
+			Optional<Literal> _description = Models
+					.objectLiteral(aadmModel.filter(_aadm, factory.createIRI(KB.EXCHANGE + "description"), null));
+			
+			String description = null;
+			if (_description.isPresent()) {
+				description = _description.get().getLabel();
+				aadmBuilder.add(aadmKB, factory.createIRI(KB.DCTERMS + KBConsts.DESCRIPTION), description);
+			}
 		}
 
 		if (aadmKB == null) {
@@ -316,6 +324,8 @@ public class DSLMappingService {
 				templateDescriptionKB = factory.createIRI(namespace + "Desc_" + MyUtils.randomString());
 				templateBuilder.add(templateDescriptionKB, RDF.TYPE, "soda:SodaliteDescription");
 				templateBuilder.add(templateKB, factory.createIRI(KB.SODA + "hasContext"), templateDescriptionKB);
+				if (!version.isEmpty())
+					templateBuilder.add(templateKB, OWL.VERSIONINFO, version);
 			}
 			// properties
 			Set<Resource> _properties = Models.getPropertyResources(aadmModel, _template,
@@ -463,7 +473,7 @@ public class DSLMappingService {
 		
 		
 		//Sommelier validations
-		ValidationService v = new ValidationService(MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*"), this.templateRequirements, this.templateTypes, kb);
+		ValidationService v = new ValidationService(this.aadmKB, this.templateRequirements, this.templateTypes, kb);
 		validationModels.addAll(v.validate());
 				
 		if (!validationModels.isEmpty()) {
@@ -586,6 +596,7 @@ public class DSLMappingService {
 				if (kbTemplate == null)
 					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
 				
+				System.err.println("kbTemplate = " + kbTemplate);
 				//assign values for requirement validation
 				if (parameterName.equals("node"))
 					tempReq.put("node", kbTemplate);
@@ -1107,15 +1118,19 @@ public class DSLMappingService {
 	}
 	
 	private IRI findTemplateReference(NamedResource n, IRI classifier) {
+		
+		String resourceShortNamespace = MyUtils.getNamespaceFromFullIRI(n.getNamespace());
+		LOG.info("n.getNamespace: {}, n.getResourceURI: {}, resourceShortNamespace: {}", n.getNamespace(), n.getResourceURI(), resourceShortNamespace);
 		IRI kbTemplate = null;
-		/*If the model is versioned, then first check if the resource is local. If the resource is snow/snow-vm, only the snow-vm is checked.
-		* IDE does not know the version before saving, thus the assumption is that a reference without version is first checked against the local versioned ones */
-		if (version.isEmpty() && templateNames.contains(n.getResource())) {
-			kbTemplate = factory.createIRI(namespace + n.getResource());
-		} else if (!version.isEmpty() &&  templateNames.contains(version + KBConsts.SLASH + n.getResource())) {
+		
+		if (resourceShortNamespace.equals(shortNamespace)) {
+			if (version.isEmpty() && templateNames.contains(n.getResource())) {
+				kbTemplate = factory.createIRI(namespace + n.getResource());
+			} else if (!version.isEmpty() && templateNames.contains(version + KBConsts.SLASH + n.getResource())) {
 			/*If the model is versioned, then first check if the resource is local. If the resource is snow/snow-vm, only the snow-vm is checked.
 			* IDE does not know the version before saving, thus the assumption is that a reference without version is first checked against the local versioned ones */
-			kbTemplate = factory.createIRI(namespace + version + KBConsts.SLASH + n.getResource());
+				kbTemplate = factory.createIRI(namespace + version + KBConsts.SLASH + n.getResource());
+			}
 		} else if ((kbTemplate = getKBTemplate(n)) != null) {
 			LOG.info("kbTemplate from getKBTemplate: {}", kbTemplate);
 		}			
@@ -1174,10 +1189,9 @@ public class DSLMappingService {
 		else
 			kb.connection.add(tmodel,namespace);
 		
-		String aadmId = MyUtils.getStringPattern(this.aadmKB.stringValue(), ".*/(AADM_.*).*");
 		//Requirement first check about existence, and (complete = true) update models if matching nodes found
 		IRI context = namespace.toString().contains("global") ? null : namespace;
-		RequirementExistenceValidation r = new RequirementExistenceValidation(aadmId, complete, kb, namespace.toString(), context);
+		RequirementExistenceValidation r = new RequirementExistenceValidation(this.aadmKB, complete, kb, namespace.toString(), context);
 		//Check for required omitted requirements
 		validationModels.addAll(r.validate());
 		//if (!validationModels.isEmpty()) {

@@ -38,7 +38,7 @@ public class RequirementExistenceValidation extends ValidationManager {
 	private static final Logger LOG = LoggerFactory.getLogger(RequirementExistenceValidation.class.getName());
 	
 	boolean complete;
-	String aadmId;
+	IRI aadmURI;
 
 	String ws;
 	IRI context;
@@ -47,9 +47,9 @@ public class RequirementExistenceValidation extends ValidationManager {
 	List<RequirementExistenceModel> requiredModels = new ArrayList<RequirementExistenceModel>();
 	List<RequirementExistenceModel> modifiedModels = new ArrayList<RequirementExistenceModel>();
 		
-	public RequirementExistenceValidation(String aadm, boolean complete, KB kb, String ws, IRI context) {
+	public RequirementExistenceValidation(IRI aadm, boolean complete, KB kb, String ws, IRI context) {
 		super(kb);
-		this.aadmId = aadm;
+		this.aadmURI = aadm;
 		this.complete = complete;
 		this.kb = kb;
 		this.ws = ws;
@@ -144,7 +144,7 @@ public class RequirementExistenceValidation extends ValidationManager {
 	public HashMap<IRI, HashMap<IRI,HashMap<IRI,Set<IRI>>>> getTemplatesWithNoRequirements(boolean required) throws IOException {
 		String fileName = required ? "missingRequiredRequirements.sparql" : "missingOptionalRequirements.sparql" ;
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/" + fileName);
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("aadmId", kb.getFactory().createLiteral(aadmId)));
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("aadm", aadmURI));
 
 		//HashMap<Template, HashMap<r_a, HashMap<r_inner, node types>>>
 		//e.g. HashMap<snow-vm,HashMap<protected_by, HashMap<node, sodalite.nodes.OpenStack.SecurityRules>
