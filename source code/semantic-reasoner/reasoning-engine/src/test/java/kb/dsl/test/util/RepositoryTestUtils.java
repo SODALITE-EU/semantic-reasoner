@@ -18,7 +18,6 @@ import kb.repository.SodaliteRepository;
 public class RepositoryTestUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(RepositoryTestUtils.class.getName());
 	public static final String SEMANTIC_REASONER_TEST = "SEMANTIC_REASONER_TEST";
-	public static final String DEFECT_PREDICTOR_TEST = "DEFECT_PREDICTOR_TEST";
 	
 	private RepositoryTestUtils() {
 		throw new IllegalStateException("RepositoryTestUtils class");
