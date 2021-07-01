@@ -108,9 +108,9 @@ public class SubmitService extends AbstractService {
 			
 		try {
 			aadmUri = m.start();
-			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
+			//String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			HttpClientRequest.getWarnings(response, aadmid, KBConsts.AADM);
+			HttpClientRequest.getWarnings(response, aadmUri, KBConsts.AADM);
 
 			addRequirementModels(m, response);
 		} catch (MappingException e) {

@@ -100,10 +100,10 @@ public class SubmitRMService extends AbstractService  {
 		JSONObject response = new JSONObject();
 		try {
 			rmUri = m.start();
-			String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(RM_.*).*");
+			//String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(RM_.*).*");
 			m.save();
 			
-			HttpClientRequest.getWarnings(response, rmid, !KBConsts.AADM);
+			HttpClientRequest.getWarnings(response, rmUri, !KBConsts.AADM);
 		} catch (MappingException e) {
 			e.printStackTrace();
 			List<DslValidationModel> validationModels = e.mappingValidationModels;

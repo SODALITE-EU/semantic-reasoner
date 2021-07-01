@@ -1124,8 +1124,8 @@ public class KBApi {
 		return optimization;
 	}
 	
-	public Set<ValidationModel> getOptimizationSuggestions(String aadmId) throws IOException, ValidationException {
-		LOG.info("getOptimizations aadmId = {}", aadmId);
+	public Set<ValidationModel> getOptimizationSuggestions(IRI aadmUri) throws IOException, ValidationException {
+		LOG.info("getOptimizations aadmUri = {}", aadmUri.stringValue());
 		Set<ValidationModel> templateOptimizations = new HashSet<>();
 		HashMap<IRI, Set<String>> resourceOptimizations = new HashMap<IRI, Set<String>>();
 		HashMap<IRI, String>  resourceOptimizationJson = new HashMap<IRI, String>();//templates -  optimization json pairs
@@ -1154,7 +1154,7 @@ public class KBApi {
 		String query_r = KB.PREFIXES + sparql_r;
 		
 		//Check which resources have capabilities
-		TupleQueryResult result_r = QueryUtil.evaluateSelectQuery(kb.getConnection(), query_r, new SimpleBinding("var_aadm_id", kb.getFactory().createLiteral(aadmId)));
+		TupleQueryResult result_r = QueryUtil.evaluateSelectQuery(kb.getConnection(), query_r, new SimpleBinding("var_aadm", aadmUri));
 		
 		while (result_r.hasNext()) {
 			BindingSet bindingSet_r = result_r.next();

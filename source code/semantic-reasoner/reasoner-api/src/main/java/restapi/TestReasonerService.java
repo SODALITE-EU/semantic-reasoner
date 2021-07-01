@@ -18,6 +18,7 @@ import httpclient.exceptions.MyRestTemplateException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import kb.configs.ConfigsLoader;
+import kb.repository.KB;
 import kb.repository.KBConsts;
 
 /** A service that submits the abstract application deployment model to the Knowledge Base.
@@ -39,6 +40,9 @@ public class TestReasonerService extends AbstractService {
 		ConfigsLoader configInstance = ConfigsLoader.getInstance();
 		configInstance.loadProperties();
 		
+		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
+		kb.shutDown();
+		
 		if (configInstance.getBugPredictorServer() == null) {
 			return Response.status(Status.BAD_REQUEST).entity("no defect predictor url set").build();
 		}
@@ -46,7 +50,7 @@ public class TestReasonerService extends AbstractService {
 		try {
 			
 			JSONObject response = new JSONObject();
-			HttpClientRequest.getWarnings(response, "https://sodalite/test/AADM_ID_88978979", KBConsts.AADM);
+			HttpClientRequest.getWarnings(response, kb.factory.createIRI("https://sodalite/test/AADM_ID_88978979"), KBConsts.AADM);
 			if (response.equals("Unreachable"))
 				return Response.status(Status.BAD_REQUEST).entity("Error connecting to defect predictor host: " + configInstance.getBugPredictorServer()).build();
 		} catch (MyRestTemplateException e) {

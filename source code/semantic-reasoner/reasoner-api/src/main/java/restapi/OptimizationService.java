@@ -105,18 +105,18 @@ public class OptimizationService extends AbstractService {
 		
 		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 		
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name, "");
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name, version);
 		IRI aadmUri = null;
 
 		//Contains the final response
 		JSONObject response = new JSONObject();
 		try {
 			aadmUri = m.start();
-			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
+			//String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			HttpClientRequest.getWarnings(response, aadmid, KBConsts.AADM);
+			HttpClientRequest.getWarnings(response, aadmUri, KBConsts.AADM);
 			
-			getOptimizations(response, aadmid);
+			getOptimizations(response, aadmUri);
 		} catch (MappingException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {	
@@ -150,7 +150,7 @@ public class OptimizationService extends AbstractService {
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}
 	
-	public void getOptimizations(JSONObject response, String aadmId) throws ClientProtocolException, IOException, ParseException, ValidationException {	
+	public void getOptimizations(JSONObject response, IRI aadmId) throws ClientProtocolException, IOException, ParseException, ValidationException {	
 		KBApi api = new KBApi();
 		Set<ValidationModel> optimizations = api.getOptimizationSuggestions(aadmId);
 		api.shutDown();
