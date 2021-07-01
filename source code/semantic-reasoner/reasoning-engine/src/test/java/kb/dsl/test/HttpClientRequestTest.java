@@ -72,8 +72,9 @@ public class HttpClientRequestTest {
 		HttpClientRequest.setBugPredictor("http://localhost:" + wireMockPort+"/");
 		JSONObject response = new JSONObject();
 		SodaliteRepository  repositoryManager = new SodaliteRepository("target/", "/config.ttl");
-		KB kb = new KB(repositoryManager, RepositoryTestUtils.SEMANTIC_REASONER_TEST);
+		KB kb = new KB(repositoryManager, RepositoryTestUtils.DEFECT_PREDICTOR_TEST);
 		HttpClientRequest.getWarnings(response, kb.factory.createIRI("https://cccccddd"), KBConsts.AADM);
+		kb.shutDown();
 		assertTrue(response.containsKey("warnings"));
 		LOG.info("Test Passed: testBugPredictor");
 	}
