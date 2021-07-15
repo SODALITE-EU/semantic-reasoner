@@ -30,6 +30,7 @@ import org.junit.jupiter.api.TestInstance;
 import kb.KBApi;
 import kb.dsl.DSLMappingService;
 import kb.dsl.DSLRMMappingService;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.dsl.test.util.RepositoryTestUtils;
@@ -70,7 +71,7 @@ class DSLMappingServiceTest {
 	static IRI rmIRI3;
 
 	static IRI rmIRI4 = null;
-	static IRI aadmIRI = null;
+	static DslModel aadmModel = null;
 
 	@BeforeAll
 	 static void loadResourceModels() {
@@ -111,8 +112,9 @@ class DSLMappingServiceTest {
 				DSLMappingService m = null;
 				String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3.ttl");
 				m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
-				aadmIRI = m.start();
-				assertNotNull(aadmIRI);
+				aadmModel = m.start();
+				LOG.info("aadm: {}", aadmModel.toString());
+				assertNotNull(aadmModel);
 				m.save();
 				
 				LOG.info("Test Passed: saving rm and aadm for openstack");
@@ -297,16 +299,16 @@ class DSLMappingServiceTest {
 	
 	@Test
 	void getAADM() throws IOException {
-		LOG.info("getAADM");
+		LOG.info("getAADM: {}", aadmModel.getUri());
 		
-		AADM aadm = api.getAADM(aadmIRI.toString());
+		AADM aadm = api.getAADM(aadmModel.getUri());
 		Set<NodeFull> templates = aadm.getTemplates();
 
 		assertTrue(templates.size() == 4);
 		LOG.info("Test Passed: getAADM");
 
 		LOG.info("removeInputs");
-		VerifySingularity.removeInputs(kb, aadmIRI.toString());
+		VerifySingularity.removeInputs(kb, aadmModel.getUri());
 		
 		String input = null;
 		for (NodeFull n: templates) {

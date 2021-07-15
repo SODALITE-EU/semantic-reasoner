@@ -41,6 +41,7 @@ import com.google.common.primitives.Ints;
 
 import kb.KBApi;
 import kb.clean.ModifyKB;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.dsl.exceptions.models.MappingValidationModel;
@@ -189,10 +190,11 @@ public class DSLMappingService {
 		}
 	}
 	
-	public IRI start() throws MappingException, ValidationException, IOException  {
+	public DslModel start() throws MappingException, ValidationException, IOException  {
 
 		// AADM
 		aadmKB = null;
+		String uriWithoutVersion = null;
 
 		for (Resource _aadm : aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "AADM")).subjects()) {
 			Optional<Literal> _userId = Models
@@ -207,13 +209,15 @@ public class DSLMappingService {
 			aadmws += (aadmURI.isEmpty())? MyUtils.randomString() + "/" : MyUtils.getStringPattern(aadmURI, ".*/(.*)/AADM_.*") + "/";
 			LOG.info("namespace = {}", aadmws);
 			aadmBuilder.setNamespace("ws", aadmws);
+			
+			uriWithoutVersion = (aadmURI.isEmpty()) ? aadmws + "AADM_" + MyUtils.randomString() : aadmURI;
 
-			aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(aadmws + "AADM_" + MyUtils.randomString()) : factory.createIRI(aadmURI);
+			aadmKB = factory.createIRI(uriWithoutVersion);
 			//context = aadmKB;
 			
 			//Append version
 			if (!version.isEmpty()) {
-				aadmKB = (aadmURI.isEmpty()) ? factory.createIRI(aadmws + "AADM_" + MyUtils.randomString() +  "/" + version) : factory.createIRI(aadmURI + "/" + version);
+				aadmKB = factory.createIRI(uriWithoutVersion  +  "/" + version);
 				aadmBuilder.add(aadmKB, OWL.VERSIONINFO, version);
 			}
 			aadmBuilder.add(aadmKB, RDF.TYPE, "soda:AbstractApplicationDeployment");
@@ -494,7 +498,9 @@ public class DSLMappingService {
 			LOG.error(e.getMessage(),e);
 		}
 		
-		return aadmKB;
+		
+		DslModel model = new DslModel(uriWithoutVersion, aadmKB, version);
+		return model;
 
 	}
 

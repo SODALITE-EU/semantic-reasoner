@@ -3,6 +3,8 @@ package restapi;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,7 @@ import kb.KBApi;
 import kb.clean.ModifyKB;
 import kb.configs.ConfigsLoader;
 import kb.dsl.DSLMappingService;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
@@ -102,15 +105,16 @@ public class SubmitService extends AbstractService {
 		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 		
 		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name, version);
-		IRI aadmUri = null;
+		DslModel aadm = null;
 		//Contains the final response
 		JSONObject response = new JSONObject();
 			
 		try {
-			aadmUri = m.start();
+			//aadmUri = m.start();
+			aadm = m.start();
 			//String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			HttpClientRequest.getWarnings(response, aadmUri, KBConsts.AADM);
+			HttpClientRequest.getWarnings(response, aadm.getFullUri(), KBConsts.AADM);
 
 			addRequirementModels(m, response);
 		} catch (MappingException e) {
@@ -135,9 +139,9 @@ public class SubmitService extends AbstractService {
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		} catch (MyRestTemplateException e) {
-			if (aadmUri != null) {
+			if (aadm != null) {
 				KBApi api = new KBApi(kb);
-				api.deleteModel(aadmUri.toString(), version, false);
+				api.deleteModel(aadm.getUri(), version, false);
 			}
 			
 			HttpRequestErrorModel erm = e.error_model;
@@ -149,8 +153,10 @@ public class SubmitService extends AbstractService {
 		} finally {
 			m.shutDown();
 		}
-		if (aadmUri != null)
-			response.put("aadmuri", aadmUri.stringValue());
+		if (aadm != null) {
+			response.put( "uri", aadm.getUri());
+			response.put( "version", aadm.getVersion());
+		}
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}
 	
