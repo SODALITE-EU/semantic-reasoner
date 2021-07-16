@@ -102,7 +102,8 @@ public class AADM extends Resource {
 		data.addProperty("type", "AbstractApplicationDeploymentModel");
 		data.addProperty("createdBy", user.toString());
 		data.addProperty("createdAt", createdAt.toString());
-		data.addProperty("version", "1");
+		if (version  != null)
+			data.addProperty("version", version);
 		
 
 		JsonArray participants = new JsonArray();

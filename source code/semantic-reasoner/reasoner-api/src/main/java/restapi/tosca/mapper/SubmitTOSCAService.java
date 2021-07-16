@@ -128,11 +128,11 @@ public class SubmitTOSCAService extends AbstractService {
 		if (aadmTTL != null)
 			aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, aadmNamespace, "", aadmName, "");
 
-		IRI rmUri = null;
+		DslModel rmModel = null;
 		DslModel aadmModel = null;
 		try {
 			if (rm != null) {
-				rmUri = rm.start();
+				rmModel = rm.start();
 				rm.save();
 			}
 			if (aadm != null) {
@@ -172,8 +172,8 @@ public class SubmitTOSCAService extends AbstractService {
 		
 		
 		
-		if (rmUri != null)
-			response.put("rmuri", rmUri.stringValue());
+		if (rmModel != null) 
+			response.put("uri", rmModel.getFullUri());
 		if (aadmModel != null) {
 			response.put( "uri", aadmModel.getUri());
 			response.put( "version", aadmModel.getVersion());

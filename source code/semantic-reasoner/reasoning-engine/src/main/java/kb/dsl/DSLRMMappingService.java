@@ -35,6 +35,7 @@ import org.joda.time.DateTime;
 
 import com.google.common.primitives.Ints;
 
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.dsl.exceptions.models.MappingValidationModel;
@@ -116,7 +117,7 @@ public class DSLRMMappingService {
 	}
 
 	
-	public IRI start() throws MappingException, ValidationException  {
+	public DslModel start() throws MappingException, ValidationException  {
 
 		// AADM
 		rmKB = null;
@@ -177,7 +178,9 @@ public class DSLRMMappingService {
 			LOG.error(e.getMessage(), e);
 		}
 		
-		return rmKB;
+		//no version in rms
+		DslModel model = new DslModel("", rmKB, "");
+		return model;
 
 	}
 	
@@ -573,8 +576,11 @@ public class DSLRMMappingService {
 	}	
 	
 	private IRI createInterfaceKBModel(IRI interface_iri) throws MappingException {
+		
 		Optional<Literal> _interfaceName = Models
 				.objectLiteral(rmModel.filter(interface_iri, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		LOG.info("createInterfaceKBModel: interface_iri = {}, _interfaceName = {} ", interface_iri, _interfaceName);
 		
 		String interfaceName = null;
 		if (!_interfaceName.isPresent())
@@ -625,6 +631,8 @@ public class DSLRMMappingService {
 		Literal value = Models
 				.objectLiteral(rmModel.filter(interface_iri, factory.createIRI(KB.EXCHANGE + "value"), null))
 				.orElse(null);
+		
+		LOG.info("value: {}", value);
 
 		if (value != null) { // this means there is no parameters
 			if (interfaceName != null && (interfaceName.equals("type"))) {

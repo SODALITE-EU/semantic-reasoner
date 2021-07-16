@@ -61,7 +61,7 @@ public class PolicyMappingTest {
 	
 	
 	
-		IRI  rmIRI1 = null;
+		DslModel  rmIRI1 = null;
 		DslModel aadmModel = null;
 		try {
 			LOG.info("Loading resource models");			

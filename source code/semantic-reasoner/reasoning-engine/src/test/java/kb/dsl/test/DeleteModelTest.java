@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import kb.KBApi;
 import kb.dsl.DSLRMMappingService;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.test.util.RepositoryTestUtils;
 import kb.repository.KB;
@@ -33,7 +34,7 @@ public class DeleteModelTest {
 	private static KBApi api;
 
 	static DSLRMMappingService rm1;
-	static IRI rmIRI1;
+	static DslModel rmIRI1;
 
 	@BeforeAll
 	 static void loadResourceModels() {
@@ -68,7 +69,7 @@ public class DeleteModelTest {
 	void testDeleteModel() throws IOException {
 		LOG.info("testDeleteModel");
 		try {
-			boolean success = api.deleteModel(rmIRI1.toString(), "", false);
+			boolean success = api.deleteModel(rmIRI1.getFullUri(), "", false);
 			assertTrue(success);
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);

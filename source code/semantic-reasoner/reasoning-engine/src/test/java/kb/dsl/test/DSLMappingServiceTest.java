@@ -68,9 +68,9 @@ class DSLMappingServiceTest {
 	static DSLRMMappingService rm3;
 	static DSLRMMappingService rm4;
 	
-	static IRI rmIRI3;
+	static DslModel rmIRI3;
 
-	static IRI rmIRI4 = null;
+	static DslModel rmIRI4 = null;
 	static DslModel aadmModel = null;
 
 	@BeforeAll
@@ -301,7 +301,7 @@ class DSLMappingServiceTest {
 	void getAADM() throws IOException {
 		LOG.info("getAADM: {}", aadmModel.getUri());
 		
-		AADM aadm = api.getAADM(aadmModel.getUri());
+		AADM aadm = api.getAADM(aadmModel.getUri(), "");
 		Set<NodeFull> templates = aadm.getTemplates();
 
 		assertTrue(templates.size() == 4);
@@ -395,7 +395,7 @@ class DSLMappingServiceTest {
 		LOG.info("testGetModel");
 		try {
 			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/", "");
-			assertEquals(model.getUri(), rmIRI3.toString());
+			assertEquals(model.getUri(), rmIRI3.getFullUri().toString());
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 			fail("IOException was thrown");
@@ -412,7 +412,7 @@ class DSLMappingServiceTest {
 		LOG.info("testGetModelForURI");
 		try {
 			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString(), "");
-			assertEquals(model.getUri(), rmIRI3.toString());
+			assertEquals(model.getUri(), rmIRI3.getFullUri());
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 			fail("IOException was thrown");

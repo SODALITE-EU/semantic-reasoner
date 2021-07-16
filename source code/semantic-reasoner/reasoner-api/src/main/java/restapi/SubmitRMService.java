@@ -32,6 +32,7 @@ import io.swagger.annotations.ApiParam;
 import kb.KBApi;
 import kb.configs.ConfigsLoader;
 import kb.dsl.DSLRMMappingService;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
@@ -94,16 +95,16 @@ public class SubmitRMService extends AbstractService  {
 		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 		
 		DSLRMMappingService m = new DSLRMMappingService(kb, rmTTL, rmURI, namespace, rmDSL, name);
-		IRI rmUri = null;
+		DslModel rm = null;
 		
 		//Contains the final response
 		JSONObject response = new JSONObject();
 		try {
-			rmUri = m.start();
+			rm = m.start();
 			//String rmid = MyUtils.getStringPattern(rmUri.toString(), ".*/(RM_.*).*");
 			m.save();
 			
-			HttpClientRequest.getWarnings(response, rmUri, !KBConsts.AADM);
+			HttpClientRequest.getWarnings(response, rm.getFullUri(), !KBConsts.AADM);
 		} catch (MappingException e) {
 			e.printStackTrace();
 			List<DslValidationModel> validationModels = e.mappingValidationModels;
@@ -126,9 +127,9 @@ public class SubmitRMService extends AbstractService  {
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		}  catch (MyRestTemplateException e) {
-			if (rmUri != null) {
+			if (rm.getFullUri() != null) {
 				KBApi api = new KBApi(kb);
-				api.deleteModel(rmUri.toString(), "", false);
+				api.deleteModel(rm.getFullUri().toString(), "", false);
 			}
 			
 			HttpRequestErrorModel erm = e.error_model;
@@ -141,8 +142,9 @@ public class SubmitRMService extends AbstractService  {
 			m.shutDown();
 		}
 
-		if (rmUri != null)
-			response.put("rmuri", rmUri.stringValue());
+		if (rm != null) {
+			response.put( "rm", rm.getFullUri());
+		}
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}
 

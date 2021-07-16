@@ -1328,13 +1328,16 @@ public class KBApi {
 		return classType;
 	}
 	
-	public AADM getAADM(String aadmId) throws IOException {
-		LOG.info("AADM: {}", aadmId);
+	public AADM getAADM(String aadmId, String version) throws IOException {
+		LOG.info("AADM: {}, version: {}", aadmId, version);
 		String sparql = MyUtils.fileToString("sparql/getAADM.sparql");
 		String query = KB.PREFIXES + sparql;
-
+		
+		String fullUri = aadmId;
+		if (!version.isEmpty())
+			fullUri += KBConsts.SLASH + version;
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
-				new SimpleBinding("aadm", kb.getFactory().createIRI(aadmId)));
+				new SimpleBinding("aadm", kb.getFactory().createIRI(fullUri)));
 
 		AADM aadm = null;
 		while (result.hasNext()) {
@@ -1345,11 +1348,14 @@ public class KBApi {
 			String templates = bindingSet.getBinding("templates").getValue().stringValue();
 			String inputs = bindingSet.getBinding("inputs").getValue().stringValue();
 			String outputs = bindingSet.getBinding("outputs").getValue().stringValue();
+			Value _version = bindingSet.hasBinding("version") ? bindingSet.getBinding("version").getValue() : null;
 
 			aadm = new AADM(kb.getFactory().createIRI(aadmId));
 			aadm.setUser(user);
 			aadm.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
 			aadm.setNamespace(namespace);
+			if (_version != null)
+				aadm.setVersion(_version.stringValue());
 
 			String[] split = templates.split(" ");
 			for (String s : split) {

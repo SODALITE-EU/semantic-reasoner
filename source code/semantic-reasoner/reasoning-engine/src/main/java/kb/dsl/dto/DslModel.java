@@ -8,8 +8,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class DslModel {
+	//The uri without the version https://www.sodalite.eu/ontologies/workspace/1/gdgfgdfgfd/AADM_ffsfsd - needed because returned in ide save response
 	String uri;
 	String version;
+	//The uri with the version https://www.sodalite.eu/ontologies/workspace/1/gdgfgdfgfd/AADM_ffsfsd/v1
 	IRI fullUri;
 	
 	
