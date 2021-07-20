@@ -2,6 +2,9 @@ package restapi.model;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -23,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
+import kb.dto.Capability;
 import kb.dto.SodaliteAbstractModel;
 import kb.utils.MyUtils;
 import restapi.AbstractService;
@@ -56,28 +60,38 @@ public class GetModelService extends AbstractService {
 	public Response getModel(@ApiParam(value = "resource name", required = false) @DefaultValue("") @QueryParam("resource") String resource,
 			@ApiParam(value = "empty or namespace value", required = false) @DefaultValue("") @QueryParam("namespace") String namespace,
 			@ApiParam(value = "uri", required = false)@DefaultValue("")  @QueryParam("uri") String uri,
-			@ApiParam(value = "version", required = false)@DefaultValue("")  @QueryParam("version") String version,
+			@ApiParam(value = "version", required = false) @QueryParam("version") String version,
 			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 			throws IOException, URISyntaxException {
-		LOG.info( "getModel: resource= {}, namespace = {}, uri = {}",  resource, namespace, uri);
+		LOG.info( "getModel: resource= {}, namespace = {}, uri = {}, version = {}",  resource, namespace, uri, version);
 		
-		SodaliteAbstractModel model = null;
+		Set<SodaliteAbstractModel> models = new HashSet<SodaliteAbstractModel> ();
 		AuthResponse ares = new AuthResponse();
-		
+				
 		KBApi api = new KBApi();
 		if (!"".equals(resource)) {
-			model = api.getModelForResource(resource, namespace, version);
+			models = api.getModelForResource(resource, namespace, version);
+			
 			if(AuthUtil.authentication() && !"".equals(namespace)) {
-				String shortNamespace = MyUtils.getNamespaceFromContext(namespace);
-				ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
-				LOG.info( "Model for Resource shortNamespace = {}",  shortNamespace);
+				Iterator<SodaliteAbstractModel> iter = models.iterator();
+				if (!models.isEmpty()) {
+					SodaliteAbstractModel model = iter.next();
+					String shortNamespace = MyUtils.getNamespaceFromContext(namespace);
+					ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
+					LOG.info( "Model for Resource shortNamespace = {}",  shortNamespace);
+				}
 			}
 		} else if (!"".equals(uri)) {
-			model = api.getModelFromURI(uri, version);
-			if(AuthUtil.authentication() && model != null && model.getNamespace() != null) {
-				String shortNamespace = MyUtils.getNamespaceFromContext(model.getNamespace());
-				ares = SharedUtil.authForReadRoleFromNamespace(model.getIsAADM(), shortNamespace, token);
-				LOG.info( "Model from URI shortNamespace = {}",  shortNamespace);
+			models = api.getModelFromURI(uri, version);
+			Iterator<SodaliteAbstractModel> iter = models.iterator();
+
+			if(AuthUtil.authentication() && !models.isEmpty()) {
+				SodaliteAbstractModel firstModel = iter.next();
+				if (firstModel.getNamespace() != null) {
+					String shortNamespace = MyUtils.getNamespaceFromContext(firstModel.getNamespace());
+					ares = SharedUtil.authForReadRoleFromNamespace(firstModel.getIsAADM(), shortNamespace, token);
+					LOG.info( "Model from URI shortNamespace = {}",  shortNamespace);
+				}
 			}
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity("Resource or uri should be provided").build();
@@ -91,8 +105,10 @@ public class GetModelService extends AbstractService {
 		api.shutDown();
 		JsonObject _model = new JsonObject();
 		JsonArray array = new JsonArray();
-		if (model != null)
-			array.add(model.serialise());
+		
+		for (SodaliteAbstractModel m : models) {
+			array.add(m.serialise());
+		}
 			
 		_model.add("data", array);
 

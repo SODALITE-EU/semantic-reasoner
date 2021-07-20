@@ -1,6 +1,7 @@
-SELECT distinct ?m ?time ?user ?dsl ?name ?isAADM ?g ?description ?namespace ?version {
-		?m a ?modelType . 
+SELECT distinct ?m ?time ?user ?dsl ?name ?isAADM ?namespace ?description ?version {
+		?m a ?modelType .
         FILTER (?modelType  IN (soda:AbstractApplicationDeployment, soda:ResourceModel))  .
+        FILTER (STRSTARTS(str(?m), ?aadm)) .
 		?m soda:createdAt ?time .
 		?m soda:createdBy ?user .
 		?m soda:hasDSL ?dsl .
@@ -8,7 +9,7 @@ SELECT distinct ?m ?time ?user ?dsl ?name ?isAADM ?g ?description ?namespace ?ve
 		BIND (xsd:boolean(exists{?m a soda:AbstractApplicationDeployment}) AS ?isAADM)
 		
 		?m DUL:isSettingFor ?resource .
-		?m soda:hasNamespace ?namespace .
-		OPTIONAL {?m dcterms:description ?description .}
+        ?m soda:hasNamespace ?namespace .
 		OPTIONAL {?m owl:versionInfo ?version .}
-} order by  ?m ?time ?user ?dsl ?name ?isAADM ?namespace  ?description ?version
+		OPTIONAL {?m dcterms:description ?description .}
+} order by ?m ?time ?user ?dsl ?name ?isAADM ?namespace  ?description ?version
