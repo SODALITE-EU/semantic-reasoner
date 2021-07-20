@@ -1507,6 +1507,9 @@ public class KBApi {
 		return models;
 	}
 	
+	/* if version == null and uri is given, all the versions + untagged are returned
+	 * if version == "" and uri is given, the untagged version is returned
+	 */
 	public Set<SodaliteAbstractModel> getModelFromURI (String uri, String version) throws IOException {
 		LOG.info("getModelFromURI for {} uri, version: {}", uri, version);
 		
@@ -1609,7 +1612,7 @@ public class KBApi {
 		if (model != null) {
 			namespace = model.getNamespace();
 		}
-		if (version == null)
+		if (version == null || (version != null && version.isEmpty()))
 			res = new ModifyKB(kb).deleteModel(model.getUri(), namespace);
 		else
 			res = new ModifyKB(kb).deleteModel(model.getUri() + KBConsts.SLASH + version, namespace);

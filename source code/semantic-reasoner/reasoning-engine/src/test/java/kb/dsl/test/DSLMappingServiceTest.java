@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -394,8 +395,15 @@ class DSLMappingServiceTest {
 	void testGetModelForResource()  {
 		LOG.info("testGetModel");
 		try {
-			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/", "");
-			assertEquals(model.getUri(), rmIRI3.getFullUri().toString());
+			Set<SodaliteAbstractModel> models = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/", "");
+			if (!models.isEmpty()) {
+				Iterator<SodaliteAbstractModel> iter = models.iterator();
+				SodaliteAbstractModel model = iter.next();
+				assertEquals(model.getUri(), rmIRI3.getFullUri().toString());
+			} else {
+				fail("Empty model");
+			}
+				
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 			fail("IOException was thrown");
@@ -411,8 +419,15 @@ class DSLMappingServiceTest {
 	void testGetModelForURI()  {
 		LOG.info("testGetModelForURI");
 		try {
-			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString(), "");
-			assertEquals(model.getUri(), rmIRI3.getFullUri());
+			Set<SodaliteAbstractModel> models = api.getModelFromURI(rmIRI3.toString(), "");
+			if (!models.isEmpty()) {
+				Iterator<SodaliteAbstractModel> iter = models.iterator();
+				SodaliteAbstractModel model = iter.next();
+			
+				assertEquals(model.getUri(), rmIRI3.getFullUri());
+			} else {
+				fail("Empty model");
+			}
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 			fail("IOException was thrown");
