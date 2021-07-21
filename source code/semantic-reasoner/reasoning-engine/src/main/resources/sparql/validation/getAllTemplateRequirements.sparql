@@ -6,6 +6,5 @@ where {
     ?templateType rdfs:subClassOf tosca:tosca.entity.Root .
     
     ?aadm soda:includesTemplate ?template .
-    FILTER (contains(str(?aadm), ?aadmId)) .
 }  
 

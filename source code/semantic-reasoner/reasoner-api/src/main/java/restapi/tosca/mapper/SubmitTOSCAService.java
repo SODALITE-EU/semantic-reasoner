@@ -3,6 +3,7 @@ package restapi.tosca.mapper;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -32,6 +33,7 @@ import io.swagger.annotations.ApiParam;
 import kb.configs.ConfigsLoader;
 import kb.dsl.DSLMappingService;
 import kb.dsl.DSLRMMappingService;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.repository.KB;
@@ -124,17 +126,17 @@ public class SubmitTOSCAService extends AbstractService {
 		if (rmTTL != null)
 			 rm = new DSLRMMappingService(kb, rmTTL, rmURI, rmNamespace, "", rmName);
 		if (aadmTTL != null)
-			aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, aadmNamespace, "", aadmName);
+			aadm = new DSLMappingService(kb, aadmTTL, aadmURI, false, aadmNamespace, "", aadmName, "");
 
-		IRI rmUri = null;
-		IRI aadmUri = null;
+		DslModel rmModel = null;
+		DslModel aadmModel = null;
 		try {
 			if (rm != null) {
-				rmUri = rm.start();
+				rmModel = rm.start();
 				rm.save();
 			}
 			if (aadm != null) {
-				aadmUri = aadm.start();
+				aadmModel = aadm.start();
 				aadm.save();
 			}
 		}  catch (MappingException e) {
@@ -170,10 +172,12 @@ public class SubmitTOSCAService extends AbstractService {
 		
 		
 		
-		if (rmUri != null)
-			response.put("rmuri", rmUri.stringValue());
-		if (aadmUri != null)
-			response.put("aadmuri", aadmUri.stringValue());
+		if (rmModel != null) 
+			response.put("uri", rmModel.getFullUri());
+		if (aadmModel != null) {
+			response.put( "uri", aadmModel.getUri());
+			response.put( "version", aadmModel.getVersion());
+		}
 		
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}

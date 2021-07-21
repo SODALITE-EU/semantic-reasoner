@@ -9,6 +9,8 @@ import org.eclipse.rdf4j.model.IRI;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import kb.utils.MyUtils;
+
 public class SodaliteAbstractModel extends Resource {
 
 		IRI user;
@@ -18,9 +20,15 @@ public class SodaliteAbstractModel extends Resource {
 		String name;
 		boolean isAADM;
 		String namespace;
+		String description;
 
 		public SodaliteAbstractModel(IRI iri) {
 			super(iri);
+		}
+		
+		public SodaliteAbstractModel(IRI iri, String version) {
+			super(iri);
+			this.version = version;
 		}
 
 		@Override
@@ -31,6 +39,10 @@ public class SodaliteAbstractModel extends Resource {
 			model.addProperty("createdAt", createdAt.toString());
 			model.addProperty("dsl", dsl);
 			model.addProperty("name", name);
+			if (version != null)
+				model.addProperty("version", version);
+			if (description != null)
+				model.addProperty("description", description);
 			return model;
 		}
 
@@ -95,5 +107,13 @@ public class SodaliteAbstractModel extends Resource {
 
 		public void setNamespace(String namespace) {
 			this.namespace = namespace;
+		}
+		
+		public String getDescription() {
+			return namespace;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
 		}
 }

@@ -16,7 +16,10 @@ import httpclient.dto.AuthErrorModel;
 
 import httpclient.exceptions.AuthException;
 import httpclient.exceptions.MyRestTemplateException;
+import kb.dsl.test.util.RepositoryTestUtils;
+import kb.repository.KB;
 import kb.repository.KBConsts;
+import kb.repository.SodaliteRepository;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -68,7 +71,10 @@ public class HttpClientRequestTest {
 	public void testBugPredictor() throws MyRestTemplateException, URISyntaxException, ParseException {
 		HttpClientRequest.setBugPredictor("http://localhost:" + wireMockPort+"/");
 		JSONObject response = new JSONObject();
-		HttpClientRequest.getWarnings(response, "ddd", KBConsts.AADM);
+		SodaliteRepository  repositoryManager = new SodaliteRepository("target/", "/config.ttl");
+		KB kb = new KB(repositoryManager, RepositoryTestUtils.SEMANTIC_REASONER_TEST);
+		HttpClientRequest.getWarnings(response, kb.factory.createIRI("https://cccccddd"), KBConsts.AADM);
+		kb.shutDown();
 		assertTrue(response.containsKey("warnings"));
 		LOG.info("Test Passed: testBugPredictor");
 	}

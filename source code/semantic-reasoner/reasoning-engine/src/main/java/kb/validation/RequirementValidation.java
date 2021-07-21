@@ -34,7 +34,7 @@ import kb.validation.exceptions.models.RequirementModel;
 
 public class RequirementValidation extends ValidationManager {
 	private static final Logger LOG = LoggerFactory.getLogger(RequirementValidation.class.getName());
-	String aadmId;
+	IRI aadmId;
 	Set<HashMap<String, IRI>> templateRequirements;
 	HashMap<IRI, IRI> templateTypes;
 	
@@ -44,7 +44,7 @@ public class RequirementValidation extends ValidationManager {
 		super(model);
 	}
 
-	public RequirementValidation(String aadmId, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, KB kb) {
+	public RequirementValidation(IRI aadmId, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, KB kb) {
 		super(kb);
 		
 		this.aadmId = aadmId;
@@ -242,7 +242,7 @@ public class RequirementValidation extends ValidationManager {
 
 	public Set<HashMap<String, IRI>> getTemplateRequirements() throws IOException {
 		String query = KB.PREFIXES + MyUtils.fileToString("sparql/validation/getAllTemplateRequirements.sparql");
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("aadmId", kb.getFactory().createLiteral(aadmId)));
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("aadm", aadmId));
 
 		Set<HashMap<String, IRI>> container = new HashSet<>();
 

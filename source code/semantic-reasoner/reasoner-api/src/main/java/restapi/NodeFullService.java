@@ -24,7 +24,7 @@ import kb.KBApi;
 import kb.configs.ConfigsLoader;
 import kb.dto.NodeFull;
 
-/** A service that returns the interfaces of a single TOSCA node
+/** A service that returns the full information of a node
  * @author George Meditskos
  * @author Zoe Vasileiou
  * @version 1.0

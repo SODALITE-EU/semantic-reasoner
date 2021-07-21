@@ -11,6 +11,6 @@ where {
 		?resource sesame:directType ?templateType .
 		?templateType rdfs:subClassOf tosca:tosca.entity.Root .
 				
-		?aadm soda:includesTemplate ?resource .
-		FILTER (contains(str(?aadm), ?var_aadm_id)).
+		?var_aadm soda:includesTemplate ?resource .
+		#FILTER (contains(str(?aadm), ?var_aadm_id)).
 	}

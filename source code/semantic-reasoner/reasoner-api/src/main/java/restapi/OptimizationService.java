@@ -3,6 +3,7 @@ package restapi;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import kb.KBApi;
 import kb.clean.ModifyKB;
 import kb.configs.ConfigsLoader;
 import kb.dsl.DSLMappingService;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 
 import kb.repository.KB;
@@ -93,6 +95,7 @@ public class OptimizationService extends AbstractService {
 			@ApiParam(value = "A flag to enable the auto-completion of missing elements in models", required = false) @DefaultValue("false") @FormParam("complete") boolean complete,
 			@ApiParam(value = "namespace", required = false) @DefaultValue("") @FormParam("namespace") String namespace,
 			@ApiParam(value = "name", required = false) @DefaultValue("") @FormParam("name") String name,
+			@ApiParam(value = "version", required = false) @DefaultValue("") @FormParam("version") String version,
 			@ApiParam(value = "token", required = false) @QueryParam("token") String token)
 					throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, URISyntaxException  {
 		
@@ -104,18 +107,18 @@ public class OptimizationService extends AbstractService {
 		
 		KB kb = new KB(configInstance.getGraphdb(), KB.REPOSITORY);
 		
-		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name);
-		IRI aadmUri = null;
+		DSLMappingService m = new DSLMappingService(kb, aadmTTL, aadmURI, complete, namespace, aadmDSL, name, version);
+		DslModel aadmModel = null;
 
 		//Contains the final response
 		JSONObject response = new JSONObject();
 		try {
-			aadmUri = m.start();
-			String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
+			aadmModel = m.start();
+			//String aadmid = MyUtils.getStringPattern(aadmUri.toString(), ".*/(AADM_.*).*");
 			m.save();
-			HttpClientRequest.getWarnings(response, aadmid, KBConsts.AADM);
+			HttpClientRequest.getWarnings(response, aadmModel.getFullUri(), KBConsts.AADM);
 			
-			getOptimizations(response, aadmid);
+			getOptimizations(response, aadmModel.getFullUri());
 		} catch (MappingException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {	
@@ -129,9 +132,9 @@ public class OptimizationService extends AbstractService {
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		} catch (MyRestTemplateException e) {
-			if (aadmUri != null) {
+			if (aadmModel != null) {
 				KBApi api = new KBApi(kb);
-				api.deleteModel(aadmUri.toString());
+				api.deleteModel(aadmModel.getUri(), version, false);
 			}
 			
 			HttpRequestErrorModel erm = e.error_model;
@@ -144,12 +147,14 @@ public class OptimizationService extends AbstractService {
 			m.shutDown();
 		}
 		
-		if (aadmUri != null)
-			response.put("aadmuri", aadmUri.stringValue());
+		if (aadmModel != null) {
+			response.put( "uri", aadmModel.getUri());
+			response.put( "version", aadmModel.getVersion());
+		}
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}
 	
-	public void getOptimizations(JSONObject response, String aadmId) throws ClientProtocolException, IOException, ParseException, ValidationException {	
+	public void getOptimizations(JSONObject response, IRI aadmId) throws ClientProtocolException, IOException, ParseException, ValidationException {	
 		KBApi api = new KBApi();
 		Set<ValidationModel> optimizations = api.getOptimizationSuggestions(aadmId);
 		api.shutDown();

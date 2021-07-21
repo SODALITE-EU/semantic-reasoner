@@ -12,6 +12,8 @@ public class Node extends Resource {
 	IRI type;
 	IRI namespace;
 	IRI namespaceOfType;
+	//The versioning is per AADM, so the version of the model is associated to the entities
+	String version;
 //	List<String> superTypes;
 
 	public Node(IRI iri) {
@@ -42,6 +44,14 @@ public class Node extends Resource {
 		this.namespaceOfType = namespaceOfType;
 	}
 	
+	public String getVersion() {
+		return version;
+	}
+	
+	public void setVersion(String version) {
+		this.version = version;
+	}
+	
 	@Override
 	public JsonElement serialise() {
 
@@ -59,6 +69,8 @@ public class Node extends Resource {
 
 		if (namespace != null)
 			data.addProperty("namespace", namespace.toString());
+		if (version != null)
+			data.addProperty("version", version);
 		node.add(uri, data);
 
 		return node;

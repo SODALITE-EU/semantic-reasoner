@@ -33,6 +33,8 @@ public class AADMService extends AbstractService {
 	/**
 	 * Getting the abstract application deployment model in JSON format.
 	 * @param aadmIRI The IRI of AADM
+	 * @param version The version of the AADM
+	 * @param refactorer - special handling when called from refactorer
 	 * @throws IOException if your input format is invalid
 	 * @return The AADM in JSON format
 	*/
@@ -45,13 +47,18 @@ public class AADMService extends AbstractService {
 					value = "The Id (IRI) of the AADM",
 					required = true) @QueryParam("aadmIRI") String aadmIRI,
 			@ApiParam(
+					value = "The version of the aadm - if requested",
+					required = false,
+					defaultValue = "") @QueryParam("version") String version,
+			@ApiParam(
 					value = "boolean value representing if it is called from the refactorer or the IaC builder",
 					required = false,
-					defaultValue = "false") @QueryParam("refactorer") boolean refactorer)
+					defaultValue = "false") @QueryParam("refactorer") boolean refactorer
+			)
 			throws IOException {
 
 		KBApi api = new KBApi();
-		AADM aadm = api.getAADM(aadmIRI);
+		AADM aadm = api.getAADM(aadmIRI, version);
 		aadm.setForRefactorer(refactorer);
 		api.shutDown();
 
@@ -63,7 +70,7 @@ public class AADMService extends AbstractService {
 	public static void main(String[] args) throws IOException {
 		AADMService s = new AADMService();
 		Response aadm = s.getAADM(
-				"https://www.sodalite.eu/ontologies/snow-blueprint-containerized-OS/AbstractApplicationDeployment_1", false);
+				"https://www.sodalite.eu/ontologies/snow-blueprint-containerized-OS/AbstractApplicationDeployment_1", "",  false);
 		LOG.info("AADM = {}", aadm.getEntity().toString());
 	}
 

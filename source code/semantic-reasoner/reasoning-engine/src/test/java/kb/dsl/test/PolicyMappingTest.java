@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import kb.KBApi;
 import kb.dsl.DSLMappingService;
 import kb.dsl.DSLRMMappingService;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.test.util.RepositoryTestUtils;
 import kb.dto.Trigger;
@@ -60,8 +61,8 @@ public class PolicyMappingTest {
 	
 	
 	
-		IRI  rmIRI1 = null;
-		IRI aadmIRI = null;
+		DslModel  rmIRI1 = null;
+		DslModel aadmModel = null;
 		try {
 			LOG.info("Loading resource models");			
 			
@@ -70,16 +71,16 @@ public class PolicyMappingTest {
 			
 			
 			rm1  = new DSLRMMappingService(kb, rmTTL1,"", "radon","DSL","");
-			aadm1  = new DSLMappingService(kb, aadmTTL1,"", false,  "radon","DSL","");
+			aadm1  = new DSLMappingService(kb, aadmTTL1,"", false,  "radon","DSL", "", "");
 			
 			try {
 				rmIRI1 = rm1.start();
 				rm1.save();
 				assertNotNull(rmIRI1);
 				
-				aadmIRI = aadm1.start();
+				aadmModel = aadm1.start();
 				aadm1.save();
-				assertNotNull(aadmIRI);
+				assertNotNull(aadmModel);
 
 				LOG.info("Test Passed: saving rm and aadm for policy");
 			} catch (MappingException e) {

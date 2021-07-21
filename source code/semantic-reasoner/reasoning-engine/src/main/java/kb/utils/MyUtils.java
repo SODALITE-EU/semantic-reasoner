@@ -35,6 +35,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import kb.repository.KB;
+import kb.repository.KBConsts;
 
 public class MyUtils {
 	private MyUtils() {
@@ -203,29 +204,41 @@ public class MyUtils {
 	 */
 	public static String getReferenceFromNamespace(String resource) {
 		String[] split = resource.split("\\/");
-		if (split.length > 1)
+		if (split.length > 1) {
+			String[] res =  split[1].split("\\@");
+			if (res.length > 1) 
+				return res[0];
 			return split[1];
+		}
 		return null;
 	}
 	
-	/* resource: docker/sodalite.nodes.Dockerhost
+	/* A) resource: docker/sodalite.nodes.Dockerhost
 	 * https://www.sodalite.eu/ontologies/workspace/1/docker/sodalite.nodes.Dockerhost is returned
+	 * B) case versioned resource: snow/snow-vm@v1, 
+	 * https://www.sodalite.eu/ontologies/workspace/1/snow/v1/snow-vm is returned
+	 * The versioned resources are only for AADM resources
 	*/
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;
+		
 		
 		String namespace = getNamespaceFromReference(resource);
 		String name = getReferenceFromNamespace(resource);
 		
 		if (namespace != null) {
-			resourceIRI = getFullNamespaceIRI(kb, namespace) + name;
-		}
-		else {
+			String version = getVersionFromNamedResource(resource);
+			resourceIRI = (version == null) ?  getFullNamespaceIRI(kb, namespace) + name : getFullNamespaceIRI(kb, namespace) + version + KBConsts.SLASH + name;
+		} else {
 			if (hasPattern(resource, "^tosca."))
 				resourceIRI = KB.TOSCA + resource;
-			else
-				resourceIRI = KB.GLOBAL + resource;
+			else {
+				String version = getVersionFromGlobalResource(resource);
+				resourceIRI = (version == null) ? KB.GLOBAL + resource : KB.GLOBAL + KBConsts.SLASH + resource;
+			}
 		}
+		
+		LOG.info("getFullResourceIRI resourceIRI:" + resourceIRI);
 		
 		return resourceIRI;
 	}
@@ -255,5 +268,30 @@ public class MyUtils {
 		catch (Exception e) {
 			return false;
 		}
+	}
+	
+	/*
+	 * aadmUri: https://www.sodalite.eu/ontologies/workspace/1/dl1tesatvj9473bef35afqgg2i/AADM_tp0qm60qvengrg5aafg8d83gq/version1
+	 * https://www.sodalite.eu/ontologies/workspace/1/dl1tesatvj9473bef35afqgg2i/AADM_tp0qm60qvengrg5aafg8d83gq is returned
+	 */
+	public static String getAADMUriWithoutVersion(IRI aadmUri) {
+		return getStringPattern(aadmUri.stringValue(), "(.*\\/AADM_[a-zA-Z0-9]+)");
+	}
+	
+	/* resource = snow/snow-vm@v1
+	 * @ is the separator for the version
+	 * v1 is returned
+	 */
+	public static String getVersionFromNamedResource(String resource) {
+		return getStringPattern(resource,".*\\/[a-zA-Z0-9\\.\\-\\_]+@([a-zA-Z0-9]+)");
+	}
+	
+	/* Get version from a resource without namespace
+	 * resource = snow-vm@v1
+	 * @ is the separator for the version
+	 * v1 is returned
+	 */
+	public static String getVersionFromGlobalResource(String resource) {
+		return getStringPattern(resource,".*[a-zA-Z0-9.-_]+@([a-zA-Z0-9]+)");
 	}
 }

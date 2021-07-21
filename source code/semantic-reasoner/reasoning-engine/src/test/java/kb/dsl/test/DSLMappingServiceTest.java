@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.TestInstance;
 import kb.KBApi;
 import kb.dsl.DSLMappingService;
 import kb.dsl.DSLRMMappingService;
+import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
 import kb.dsl.test.util.RepositoryTestUtils;
@@ -67,10 +69,10 @@ class DSLMappingServiceTest {
 	static DSLRMMappingService rm3;
 	static DSLRMMappingService rm4;
 	
-	static IRI rmIRI3;
+	static DslModel rmIRI3;
 
-	static IRI rmIRI4 = null;
-	static IRI aadmIRI = null;
+	static DslModel rmIRI4 = null;
+	static DslModel aadmModel = null;
 
 	@BeforeAll
 	 static void loadResourceModels() {
@@ -110,9 +112,10 @@ class DSLMappingServiceTest {
 				
 				DSLMappingService m = null;
 				String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3.ttl");
-				m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
-				aadmIRI = m.start();
-				assertNotNull(aadmIRI);
+				m  = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
+				aadmModel = m.start();
+				LOG.info("aadm: {}", aadmModel.toString());
+				assertNotNull(aadmModel);
 				m.save();
 				
 				LOG.info("Test Passed: saving rm and aadm for openstack");
@@ -142,7 +145,7 @@ class DSLMappingServiceTest {
 		DSLMappingService m = null;
 		try {
 			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_required_property_missing.ttl");
-			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
 			try {
 				m.start();
 			} catch (ValidationException e) {	
@@ -173,7 +176,7 @@ class DSLMappingServiceTest {
 		DSLMappingService m = null;
 		try {
 			String aadmTTL = RepositoryTestUtils.fileToString("dsl/snow/ide_snow_v3_mapping_exception.ttl");
-			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl");
+			m = new DSLMappingService(kb, aadmTTL,"", false,"snow","DSL","snow.ttl", "");
 			try {
 				m.start();
 				m.save();
@@ -297,16 +300,16 @@ class DSLMappingServiceTest {
 	
 	@Test
 	void getAADM() throws IOException {
-		LOG.info("getAADM");
+		LOG.info("getAADM: {}", aadmModel.getUri());
 		
-		AADM aadm = api.getAADM(aadmIRI.toString());
+		AADM aadm = api.getAADM(aadmModel.getUri(), "");
 		Set<NodeFull> templates = aadm.getTemplates();
 
 		assertTrue(templates.size() == 4);
 		LOG.info("Test Passed: getAADM");
 
 		LOG.info("removeInputs");
-		VerifySingularity.removeInputs(kb, aadmIRI.toString());
+		VerifySingularity.removeInputs(kb, aadmModel.getUri());
 		
 		String input = null;
 		for (NodeFull n: templates) {
@@ -392,8 +395,15 @@ class DSLMappingServiceTest {
 	void testGetModelForResource()  {
 		LOG.info("testGetModel");
 		try {
-			SodaliteAbstractModel model = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/");
-			assertEquals(model.getUri(), rmIRI3.toString());
+			Set<SodaliteAbstractModel> models = api.getModelForResource("sodalite.nodes.OpenStack.SecurityRules", KB.BASE_NAMESPACE + "openstack/", "");
+			if (!models.isEmpty()) {
+				Iterator<SodaliteAbstractModel> iter = models.iterator();
+				SodaliteAbstractModel model = iter.next();
+				assertEquals(model.getUri(), rmIRI3.getFullUri().toString());
+			} else {
+				fail("Empty model");
+			}
+				
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 			fail("IOException was thrown");
@@ -409,8 +419,15 @@ class DSLMappingServiceTest {
 	void testGetModelForURI()  {
 		LOG.info("testGetModelForURI");
 		try {
-			SodaliteAbstractModel model = api.getModelFromURI(rmIRI3.toString());
-			assertEquals(model.getUri(), rmIRI3.toString());
+			Set<SodaliteAbstractModel> models = api.getModelFromURI(rmIRI3.toString(), "");
+			if (!models.isEmpty()) {
+				Iterator<SodaliteAbstractModel> iter = models.iterator();
+				SodaliteAbstractModel model = iter.next();
+			
+				assertEquals(model.getUri(), rmIRI3.getFullUri());
+			} else {
+				fail("Empty model");
+			}
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 			fail("IOException was thrown");

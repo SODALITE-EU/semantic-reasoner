@@ -102,6 +102,11 @@ public class GetResources {
 
 	
 	public static NamedResource setNamedResource (String namespace, String value, KB kb) {
+		NamedResource n = createNamedResource(namespace, value, kb);		
+		return n;
+	}
+		
+	private static NamedResource createNamedResource(String namespace, String value, KB kb) {
 		NamedResource n = new NamedResource();
 		
 		String namespaceRef = MyUtils.getNamespaceFromReference(value);

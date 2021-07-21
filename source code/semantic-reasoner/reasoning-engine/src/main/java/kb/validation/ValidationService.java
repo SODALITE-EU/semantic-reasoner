@@ -28,8 +28,8 @@ public class ValidationService {
 		requirementValidation = new RequirementValidation(model);
 	}
 	
-	public ValidationService(String aadmId, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, KB kb) {
-		requirementValidation = new RequirementValidation(aadmId, templateRequirements, templateTypes, kb);
+	public ValidationService(IRI aadmURI, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, KB kb) {
+		requirementValidation = new RequirementValidation(aadmURI, templateRequirements, templateTypes, kb);
 	}
 
 	public List<RequirementModel> validate() {

@@ -167,7 +167,7 @@ topology_template:
         env: { get_input: reasoner_env }
         ports:  ['8080:8080']
         volumes:
-          - "/tmp/tomcat/webapps/Ansibles:/usr/local/tomcat/webapps/Ansibles"   
+          - "/var/tmp/tomcat/webapps/Ansibles:/usr/local/tomcat/webapps/Ansibles"   
       requirements:
         - host: docker-host
         - registry: docker-public-registry   

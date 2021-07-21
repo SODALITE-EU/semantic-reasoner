@@ -18,6 +18,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.eclipse.rdf4j.model.IRI;
 import org.joda.time.LocalDateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -147,15 +148,15 @@ public class HttpClientRequest {
 		return rolesList;
 	}
 	
-	public static void getWarnings(JSONObject response, String modelId, boolean aadm) throws URISyntaxException, ParseException, MyRestTemplateException {
-		LOG.info("getWarnings:");
+	public static void getWarnings(JSONObject response, IRI modelId, boolean aadm) throws URISyntaxException, ParseException, MyRestTemplateException {
+		LOG.info("getWarnings modelId {}:", modelId);
 		String url = bugPredictor + BUG_PREDICTOR_SERVICE;
 		
 		String input;
 		if (aadm) 
-			input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"aadmid\":\""+ modelId + "\"}";
+			input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"aadmid\":\""+ modelId.stringValue() + "\"}";
 		else
-			input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"rmid\":\""+ modelId + "\"}";
+			input = "{\"server\": \"" + configInstance.getGraphdb() + "\","+ "\"repository\":\""+ KB.REPOSITORY + "\","+ "\"rmid\":\""+ modelId.stringValue() + "\"}";
 		LOG.info("input = {}", input);
 		
 		String result = null;
