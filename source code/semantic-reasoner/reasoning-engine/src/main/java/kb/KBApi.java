@@ -1431,9 +1431,7 @@ public class KBApi {
 			Value dsl = bindingSet.getBinding("dsl").getValue();
 			Value name = bindingSet.getBinding("name").getValue();
 			Value _version = bindingSet.hasBinding("version") ? bindingSet.getBinding("version").getValue() : null;
-			Value _description = null;
-			if (type.equals("AADM"))
-				_description = bindingSet.hasBinding("description") ? bindingSet.getBinding("description").getValue() : null;
+			Value _description = bindingSet.hasBinding("description") ? bindingSet.getBinding("description").getValue() : null;
 			
 			SodaliteAbstractModel a;
 			a = (_version != null) ? new SodaliteAbstractModel(kb.factory.createIRI(MyUtils.getAADMUriWithoutVersion(model)) , _version.stringValue()) : new SodaliteAbstractModel(model);
