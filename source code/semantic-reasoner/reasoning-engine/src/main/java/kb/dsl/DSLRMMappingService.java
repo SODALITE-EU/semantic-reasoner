@@ -152,7 +152,8 @@ public class DSLRMMappingService {
 			} 
 			resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasDSL"), rmDSL);
 			
-			resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasName"), name);			
+			resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasName"), name);
+			resourceBuilder.add(rmKB, factory.createIRI(KB.SODA + "hasNamespace"), MyUtils.getNamespaceFromContext(namespace.toString()));
 		}
 
 		if (rmKB == null) {

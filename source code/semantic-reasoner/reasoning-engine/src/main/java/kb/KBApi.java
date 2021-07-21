@@ -1533,7 +1533,6 @@ public class KBApi {
 						new SimpleBinding("aadm", kb.getFactory().createLiteral(uriBound)));
 		}
 		else
-		
 			result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, 
 						new SimpleBinding("m", kb.getFactory().createIRI(uriBound)));
 		

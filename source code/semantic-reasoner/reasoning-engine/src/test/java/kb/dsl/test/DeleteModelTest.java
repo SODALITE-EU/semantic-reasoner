@@ -69,6 +69,7 @@ public class DeleteModelTest {
 	void testDeleteModel() throws IOException {
 		LOG.info("testDeleteModel");
 		try {
+			LOG.info("rmIRI1: {}", rmIRI1.getFullUri().toString());
 			boolean success = api.deleteModel(rmIRI1.getFullUri().toString(), "", false);
 			assertTrue(success);
 		} catch (Exception e) {
