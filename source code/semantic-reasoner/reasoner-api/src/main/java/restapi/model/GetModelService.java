@@ -47,6 +47,8 @@ public class GetModelService extends AbstractService {
 	  * @param resource  (e.g. node type name or template name) could be provided
 	  * @param namespace If empty global namespace is searched, otherwise the provided one
 	  * @param uri The uri of the model is provided
+	  * @param version The version is optionally provided. If version is not provided, and uri is provided, all the versions of a specific model are returned.
+	  * If version = "" and uri is provided then the untagged model is returned. And if version is provided, the specific versioned model is returned.
 	  * @throws IOException If your input format is invalid
 	  * @return The model metadata
 	 * @throws URISyntaxException 
