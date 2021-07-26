@@ -1,0 +1,9 @@
+select ?rm ?createdAt ?user ?namespace  (group_concat(distinct concat(str(?type), "|" , str(?superclass))) as ?types)
+where {
+	?rm soda:createdAt ?createdAt .
+	?rm soda:createdBy ?user .
+	?rm soda:hasNamespace ?namespace .
+	?rm soda:includesType ?type .
+    ?type sesame:directType ?superclass .
+    ?superclass rdfs:subClassOf soda:SodaliteSituation .
+} group by ?rm ?createdAt ?user ?namespace

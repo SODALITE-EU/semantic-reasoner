@@ -43,6 +43,7 @@ import kb.dto.Operation;
 import kb.dto.Optimization;
 import kb.dto.Parameter;
 import kb.dto.Property;
+import kb.dto.RM;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
 import kb.dto.Trigger;
@@ -1402,6 +1403,49 @@ public class KBApi {
 		}
 	}
 	
+	
+	public RM getRM(String rmId) throws IOException {
+		LOG.info("RM: {}", rmId);
+		String sparql = MyUtils.fileToString("sparql/getRM.sparql");
+		String query = KB.PREFIXES + sparql;
+		
+		String fullUri = rmId;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("rm", kb.getFactory().createIRI(fullUri)));
+
+		RM rm = null;
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			Value createdAt = bindingSet.getBinding("createdAt").getValue();
+			IRI user = (IRI) bindingSet.getBinding("user").getValue();
+			String namespace = bindingSet.getBinding("namespace").getValue().stringValue();
+			String types = bindingSet.getBinding("types").getValue().stringValue();
+
+			rm = new RM(kb.getFactory().createIRI(rmId));
+			rm.setUser(user);
+			rm.setCreatedAt(ZonedDateTime.parse(createdAt.stringValue()));
+			rm.setNamespace(namespace);
+
+			String[] split = types.split(" ");
+			for (String s : split) {
+				String[] split2 = s.split("\\|");
+				NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), false);
+				f.setType(kb.getFactory().createIRI(split2[1]));
+				rm.addType(f);
+			}
+
+		}
+		result.close();
+
+		if (rm != null) {
+			rm.build(this);
+		} else {
+			LOG.warn("RM is null");
+		}
+
+		return rm;
+	}
 	
 	public Set<SodaliteAbstractModel> getModels(String type, String namespace) throws IOException {
 		LOG.info("getModels for {} type, {} namespace", type, namespace);
