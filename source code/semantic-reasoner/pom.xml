@@ -15,7 +15,7 @@
 	<properties>
 		<jersey2.version>2.32</jersey2.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<default.min.distinct.threshold>104857600</default.min.distinct.threshold>
+		<default.min.distinct.threshold>52428800</default.min.distinct.threshold>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
