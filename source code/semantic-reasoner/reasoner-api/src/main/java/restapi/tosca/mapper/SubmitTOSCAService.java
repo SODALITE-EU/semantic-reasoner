@@ -173,10 +173,10 @@ public class SubmitTOSCAService extends AbstractService {
 		
 		
 		if (rmModel != null) 
-			response.put("uri", rmModel.getFullUri());
+			response.put("rmuri", rmModel.getFullUri().toString());
 		if (aadmModel != null) {
-			response.put( "uri", aadmModel.getUri());
-			response.put( "version", aadmModel.getVersion());
+			response.put( "aadmuri", aadmModel.getUri());
+			//response.put( "version", aadmModel.getVersion());
 		}
 		
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
