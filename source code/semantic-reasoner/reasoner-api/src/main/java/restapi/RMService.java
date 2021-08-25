@@ -31,7 +31,8 @@ import kb.utils.MyUtils;
 public class RMService extends AbstractService {
 	private static final Logger LOG = LoggerFactory.getLogger(AADMService.class.getName());
 	/**
-	 * Getting the abstract application deployment model in JSON format.
+	 * Getting the resource model in JSON format.
+	 * It is used by the IDE so as to create DSL of the models that are saved by the Platform Discovery Service
 	 * @param rmIRI The IRI of RM
 	 * @throws IOException if your input format is invalid
 	 * @return The RM in JSON format

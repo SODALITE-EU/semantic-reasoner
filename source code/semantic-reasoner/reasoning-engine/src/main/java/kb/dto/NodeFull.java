@@ -35,7 +35,7 @@ public class NodeFull extends Node {
 	String classType;
 
 
-	public boolean isTemplate = false, isInput = false, isOutput = false;
+	public boolean isTemplate = false, isInput = false, isOutput = false, notFromSuperClasses = false;
 
 	public NodeFull(IRI iri, boolean isTemplate) {
 		super(iri);
@@ -44,22 +44,28 @@ public class NodeFull extends Node {
 
 	public void build(KBApi api) throws IOException {
 		LOG.info("building={}, isTemplate={}", uri, isTemplate);
+		
+		boolean noInheritance = isTemplate;
+		
+		//when the RMservice is called, the concepts from the superclasses should not be included in the types
+		if (!isTemplate && notFromSuperClasses)
+			noInheritance = true;
 
-		properties = api.getProperties(uri.toString(), isTemplate, KBConsts.AADM_JSON);
-		attributes = api.getAttributes(uri.toString(), isTemplate, KBConsts.AADM_JSON);
-		capabilities = api.getCapabilities(uri.toString(), isTemplate, KBConsts.AADM_JSON);
-		interfaces = api.getInterfaces(uri.toString(), isTemplate);
-		requirements = api.getRequirements(uri.toString(), isTemplate);
+		properties = api.getProperties(uri.toString(), noInheritance, KBConsts.AADM_JSON);
+		attributes = api.getAttributes(uri.toString(), noInheritance, KBConsts.AADM_JSON);
+		capabilities = api.getCapabilities(uri.toString(), noInheritance, KBConsts.AADM_JSON);
+		interfaces = api.getInterfaces(uri.toString(), noInheritance);
+		requirements = api.getRequirements(uri.toString(), noInheritance);
 
 		// TODO orphan properties
-		validTargetTypes = api.getValidTargetTypes(uri.toString(), isTemplate);
+		validTargetTypes = api.getValidTargetTypes(uri.toString(), noInheritance);
 
-		operations = api.getOperations(uri.toString(), isTemplate);
+		operations = api.getOperations(uri.toString(), noInheritance);
 		
 		optimization = api.getOptimization(uri.toString());
 		//policies
-		triggers = api.getTriggers(uri.toString(), isTemplate);
-		targets = api.getTargets(uri.toString(), isTemplate);
+		triggers = api.getTriggers(uri.toString(), noInheritance);
+		targets = api.getTargets(uri.toString(), noInheritance);
 
 		// inputs
 		inputs = api.getInputsOutputs(uri.toString(), true);
@@ -72,6 +78,10 @@ public class NodeFull extends Node {
 
 	public boolean isTemplate() {
 		return isTemplate;
+	}
+	
+	public void setNotFromSuperClasses(boolean notFromSuperClasses) {
+		this.notFromSuperClasses = notFromSuperClasses;
 	}
 
 //	public void setTemplate(boolean isTemplate) {
