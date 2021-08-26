@@ -169,7 +169,9 @@ public class MyUtils {
 	/*namespace: docker
 	 * https://www.sodalite.eu/ontologies/workspace/1/docker/ is returned*/
 	public static String getFullNamespaceIRI(KB kb, String namespace) {
-		final String[] uri = {null};
+		/*There are models that have references to local types with dedicated namespace. e.g. derived_from hpc/node1.
+		 hpc namespace is not present in KB yet, so there is no reason to check if it exists in KB*/
+		/*final String[] uri = {null};
 		
 		List<Resource> list = Iterations.asList(kb.connection.getContextIDs());
 		Map<String,String> namespaces = list.stream().
@@ -184,7 +186,8 @@ public class MyUtils {
 			}
 		});
 		
-		return uri[0];
+		return uri[0];*/
+		return KB.BASE_NAMESPACE + namespace + KBConsts.SLASH;
 	}
 	
 	/*
@@ -222,10 +225,8 @@ public class MyUtils {
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;
 		
-		
 		String namespace = getNamespaceFromReference(resource);
 		String name = getReferenceFromNamespace(resource);
-		
 		if (namespace != null) {
 			String version = getVersionFromNamedResource(resource);
 			resourceIRI = (version == null) ?  getFullNamespaceIRI(kb, namespace) + name : getFullNamespaceIRI(kb, namespace) + version + KBConsts.SLASH + name;

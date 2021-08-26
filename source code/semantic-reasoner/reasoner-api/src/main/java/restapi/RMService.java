@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.google.gson.JsonElement;
 
@@ -31,7 +32,8 @@ import kb.utils.MyUtils;
 public class RMService extends AbstractService {
 	private static final Logger LOG = LoggerFactory.getLogger(AADMService.class.getName());
 	/**
-	 * Getting the abstract application deployment model in JSON format.
+	 * Getting the resource model in JSON format.
+	 * It is used by the IDE so as to create DSL of the models that are saved by the Platform Discovery Service
 	 * @param rmIRI The IRI of RM
 	 * @throws IOException if your input format is invalid
 	 * @return The RM in JSON format
@@ -50,10 +52,12 @@ public class RMService extends AbstractService {
 		KBApi api = new KBApi();
 		RM rm = api.getRM(rmIRI);
 		api.shutDown();
-
-		JsonElement convert = AADMJsonFormat.convert(rm.serialise());
-
-		return Response.ok(MyUtils.getGson(true).toJson(convert)).build();
+		if (rm != null) {
+			JsonElement convert = AADMJsonFormat.convert(rm.serialise());
+			return Response.ok(MyUtils.getGson(true).toJson(convert)).build();
+		} else
+			return Response.status(Status.NOT_FOUND).entity("RM is not found").build();
+		
 	}
 
 	public static void main(String[] args) throws IOException {

@@ -1336,7 +1336,7 @@ public class KBApi {
 		String query = KB.PREFIXES + sparql;
 		
 		String fullUri = aadmId;
-		if (!version.isEmpty())
+		if (version != null)
 			fullUri += KBConsts.SLASH + version;
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("aadm", kb.getFactory().createIRI(fullUri)));
@@ -1432,6 +1432,8 @@ public class KBApi {
 				String[] split2 = s.split("\\|");
 				NodeFull f = new NodeFull(kb.getFactory().createIRI(split2[0]), false);
 				f.setType(kb.getFactory().createIRI(split2[1]));
+				//Not getting concepts from superclasses
+				f.setNotFromSuperClasses(true);
 				rm.addType(f);
 			}
 
