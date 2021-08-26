@@ -225,13 +225,10 @@ public class MyUtils {
 	public static String getFullResourceIRI(String resource, KB kb) {
 		String resourceIRI;
 		
-		System.err.println("resource = " + resource);	
 		String namespace = getNamespaceFromReference(resource);
 		String name = getReferenceFromNamespace(resource);
-		System.err.println("getFullResourceIRI namespace = " + namespace + ", name = " + name);	
 		if (namespace != null) {
 			String version = getVersionFromNamedResource(resource);
-			System.err.println("version = " + version);
 			resourceIRI = (version == null) ?  getFullNamespaceIRI(kb, namespace) + name : getFullNamespaceIRI(kb, namespace) + version + KBConsts.SLASH + name;
 		} else {
 			if (hasPattern(resource, "^tosca."))
