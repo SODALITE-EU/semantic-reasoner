@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.google.gson.JsonElement;
 
@@ -59,12 +60,13 @@ public class AADMService extends AbstractService {
 
 		KBApi api = new KBApi();
 		AADM aadm = api.getAADM(aadmIRI, version);
-		aadm.setForRefactorer(refactorer);
 		api.shutDown();
-
-		JsonElement convert = AADMJsonFormat.convert(aadm.serialise());
-
-		return Response.ok(MyUtils.getGson(true).toJson(convert)).build();
+		if (aadm != null) {
+			aadm.setForRefactorer(refactorer);
+			JsonElement convert = AADMJsonFormat.convert(aadm.serialise());
+			return Response.ok(MyUtils.getGson(true).toJson(convert)).build();
+		} else
+			return Response.ok(Status.NOT_FOUND).entity("The AADM is not found").build();
 	}
 
 	public static void main(String[] args) throws IOException {

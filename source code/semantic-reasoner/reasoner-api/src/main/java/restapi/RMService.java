@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.google.gson.JsonElement;
 
@@ -51,10 +52,12 @@ public class RMService extends AbstractService {
 		KBApi api = new KBApi();
 		RM rm = api.getRM(rmIRI);
 		api.shutDown();
-
-		JsonElement convert = AADMJsonFormat.convert(rm.serialise());
-
-		return Response.ok(MyUtils.getGson(true).toJson(convert)).build();
+		if (rm != null) {
+			JsonElement convert = AADMJsonFormat.convert(rm.serialise());
+			return Response.ok(MyUtils.getGson(true).toJson(convert)).build();
+		} else
+			return Response.status(Status.NOT_FOUND).entity("RM is not found").build();
+		
 	}
 
 	public static void main(String[] args) throws IOException {

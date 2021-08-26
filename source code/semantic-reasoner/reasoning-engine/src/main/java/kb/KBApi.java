@@ -1336,7 +1336,7 @@ public class KBApi {
 		String query = KB.PREFIXES + sparql;
 		
 		String fullUri = aadmId;
-		if (!version.isEmpty())
+		if (version != null)
 			fullUri += KBConsts.SLASH + version;
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("aadm", kb.getFactory().createIRI(fullUri)));
