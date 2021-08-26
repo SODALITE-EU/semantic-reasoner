@@ -302,7 +302,7 @@ class DSLMappingServiceTest {
 	void getAADM() throws IOException {
 		LOG.info("getAADM: {}", aadmModel.getUri());
 		
-		AADM aadm = api.getAADM(aadmModel.getUri(), "");
+		AADM aadm = api.getAADM(aadmModel.getUri(), null);
 		Set<NodeFull> templates = aadm.getTemplates();
 
 		assertTrue(templates.size() == 4);
