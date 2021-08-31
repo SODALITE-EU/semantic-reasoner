@@ -421,6 +421,7 @@ public class DSLRMMappingService {
 		
 
 		if (value != null) { // this means there is no parameters
+			
 			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
 			IRI kbNode = getKBNode(n);
 			if (kbNode == null) {
@@ -428,7 +429,7 @@ public class DSLRMMappingService {
 					kbNode = factory.createIRI(namespace + n.getResource());
 				else {
 					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS),
-																	requirement.getLocalName(), "Cannot find Node: " + value.getLabel() + " for requirement =" + requirement));
+							requirement.getLocalName(), "Cannot find Node: " + value.getLabel() + " for requirement =" + requirement));
 					LOG.warn("{}: Cannot find Node: {} for requirement: {}", currentType, value.getLabel(), requirement);
 				}
 			}
@@ -499,8 +500,10 @@ public class DSLRMMappingService {
 			if (value != null) { // this means there is no parameters
 				Object i = null;
 				//the int check was added for occurrences
-				if ((i = Ints.tryParse(value.stringValue())) != null) {
-					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+				/*if ((i = Ints.tryParse(value.stringValue())) != null) {
+					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), i);
+				} else*/ if (value.stringValue().equals("UNBOUNDED") || Ints.tryParse(value.stringValue()) != null) {
+					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value.stringValue());
 				} else {
 						NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
 						IRI kbNode = getKBNode(n);
