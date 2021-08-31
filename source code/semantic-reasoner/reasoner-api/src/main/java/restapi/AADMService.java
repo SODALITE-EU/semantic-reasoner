@@ -66,7 +66,7 @@ public class AADMService extends AbstractService {
 			JsonElement convert = AADMJsonFormat.convert(aadm.serialise());
 			return Response.ok(MyUtils.getGson(true).toJson(convert)).build();
 		} else
-			return Response.ok(Status.NOT_FOUND).entity("The AADM is not found").build();
+			return Response.status(Status.NOT_FOUND).entity("The AADM is not found").build();
 	}
 
 	public static void main(String[] args) throws IOException {

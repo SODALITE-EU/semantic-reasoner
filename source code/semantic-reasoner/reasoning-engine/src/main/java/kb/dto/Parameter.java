@@ -62,6 +62,7 @@ public class Parameter extends Resource {
 					
 					if(value.startsWith("[")) {
 						//Retrieve the individual values of a list
+						LOG.info("PARAMETER SERIALIZE: {}", value);
 						ArrayList<String> values = MyUtils.getGson(false).fromJson(value, ArrayList.class);
 						//Add only the values that are resources to the aadm json
 						values.stream().forEach((l) -> {
