@@ -2,6 +2,7 @@ pipeline {
   options { 
 	  disableConcurrentBuilds() 
 	  buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '30', daysToKeepStr: '', numToKeepStr: '')
+          timeout(time: 2, unit: 'HOURS')
   }
   agent { label 'docker-slave' }
   environment {
