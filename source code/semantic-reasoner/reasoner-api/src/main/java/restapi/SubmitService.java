@@ -2,6 +2,7 @@ package restapi;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -96,6 +97,8 @@ public class SubmitService extends AbstractService {
 			@ApiParam(value = "token") @FormParam("token") String token)
 			throws RDFParseException, UnsupportedRDFormatException, IOException, MappingException, MyRestTemplateException, URISyntaxException {
 		
+		long startTime = Instant.now().toEpochMilli();
+		
 		if(AuthUtil.authentication()) {
 			AuthResponse ares = SharedUtil.authForWriteRoleFromNamespace(SharedUtil.IS_AADM, namespace, token);
 			if (ares.getResponse() != null)
@@ -137,6 +140,10 @@ public class SubmitService extends AbstractService {
 			
 			JSONObject errors = new JSONObject();
 			errors.put("errors", array);
+			
+			long endTime = Instant.now().toEpochMilli();
+			long timeElapsed = endTime - startTime;
+			LOG.info("Submit AADM execution time in milliseconds: " + timeElapsed);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		} catch (MyRestTemplateException e) {
 			if (aadm != null) {
@@ -157,6 +164,11 @@ public class SubmitService extends AbstractService {
 			response.put( "uri", aadm.getUri());
 			response.put( "version", aadm.getVersion());
 		}
+		
+		long endTime = Instant.now().toEpochMilli();
+		long timeElapsed = endTime - startTime;
+		LOG.info("Submit AADM execution time in milliseconds: " + timeElapsed);
+		
 		return Response.ok(Status.ACCEPTED).entity(response.toString()).build();
 	}
 	
