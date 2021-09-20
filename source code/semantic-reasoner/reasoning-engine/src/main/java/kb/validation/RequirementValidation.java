@@ -40,16 +40,20 @@ public class RequirementValidation extends ValidationManager {
 	
 	List<RequirementModel> models = new ArrayList<RequirementModel>();
 	
+	//Needed for finding compatible templates
+	IRI context;
+	
 	public RequirementValidation(Model model) {
 		super(model);
 	}
 
-	public RequirementValidation(IRI aadmId, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, KB kb) {
+	public RequirementValidation(IRI aadmId, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, KB kb, IRI context) {
 		super(kb);
 		
 		this.aadmId = aadmId;
 		this.templateRequirements = templateRequirements;
 		this.templateTypes = templateTypes;
+		this.context = context;
 	}
 	//public List<RequirementModel> start() throws IOException, NoRequirementDefinitionValidationException,
 		//	NodeMismatchValidationException, CapabilityMismatchValidationException {
@@ -80,6 +84,7 @@ public class RequirementValidation extends ValidationManager {
 			boolean hasRequirementDefinition = requirementDefinitions(templateRequirement);
 			
 			if (hasRequirementDefinition == false) {
+
 				//throw new NoRequirementDefinitionValidationException(template, r_a);
 				models.add(new RequirementModel(context_base_path + MyUtils.getStringValue(r_a), MyUtils.getStringValue(template), MyUtils.getStringValue(r_a),"NoRequirementDefinition"));
 			}
@@ -98,10 +103,17 @@ public class RequirementValidation extends ValidationManager {
 					HashMap<String, IRI> nodeMismatch = nodeMismatch(nodeCtx, r_a, typeOfNode);
 			
 					LOG.info("template = {}, r_a = {}, nodeCtx = {}", template, r_a, nodeCtx);
+					
 					if (!nodeMismatch.isEmpty()) {
 						//throw new NodeMismatchValidationException(nodeMismatch.get("type_r_a_node"), template,
 							//nodeMismatch.get("r_d_node"));
-						models.add(new RequirementModel(context_base_path + MyUtils.getStringValue(r_a) + "/node" , MyUtils.getStringValue(template), MyUtils.getStringValue(r_a) + "/node", typeOfNode.toString(), MyUtils.getStringValue(nodeMismatch.get("r_d_node")), "NodeMismatch"));		
+						
+						LOG.info("r_d_node = {}", nodeMismatch.get("r_d_node"));
+						RequirementExistenceValidation r = new RequirementExistenceValidation(kb, context);
+						Set<IRI> nodes = r.selectCompatibleTemplates(nodeMismatch.get("r_d_node"));
+						LOG.info("Compatible templates: {}", nodes);
+						
+						models.add(new RequirementModel(context_base_path + MyUtils.getStringValue(r_a) + "/node" , MyUtils.getStringValue(template), MyUtils.getStringValue(r_a) + "/node", typeOfNode.toString(), MyUtils.getStringValue(nodeMismatch.get("r_d_node")), "NodeMismatch", nodes));		
 					}
 				}
 

@@ -57,7 +57,11 @@ public class RequirementExistenceValidation extends ValidationManager {
 	Set<HashMap<String, IRI>> ModelsToBeModified = new HashSet<>();
 	
 	
-		
+	public RequirementExistenceValidation(KB kb, IRI context) {
+		this.kb = kb;
+		this.context = context;
+	}
+	
 	public RequirementExistenceValidation(IRI aadm, boolean complete, KB kb, String ws, IRI context, Set<HashMap<String, IRI>> templateRequirements, HashMap<IRI, IRI> templateTypes, HashMap<IRI, String> templateClasses) {
 		super(kb);
 		this.aadmURI = aadm;
@@ -131,7 +135,7 @@ public class RequirementExistenceValidation extends ValidationManager {
 
 					 Set<IRI> templates= selectCompatibleTemplates(type);
 					 
-					 String contextPath = templateClasses.get(template) + MyUtils.getStringValue(template) + KBConsts.SLASH + KBConsts.REQUIREMENTS + KBConsts.SLASH +  MyUtils.getStringValue(r_a) +  KBConsts.SLASH + "node";
+					 String contextPath = templateClasses.get(template) + KBConsts.SLASH + MyUtils.getStringValue(template) + KBConsts.SLASH + KBConsts.REQUIREMENTS + KBConsts.SLASH +  MyUtils.getStringValue(r_a) +  KBConsts.SLASH + "node";
 					 if (templates.size() == 1) {
 						 if (complete) {
 							 //keep the templates to be modified in a structure since the aadm is not save yet in KB

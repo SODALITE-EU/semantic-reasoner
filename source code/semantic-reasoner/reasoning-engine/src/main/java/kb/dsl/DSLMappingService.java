@@ -482,14 +482,14 @@ public class DSLMappingService {
 			LOG.info("capability = {}", t.get("capability"));
 		}
 		
+		IRI context = namespace.toString().contains("global") ? null : namespace;
 		
 		//Sommelier validations
-		ValidationService v = new ValidationService(this.aadmKB, this.templateRequirements, this.templateTypes, kb);
+		ValidationService v = new ValidationService(this.aadmKB, this.templateRequirements, this.templateTypes, kb, context);
 		validationModels.addAll(v.validate());
 		
 		//Abstraction of DSL
 		//Requirement first check about existence, and (complete = true) update models if matching nodes found
-		IRI context = namespace.toString().contains("global") ? null : namespace;
 		r = new RequirementExistenceValidation(this.aadmKB, complete, kb, namespace.toString(), context, this.templateRequirements,  this.templateTypes, templateClasses);
 		//Check for required omitted requirements
 		validationModels.addAll(r.validate());		

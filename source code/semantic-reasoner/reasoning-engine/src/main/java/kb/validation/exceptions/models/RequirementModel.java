@@ -1,9 +1,14 @@
 package kb.validation.exceptions.models;
 
+import java.util.Set;
+
+import org.eclipse.rdf4j.model.IRI;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class RequirementModel extends ValidationModel {
 	String contextPath, templateName, requirement, type_r_a, r_d, nodeType, validationType;
+	Set<IRI> matchingNodes;
 
 	public RequirementModel(String contextPath, String templateName, String requirement, String validationType) {
 		super();
@@ -13,7 +18,7 @@ public class RequirementModel extends ValidationModel {
 		this.validationType = validationType;
 	}
 	
-	public RequirementModel(String contextPath, String templateName, String requirement, String type_r_a, String r_d, String validationType) {
+	public RequirementModel(String contextPath, String templateName, String requirement, String type_r_a, String r_d, String validationType, Set<IRI> matchingNodes) {
 		super();
 		this.contextPath = contextPath;
 		this.templateName = templateName;
@@ -21,6 +26,7 @@ public class RequirementModel extends ValidationModel {
 		this.type_r_a = type_r_a;
 		this.r_d = r_d;
 		this.validationType = validationType;
+		this.matchingNodes = matchingNodes;
 	}
 	
 	//related to capabilities and relationships
@@ -48,6 +54,14 @@ public class RequirementModel extends ValidationModel {
 			case "NodeMismatch":
 				info.put("description",String.format("The type of requirement assigment %s of template %s does not match the requirement definition %s.",
 						type_r_a, templateName, r_d));
+				if (!matchingNodes.isEmpty()) {
+					JSONArray nodes = new JSONArray();
+					for (IRI t : matchingNodes) {
+						nodes.add(t.toString());
+					}
+					
+					info.put("suggestions", nodes);
+				}
 				break;
 			case "CapabilityExistsMismatch":
 			case "CapabilityMismatch":
