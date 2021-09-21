@@ -482,6 +482,8 @@ public class DSLMappingService {
 			LOG.info("capability = {}", t.get("capability"));
 		}
 		
+		LOG.info("uriWithoutVersion: {}, aadmKB: {}", uriWithoutVersion, aadmKB);
+		
 		IRI context = namespace.toString().contains("global") ? null : namespace;
 		
 		//Sommelier validations
@@ -495,7 +497,9 @@ public class DSLMappingService {
 		validationModels.addAll(r.validate());		
 		suggestedModels.addAll(r.getSuggestions());
 		modifiedModels.addAll(r.getModifiedModels());
-				
+		
+		LOG.info("validationModels: {}", validationModels);
+		
 		if (!validationModels.isEmpty()) {
 			throw new ValidationException(validationModels);
 		}
@@ -533,7 +537,11 @@ public class DSLMappingService {
 			subMappingPath += ErrorConsts.SLASH + requirementName;
 		}
 		
-		tempReq.put("template", kb.factory.createIRI(this.namespace + this.currentTemplate));
+		//ZOE
+		String template = this.namespace + this.currentTemplate;
+		if (!version.isEmpty())
+			template = this.namespace + this.version + KBConsts.SLASH + this.currentTemplate; 
+		tempReq.put("template", kb.factory.createIRI(template));
 		tempReq.put("templateType", this.currentType);
 		//base IRI has been added only because other type is not permitted. It is converted to String in RequirementValidation
 		tempReq.put("kindOfTemplate", kb.factory.createIRI(KB.BASE_NAMESPACE + this.currentPrefixTemplate));

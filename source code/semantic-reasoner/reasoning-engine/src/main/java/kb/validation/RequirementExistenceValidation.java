@@ -56,6 +56,8 @@ public class RequirementExistenceValidation extends ValidationManager {
 	//keep the templates to be modified in a structure since the aadm is not save yet in KB
 	Set<HashMap<String, IRI>> ModelsToBeModified = new HashSet<>();
 	
+	public static final String REQUIRED_DESCRIPTION = " does not declare a mandatory ";
+	public static final String OPTIONAL_DESCRIPTION = " does not declare an optional ";
 	
 	public RequirementExistenceValidation(KB kb, IRI context) {
 		this.kb = kb;
@@ -117,6 +119,9 @@ public class RequirementExistenceValidation extends ValidationManager {
 	public void setModels(HashMap<IRI, HashMap<IRI,HashMap<IRI,Set<IRI>>>> map, boolean required) throws IOException {
 		
 		List<RequirementExistenceModel> models;
+		String desc = this.OPTIONAL_DESCRIPTION;
+		 if (required)
+			 desc = this.REQUIRED_DESCRIPTION;
 
 		for (Map.Entry e : map.entrySet()) {
 			 LOG.info("Template: {}", e.getKey());
@@ -148,16 +153,12 @@ public class RequirementExistenceValidation extends ValidationManager {
 							 this.ModelsToBeModified.add(tempReq);
 							 
 							 
-							 
+								 
 							 modifiedModels.add(new RequirementExistenceModel(contextPath, 
-									 "The template " + MyUtils.getStringValue(template) + " does not declare a mandatory requirement and autocompleted by " + templates.iterator().next(), templates));
+									 "The template " + MyUtils.getStringValue(template) + desc + "requirement and autocompleted by " + templates.iterator().next(), templates));
 						 } else {
 							 //models.add(new RequirementExistenceModel(template, r_a, r_i, templates));
-							 String description;
-							 if (required)
-								 description = "The template " + MyUtils.getStringValue(template) + " does not declare a mandatory " + MyUtils.getStringValue(r_a) + " requirement" ;
-							 else
-								 description = "The template " + MyUtils.getStringValue(template) + " does not declare an optional" + MyUtils.getStringValue(r_a) + " requirement";
+							 String description = "The template " + MyUtils.getStringValue(template) + desc + MyUtils.getStringValue(r_a) + " requirement." ;
 							 models.add(new RequirementExistenceModel(contextPath , description , templates));
 						 }
 					 }	else if (templates.isEmpty()){
@@ -165,7 +166,8 @@ public class RequirementExistenceValidation extends ValidationManager {
 							 models.add(new RequirementExistenceModel(contextPath , "The template " + MyUtils.getStringValue(template) + " does not declare a mandatory " + MyUtils.getStringValue(r_a) + " requirement", templates));
 					 } else {
 						 // more than one template found
-					 	models.add(new RequirementExistenceModel(contextPath, templates.size() + " matching target templates found for the " + MyUtils.getStringValue(r_a) + " requirement", templates));
+					 	models.add(new RequirementExistenceModel(contextPath,  
+					 				"The template " + MyUtils.getStringValue(template) + desc + MyUtils.getStringValue(r_a) + " requirement. " + templates.size() + " matching target templates found for the " + MyUtils.getStringValue(r_a) + " requirement.", templates));
 					}	 
 				 }
 			 }
@@ -214,7 +216,10 @@ public class RequirementExistenceValidation extends ValidationManager {
 				 * So the template details are saved in java structures. Those java structures are also used for Sommelier validation.
 				 * Here it is checked if the requirement assignement has been done.
 				 */
-				for (HashMap<String, IRI> templateRequirement : templateRequirements) {// template, templateType, r_a					
+				for (HashMap<String, IRI> templateRequirement : templateRequirements) {// template, templateType, r_a
+					System.out.println("template = " + template.toString());
+					System.out.println("templateRequirement.get(\"template\").toString() = " + templateRequirement.get("template").toString());
+					
 					if(template.toString().equals(templateRequirement.get("template").toString()) && r_a.toString().equals(templateRequirement.get("r_a").toString()) && templateRequirement.get("node") != null) {
 						reqAssignmentFound = true;
 						break;
