@@ -141,6 +141,7 @@ public class RequirementExistenceValidation extends ValidationManager {
 					 Set<IRI> templates= selectCompatibleTemplates(type);
 					 
 					 String contextPath = templateClasses.get(template) + KBConsts.SLASH + MyUtils.getStringValue(template) + KBConsts.SLASH + KBConsts.REQUIREMENTS + KBConsts.SLASH +  MyUtils.getStringValue(r_a) +  KBConsts.SLASH + "node";
+					 String name = MyUtils.getStringValue(r_a) + KBConsts.SLASH + MyUtils.getStringValue(r_i);
 					 if (templates.size() == 1) {
 						 if (complete) {
 							 //keep the templates to be modified in a structure since the aadm is not save yet in KB
@@ -155,19 +156,22 @@ public class RequirementExistenceValidation extends ValidationManager {
 							 
 								 
 							 modifiedModels.add(new RequirementExistenceModel(contextPath, 
-									 "The template " + MyUtils.getStringValue(template) + desc + "requirement and autocompleted by " + templates.iterator().next(), templates));
+									 "The template " + MyUtils.getStringValue(template) + desc + "requirement and autocompleted by " + templates.iterator().next(),
+									 templates, name));
 						 } else {
 							 //models.add(new RequirementExistenceModel(template, r_a, r_i, templates));
 							 String description = "The template " + MyUtils.getStringValue(template) + desc + MyUtils.getStringValue(r_a) + " requirement." ;
-							 models.add(new RequirementExistenceModel(contextPath , description , templates));
+							 models.add(new RequirementExistenceModel(contextPath , description , templates, name));
 						 }
 					 }	else if (templates.isEmpty()){
 						 if (required)
-							 models.add(new RequirementExistenceModel(contextPath , "The template " + MyUtils.getStringValue(template) + " does not declare a mandatory " + MyUtils.getStringValue(r_a) + " requirement", templates));
+							 models.add(new RequirementExistenceModel(contextPath , "The template " + MyUtils.getStringValue(template) + " does not declare a mandatory " + MyUtils.getStringValue(r_a) + " requirement", 
+									 templates, name));
 					 } else {
 						 // more than one template found
 					 	models.add(new RequirementExistenceModel(contextPath,  
-					 				"The template " + MyUtils.getStringValue(template) + desc + MyUtils.getStringValue(r_a) + " requirement. " + templates.size() + " matching target templates found for the " + MyUtils.getStringValue(r_a) + " requirement.", templates));
+					 				"The template " + MyUtils.getStringValue(template) + desc + MyUtils.getStringValue(r_a) + " requirement. " + templates.size() + " matching target templates found for the " + MyUtils.getStringValue(r_a) + " requirement.",
+					 				templates, name));
 					}	 
 				 }
 			 }
