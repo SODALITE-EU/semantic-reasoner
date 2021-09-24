@@ -363,7 +363,7 @@ public class DSLMappingService {
 			}
 			
 			// validation
-			RequiredPropertyValidation v = new RequiredPropertyValidation(templateName,
+			RequiredPropertyValidation v = new RequiredPropertyValidation(currentPrefixTemplate, templateName,
 					factory.createIRI(resourceIRI), definedPropertiesForValidation, kb);
 			validationModels.addAll(v.validate());
 			
