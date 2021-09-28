@@ -24,10 +24,9 @@ public class RequiredPropertyAttributeModel extends ValidationModel {
 		JSONObject info = new JSONObject();
 		info.put("description", String.format("Missing required %s.", property == null ? "attribute" : "property"));
 		info.put("name", property);
-		info.put("context", templateName);
+		
 		String kindOfElement = property == null ? "attributes" : "properties";
-		info.put("path", kindOfTemplate + KBConsts.SLASH + kindOfElement + KBConsts.SLASH + kindOfElement);
-
+		info.put("context", kindOfTemplate + KBConsts.SLASH +  templateName + KBConsts.SLASH + kindOfElement + KBConsts.SLASH + property);
 		json.put("info", info);
 
 		return json;
