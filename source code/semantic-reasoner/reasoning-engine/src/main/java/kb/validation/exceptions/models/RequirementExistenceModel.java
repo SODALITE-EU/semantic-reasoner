@@ -35,6 +35,7 @@ public class RequirementExistenceModel extends ValidationModel {
 	
 	@Override
 	public JSONObject toJson() {
+		JSONObject json = new JSONObject();
 	
 		JSONObject template_obj = new JSONObject();
 		template_obj.put("type", "RequirementExistence");
@@ -48,7 +49,9 @@ public class RequirementExistenceModel extends ValidationModel {
 		template_obj.put("name", name);
 		template_obj.put("suggestions", nodes);
 		
-		return template_obj;
+		json.put("info", template_obj);
+		
+		return json;
 	}
 
 }
