@@ -525,6 +525,7 @@ public class DSLMappingService {
 	}
 
 	private IRI createRequirementKBModel(IRI requirement) throws MappingException {
+		LOG.info("Requirement: {}", requirement);
 		tempReq = new HashMap<String, IRI>();
 		Optional<Literal> _requirementName = Models
 				.objectLiteral(aadmModel.filter(requirement, factory.createIRI(KB.EXCHANGE + "name"), null));
@@ -568,7 +569,8 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);			
+			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);	
+			LOG.info("createRequirementKBModel: getResourceURI {}", n.getResourceURI());
 			if (findTemplateReference(n, requirementClassifierKB) == null)
 				mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));			
 		} else {
@@ -622,11 +624,12 @@ public class DSLMappingService {
 
 			if (value != null) { // this means there is no parameters
 				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
+				LOG.info("createParameterKBModel: getResourceURI {}", n.getResourceURI());
 				IRI kbTemplate = findTemplateReference(n, parameterClassifierKB);
 				if (kbTemplate == null)
 					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
 				
-				System.err.println("kbTemplate = " + kbTemplate);
+				LOG.info("kbTemplate = {}", kbTemplate);
 				//assign values for requirement validation
 				if (parameterName.equals("node"))
 					tempReq.put("node", kbTemplate);
@@ -1120,7 +1123,7 @@ public class DSLMappingService {
 		LOG.info(sparql);
 		String query = KB.PREFIXES + sparql;
 
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("resource", kb.getFactory().createIRI(n.getResourceURI())));
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("x", kb.getFactory().createIRI(n.getResourceURI())));
 
 		/*Set<IRI> xSet = new HashSet<IRI>();
 		while (result.hasNext()) {
