@@ -36,6 +36,7 @@ public class UpdateKB {
 		LOG.info("Adding requirement to template= {}\n\t {} \n\t\t {} \n\t\t\t {}", new Object[] {
 								template, r_a, r_i, matching_template
 							});
+		LOG.info("context= {}", context);
 		RepositoryResult<Statement> statements = conn.getStatements(template, f.createIRI(KB.SODA + "hasContext"), null, context, null);
 		IRI desc = (IRI) statements.next().getObject();
 		 

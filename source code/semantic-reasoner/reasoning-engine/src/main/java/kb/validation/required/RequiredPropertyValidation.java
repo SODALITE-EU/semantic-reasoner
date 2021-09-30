@@ -13,6 +13,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 
 import kb.repository.KB;
+import kb.repository.KBConsts;
 import kb.utils.QueryUtil;
 import kb.validation.exceptions.models.RequiredPropertyAttributeModel;
 
@@ -24,11 +25,13 @@ public class RequiredPropertyValidation {
 	Set<String> exchangeProperties;
 	KB kb;
 	Model aadm;
+	String kindOfTemplate;
 
 	List<RequiredPropertyAttributeModel> models = new ArrayList<RequiredPropertyAttributeModel>();
 
-	public RequiredPropertyValidation(String templateName, IRI templateType, Set<String> exchangeProperties,
+	public RequiredPropertyValidation(String kindOfTemplate, String templateName, IRI templateType, Set<String> exchangeProperties,
 			KB kb) {
+		this.kindOfTemplate = kindOfTemplate;
 		this.templateType = templateType;
 		this.templateName = templateName;
 		this.exchangeProperties = exchangeProperties;
@@ -56,13 +59,12 @@ public class RequiredPropertyValidation {
 				}
 			}
 			if (!found) {
-				models.add(new RequiredPropertyAttributeModel(templateName, templateType.stringValue(), sch, null));
+				models.add(new RequiredPropertyAttributeModel(kindOfTemplate, templateName, templateType.stringValue(), sch, null));
 			}
 			found = false;
 		}
 
 		return models;
-
 	}
 
 	private String optionalPropertiesQuery = "select distinct ?property\r\n" +

@@ -1,17 +1,26 @@
-select ?template  ?v  ?r_a ?r_i
+select distinct ?v  ?r_a ?r_i 
 where {
-	?aadm soda:includesTemplate ?template .
+	#?aadm soda:includesTemplate ?template .
     
-	?template a soda:SodaliteSituation ;
-            sesame:directType ?templateType .
+	#?template a soda:SodaliteSituation ;
+    #        sesame:directType ?templateType .
 	?templateType soda:hasInferredContext ?ctx.
 	?templateType rdfs:subClassOf tosca:tosca.entity.Root. 
 	?ctx tosca:requirements ?r .
 	?r DUL:classifies ?r_a.
 	?r DUL:hasParameter [DUL:classifies ?r_i; DUL:hasRegion ?v] .
-	?r DUL:hasParameter [DUL:classifies tosca:occurrences; DUL:hasParameter [DUL:classifies tosca:min; tosca:hasDataValue ?occMin]] .
-	FILTER (xsd:integer(?occMin) > 0) .
-	FILTER NOT EXISTS {
-		?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a]] .
+	{
+		FILTER NOT EXISTS {
+			?r DUL:hasParameter [DUL:classifies tosca:occurrences; DUL:hasParameter [DUL:classifies tosca:min; tosca:hasDataValue ?occMin]] .
+		}
+	} union {
+		?r DUL:hasParameter [DUL:classifies tosca:occurrences; DUL:hasParameter [DUL:classifies tosca:min; tosca:hasDataValue ?occMin]] .
+		FILTER (xsd:integer(?occMin) > 0) .
     }
+	#FILTER NOT EXISTS {
+	#	?template soda:hasContext [tosca:requirements [DUL:classifies ?r_a]] .
+    #}
+    #this has been added because only node is supported in our use cases and not the capability and relationship
+    FILTER (strends(str(?r_i), "node")).
+    
 }

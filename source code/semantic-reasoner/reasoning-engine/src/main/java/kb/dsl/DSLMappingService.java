@@ -127,6 +127,9 @@ public class DSLMappingService {
 	Set<HashMap<String, IRI>> templateRequirements = new HashSet<>();
 	HashMap<IRI, IRI> templateTypes = new HashMap<>();
 	HashMap<String, IRI> tempReq;
+	
+	//<https://www.sodalite.eu/ontologies/snow/snow-docker-host, node_templates>
+	HashMap<IRI, String> templateClasses = new HashMap<>();
 
 	public List<ValidationModel> validationModels = new ArrayList<>();
 	public List<ValidationModel> modifiedModels = new ArrayList<>();
@@ -134,6 +137,8 @@ public class DSLMappingService {
 	public List<DslValidationModel>  mappingModels =  new ArrayList<>();
 	
 	public Set<String> templateNames = new HashSet<>();
+	
+	RequirementExistenceValidation r;
 	
 
 	public DSLMappingService(KB kb, String aadmTTL, String aadmURI, boolean complete, String namespace, String aadmDSL, String name, String version)
@@ -308,6 +313,8 @@ public class DSLMappingService {
 				
 				String kindOfTtemplate = MyUtils.getStringPattern(template.getLocalName(), "([A-Za-z]+)_\\d+");
 				currentPrefixTemplate = KBConsts.TEMPLATE_CLASSES.get(kindOfTtemplate);
+				LOG.info("kindOfTtemplate={}", kindOfTtemplate);
+				templateClasses.put(templateKB, KBConsts.TEMPLATE_CLASSES.get(kindOfTtemplate));
 				
 				IRI kbNodeType = GetResources.getKBNodeType(fullTemplateType, "tosca:tosca.entity.Root", kb);
 
@@ -356,7 +363,7 @@ public class DSLMappingService {
 			}
 			
 			// validation
-			RequiredPropertyValidation v = new RequiredPropertyValidation(templateName,
+			RequiredPropertyValidation v = new RequiredPropertyValidation(currentPrefixTemplate, templateName,
 					factory.createIRI(resourceIRI), definedPropertiesForValidation, kb);
 			validationModels.addAll(v.validate());
 			
@@ -475,11 +482,24 @@ public class DSLMappingService {
 			LOG.info("capability = {}", t.get("capability"));
 		}
 		
+		LOG.info("uriWithoutVersion: {}, aadmKB: {}", uriWithoutVersion, aadmKB);
+		
+		IRI context = namespace.toString().contains("global") ? null : namespace;
 		
 		//Sommelier validations
-		ValidationService v = new ValidationService(this.aadmKB, this.templateRequirements, this.templateTypes, kb);
+		ValidationService v = new ValidationService(this.aadmKB, this.templateRequirements, this.templateTypes, kb, context);
 		validationModels.addAll(v.validate());
-				
+		
+		//Abstraction of DSL
+		//Requirement first check about existence, and (complete = true) update models if matching nodes found
+		r = new RequirementExistenceValidation(this.aadmKB, complete, kb, namespace.toString(), context, this.templateRequirements,  this.templateTypes, templateClasses);
+		//Check for required omitted requirements
+		validationModels.addAll(r.validate());		
+		suggestedModels.addAll(r.getSuggestions());
+		modifiedModels.addAll(r.getModifiedModels());
+		
+		LOG.info("validationModels: {}", validationModels);
+		
 		if (!validationModels.isEmpty()) {
 			throw new ValidationException(validationModels);
 		}
@@ -505,6 +525,7 @@ public class DSLMappingService {
 	}
 
 	private IRI createRequirementKBModel(IRI requirement) throws MappingException {
+		LOG.info("Requirement: {}", requirement);
 		tempReq = new HashMap<String, IRI>();
 		Optional<Literal> _requirementName = Models
 				.objectLiteral(aadmModel.filter(requirement, factory.createIRI(KB.EXCHANGE + "name"), null));
@@ -517,7 +538,11 @@ public class DSLMappingService {
 			subMappingPath += ErrorConsts.SLASH + requirementName;
 		}
 		
-		tempReq.put("template", kb.factory.createIRI(this.templatews + this.currentTemplate));
+		//ZOE
+		String template = this.namespace + this.currentTemplate;
+		if (!version.isEmpty())
+			template = this.namespace + this.version + KBConsts.SLASH + this.currentTemplate; 
+		tempReq.put("template", kb.factory.createIRI(template));
 		tempReq.put("templateType", this.currentType);
 		//base IRI has been added only because other type is not permitted. It is converted to String in RequirementValidation
 		tempReq.put("kindOfTemplate", kb.factory.createIRI(KB.BASE_NAMESPACE + this.currentPrefixTemplate));
@@ -544,7 +569,8 @@ public class DSLMappingService {
 				.orElse(null);
 
 		if (value != null) { // this means there is no parameters
-			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);			
+			NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);	
+			LOG.info("createRequirementKBModel: getResourceURI {}", n.getResourceURI());
 			if (findTemplateReference(n, requirementClassifierKB) == null)
 				mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));			
 		} else {
@@ -598,11 +624,12 @@ public class DSLMappingService {
 
 			if (value != null) { // this means there is no parameters
 				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
+				LOG.info("createParameterKBModel: getResourceURI {}", n.getResourceURI());
 				IRI kbTemplate = findTemplateReference(n, parameterClassifierKB);
 				if (kbTemplate == null)
 					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.REQUIREMENTS), requirement.getLocalName(), "Cannot find Template: " + value.getLabel()));
 				
-				System.err.println("kbTemplate = " + kbTemplate);
+				LOG.info("kbTemplate = {}", kbTemplate);
 				//assign values for requirement validation
 				if (parameterName.equals("node"))
 					tempReq.put("node", kbTemplate);
@@ -1096,7 +1123,7 @@ public class DSLMappingService {
 		LOG.info(sparql);
 		String query = KB.PREFIXES + sparql;
 
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("resource", kb.getFactory().createIRI(n.getResourceURI())));
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query, new SimpleBinding("x", kb.getFactory().createIRI(n.getResourceURI())));
 
 		/*Set<IRI> xSet = new HashSet<IRI>();
 		while (result.hasNext()) {
@@ -1195,30 +1222,19 @@ public class DSLMappingService {
 		else
 			kb.connection.add(tmodel,namespace);
 		
-		//Requirement first check about existence, and (complete = true) update models if matching nodes found
-		IRI context = namespace.toString().contains("global") ? null : namespace;
-		RequirementExistenceValidation r = new RequirementExistenceValidation(this.aadmKB, complete, kb, namespace.toString(), context);
-		//Check for required omitted requirements
-		validationModels.addAll(r.validate());
-		//if (!validationModels.isEmpty()) {
-			//Set<IRI> templatesIRIs = MyUtils.getResourceIRIs(this.kb, this.namespace, this.templateNames);
-	/*		KBApi api = new KBApi(kb);
-			api.deleteModel(aadmId);
-			throw new ValidationException(validationModels);
-		}*/
-		
-		suggestedModels.addAll(r.getSuggestions());
-		modifiedModels.addAll(r.getModifiedModels());
+		//The requirement matching templates that were found, they are added to the KB here
+		if (!r.getModelsToBeModified().isEmpty())
+			r.autocompleteRequirements();
 		
 		//Sommelier validations
 		/*ValidationService v = new ValidationService(aadmId, this.templateRequirements, this.templateTypes);
 		validationModels.addAll(v.validate());*/
 		
-		if (!validationModels.isEmpty()) {
+		/*if (!validationModels.isEmpty()) {
 			KBApi api = new KBApi(kb);
 			api.deleteModel(this.aadmKB.toString(), version, false);
 			throw new ValidationException(validationModels);
-		}
+		}*/
 		
 	}
 }

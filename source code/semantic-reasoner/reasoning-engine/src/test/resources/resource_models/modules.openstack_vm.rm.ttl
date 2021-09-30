@@ -918,7 +918,27 @@
   exchange:hasParameter :Parameter_113 ;
   exchange:hasParameter :Parameter_114 ;
   exchange:hasParameter :Parameter_115 ;
+  exchange:hasParameter :Parameter_200 ;
 .		
+
+:Parameter_200
+  rdf:type exchange:Parameter ;
+  exchange:name "occurrences" ;	  
+  exchange:hasParameter :Parameter_204 ;
+  exchange:hasParameter :Parameter_205 ;  
+.
+
+:Parameter_204
+  rdf:type exchange:Parameter ;
+  exchange:name "min" ;
+  exchange:value '0' ;
+.
+
+:Parameter_205
+  rdf:type exchange:Parameter ;
+  exchange:name "max" ;
+  exchange:value "UNBOUNDED" ;
+.	
 
 :NodeType_1
   rdf:type exchange:Type ;

@@ -2,12 +2,15 @@ package kb.validation.exceptions.models;
 
 import org.json.simple.JSONObject;
 
+import kb.repository.KBConsts;
+
 public class RequiredPropertyAttributeModel extends ValidationModel {
 
-	String templateName, templateType, property, attribute;
+	String kindOfTemplate, templateName, templateType, property, attribute;
 
-	public RequiredPropertyAttributeModel(String templateName, String templateType, String property, String attribute) {
+	public RequiredPropertyAttributeModel(String kindOfTemplate, String templateName, String templateType, String property, String attribute) {
 		super();
+		this.kindOfTemplate = kindOfTemplate;
 		this.templateName = templateName;
 		this.templateType = templateType;
 		this.property = property;
@@ -21,8 +24,9 @@ public class RequiredPropertyAttributeModel extends ValidationModel {
 		JSONObject info = new JSONObject();
 		info.put("description", String.format("Missing required %s.", property == null ? "attribute" : "property"));
 		info.put("name", property);
-		info.put("context", templateName);
-
+		
+		String kindOfElement = property == null ? "attributes" : "properties";
+		info.put("context", kindOfTemplate + KBConsts.SLASH +  templateName + KBConsts.SLASH + kindOfElement + KBConsts.SLASH + property);
 		json.put("info", info);
 
 		return json;
