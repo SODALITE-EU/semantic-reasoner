@@ -30,7 +30,7 @@ import kb.validation.utils.UpdateKB;
 	protected_by:
 				node: XXXXX
  * If complete is true, the model in KB is getting updated by adding a (required/optional) requirement with
- * the found matching node to the corresponding template.
+ * the found matching node to the corresponding template. If complete is false, only suggestions are returned.
  * @author George Meditskos
  * @author Zoe Vasileiou
  * @version 1.0
