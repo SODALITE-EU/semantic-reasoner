@@ -60,7 +60,7 @@ public class RequirementExistenceValidation extends ValidationManager {
 	public static final String OPTIONAL_DESCRIPTION = " does not declare an optional ";
 	
 	public RequirementExistenceValidation(KB kb, IRI context) {
-		this.kb = kb;
+		super(kb);
 		this.context = context;
 	}
 	
