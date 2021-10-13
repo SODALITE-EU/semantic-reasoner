@@ -43,6 +43,7 @@ import kb.dto.Interface;
 import kb.dto.Node;
 import kb.dto.NodeFull;
 import kb.dto.NodeType;
+import kb.dto.Operation;
 import kb.dto.Property;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
@@ -374,6 +375,16 @@ class DSLMappingServiceTest {
 		Set<IRI> targets = api.getTargets(api.getResourceIRI("snow/snow-security-rules"), true);
 		assertTrue(targets.size() == 1);
 		LOG.info("Test Passed: getTargets of a policy template");
+	}
+	
+	@Test
+	void testOperationsFromNamespaceService() throws IOException {
+		LOG.info("getOperationsFromNamespaces");
+		List<String> imports = new ArrayList<String>();
+		//imports.add("snow");
+		Set<Operation> operations = api.getOperationsFromNamespaces(imports);
+		assertTrue(operations.size() == 13);
+		LOG.info("Test Passed: getOperationsFromNamespaces of a template");
 	}
 	
 	@Test
