@@ -45,6 +45,7 @@ import kb.dto.NodeFull;
 import kb.dto.NodeType;
 import kb.dto.Operation;
 import kb.dto.Property;
+import kb.dto.RM;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
 import kb.dto.Trigger;
@@ -323,6 +324,17 @@ class DSLMappingServiceTest {
 		assertTrue(inputs.size() == 0);
 		
 		LOG.info("Test Passed: removeInputs");
+	}
+	
+	@Test
+	void getRM() throws IOException {
+		LOG.info("getRM: {}", rmIRI3.getFullUri().toString());
+		
+		RM rm = api.getRM(rmIRI3.getFullUri().toString());
+		Set<NodeFull> types = rm.getTypes();
+
+		assertTrue(types.size() == 2);
+		LOG.info("Test Passed: getRM");
 	}
 	
 	
