@@ -43,7 +43,9 @@ import kb.dto.Interface;
 import kb.dto.Node;
 import kb.dto.NodeFull;
 import kb.dto.NodeType;
+import kb.dto.Operation;
 import kb.dto.Property;
+import kb.dto.RM;
 import kb.dto.Requirement;
 import kb.dto.SodaliteAbstractModel;
 import kb.dto.Trigger;
@@ -324,6 +326,17 @@ class DSLMappingServiceTest {
 		LOG.info("Test Passed: removeInputs");
 	}
 	
+	@Test
+	void getRM() throws IOException {
+		LOG.info("getRM: {}", rmIRI3.getFullUri().toString());
+		
+		RM rm = api.getRM(rmIRI3.getFullUri().toString());
+		Set<NodeFull> types = rm.getTypes();
+
+		assertTrue(types.size() == 2);
+		LOG.info("Test Passed: getRM");
+	}
+	
 	
 	@Test
 	void isSubClassOf() throws IOException {
@@ -374,6 +387,16 @@ class DSLMappingServiceTest {
 		Set<IRI> targets = api.getTargets(api.getResourceIRI("snow/snow-security-rules"), true);
 		assertTrue(targets.size() == 1);
 		LOG.info("Test Passed: getTargets of a policy template");
+	}
+	
+	@Test
+	void testOperationsFromNamespaceService() throws IOException {
+		LOG.info("getOperationsFromNamespaces");
+		List<String> imports = new ArrayList<String>();
+		imports.add("snow");
+		Set<Operation> operations = api.getOperationsFromNamespaces(imports);
+		assertTrue(operations.size() == 13);
+		LOG.info("Test Passed: getOperationsFromNamespaces of a template");
 	}
 	
 	@Test
