@@ -381,7 +381,7 @@ class DSLMappingServiceTest {
 	void testOperationsFromNamespaceService() throws IOException {
 		LOG.info("getOperationsFromNamespaces");
 		List<String> imports = new ArrayList<String>();
-		//imports.add("snow");
+		imports.add("snow");
 		Set<Operation> operations = api.getOperationsFromNamespaces(imports);
 		assertTrue(operations.size() == 13);
 		LOG.info("Test Passed: getOperationsFromNamespaces of a template");
