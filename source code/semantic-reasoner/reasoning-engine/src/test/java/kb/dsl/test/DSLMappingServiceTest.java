@@ -371,6 +371,15 @@ class DSLMappingServiceTest {
 	}
 	
 	@Test
+	void getCapabilitiesFromRequirements() throws IOException {
+		LOG.info("getCapabilityFromRequirement");
+		
+		Set<Capability> capabilities = api.getCapabilitiesFromRequirements("snow/openstack_vm", "protected_by", true);
+		assertTrue(capabilities.size() == 0);
+	}
+	
+	
+	@Test
 	void testTriggersService() throws IOException {
 		LOG.info("getTriggers");
 		
