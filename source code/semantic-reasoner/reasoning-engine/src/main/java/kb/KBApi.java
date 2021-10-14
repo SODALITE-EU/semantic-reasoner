@@ -1420,7 +1420,7 @@ public class KBApi {
 			if(!_namespace.equals("global"));
 				a.setNamespace(KB.BASE_NAMESPACE + _namespace + KBConsts.SLASH);
 				
-			if (version != null && !version.isEmpty())
+			if (version != null && !version.isEmpty() && _version != null)
 				a.setVersion(_version.stringValue());
 			
 			if (_description != null)
@@ -1473,11 +1473,12 @@ public class KBApi {
 		String namespace = null;
 		if (model != null) {
 			namespace = model.getNamespace();
+		
+			if (version == null || (version != null && version.isEmpty()))
+				res = new ModifyKB(kb).deleteModel(model.getUri(), namespace);
+			else
+				res = new ModifyKB(kb).deleteModel(model.getUri() + KBConsts.SLASH + version, namespace);
 		}
-		if (version == null || (version != null && version.isEmpty()))
-			res = new ModifyKB(kb).deleteModel(model.getUri(), namespace);
-		else
-			res = new ModifyKB(kb).deleteModel(model.getUri() + KBConsts.SLASH + version, namespace);
 		
 		return res;
 	

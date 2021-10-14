@@ -127,7 +127,7 @@ public class SubmitRMService extends AbstractService  {
 			errors.put("errors", array);
 			return Response.status(Status.BAD_REQUEST).entity(errors.toString()).build();
 		}  catch (MyRestTemplateException e) {
-			if (rm.getFullUri() != null) {
+			if (rm != null && rm.getFullUri() != null) {
 				KBApi api = new KBApi(kb);
 				api.deleteModel(rm.getFullUri().toString(), "", false);
 			}

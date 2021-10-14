@@ -631,7 +631,7 @@ public class DSLMappingService {
 				
 				LOG.info("kbTemplate = {}", kbTemplate);
 				//assign values for requirement validation
-				if (parameterName.equals("node"))
+				if (parameterName != null && parameterName.equals("node"))
 					tempReq.put("node", kbTemplate);
 				else if (parameterName.equals("capability"))
 					tempReq.put("capability", kbTemplate);
