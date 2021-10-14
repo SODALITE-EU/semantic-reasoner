@@ -36,6 +36,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kb.KBApi;
+import kb.KBApiOptimizations;
 import kb.clean.ModifyKB;
 import kb.configs.ConfigsLoader;
 import kb.dsl.DSLMappingService;
@@ -155,7 +156,7 @@ public class OptimizationService extends AbstractService {
 	}
 	
 	public void getOptimizations(JSONObject response, IRI aadmId) throws ClientProtocolException, IOException, ParseException, ValidationException {	
-		KBApi api = new KBApi();
+		KBApiOptimizations api = new KBApiOptimizations();
 		Set<ValidationModel> optimizations = api.getOptimizationSuggestions(aadmId);
 		api.shutDown();
 		
