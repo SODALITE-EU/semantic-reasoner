@@ -54,6 +54,8 @@ public class DeleteModelTest {
 				
 			rm1 = new DSLRMMappingService(kb, rmTTL1,  "https://www.sodalite.eu/ontologies/workspace/1/vbeit9auui3d3j0tdekbljfndl/RM_92aj0uo7t6l6u8mv5tmh99pjnb" , "docker","DSL","modules.docker_registry.rm.ttl");
 			rmIRI1 = rm1.start();
+			
+			//resave so as the delete of VerifySingularity to be checked
 			rm1.save();
 			rmIRI1 = rm1.start();
 			rm1.save();

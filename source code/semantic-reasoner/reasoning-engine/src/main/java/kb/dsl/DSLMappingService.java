@@ -633,7 +633,7 @@ public class DSLMappingService {
 				//assign values for requirement validation
 				if (parameterName != null && parameterName.equals("node"))
 					tempReq.put("node", kbTemplate);
-				else if (parameterName.equals("capability"))
+				else if (parameterName != null && parameterName.equals("capability"))
 					tempReq.put("capability", kbTemplate);
 			} else {
 

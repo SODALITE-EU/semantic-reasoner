@@ -981,7 +981,7 @@ public class DSLRMMappingService {
 				if (propertyName != null && propertyName.equals("type") && nodeNames.contains(n.getResource())) {
 					kbNode = factory.createIRI(namespace + factory.createLiteral(n.getResource()).getLabel());
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-				} else if (propertyName.equals("type") && !value.isEmpty() && (kbNode = getKBNode(n)) != null) {
+				} else if (propertyName != null && propertyName.equals("type") && !value.isEmpty() && (kbNode = getKBNode(n)) != null) {
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 				} else if ((i = Ints.tryParse(value)) != null) {
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
