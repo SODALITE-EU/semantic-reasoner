@@ -978,10 +978,10 @@ public class DSLRMMappingService {
 				IRI kbNode = null;
 				NamedResource n = GetResources.setNamedResource(nodews, value, kb);
 				//Check if the node object exists in this local resource model
-				if (propertyName.equals("type") && nodeNames.contains(n.getResource())) {
+				if (propertyName != null && propertyName.equals("type") && nodeNames.contains(n.getResource())) {
 					kbNode = factory.createIRI(namespace + factory.createLiteral(n.getResource()).getLabel());
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-				} else if (propertyName.equals("type") && !value.isEmpty() && (kbNode = getKBNode(n)) != null) {
+				} else if (propertyName != null && propertyName.equals("type") && !value.isEmpty() && (kbNode = getKBNode(n)) != null) {
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 				} else if ((i = Ints.tryParse(value)) != null) {
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
