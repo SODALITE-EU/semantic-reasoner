@@ -1,0 +1,5 @@
+select distinct ?mime_type
+where {
+	?resource soda:hasContext ?context .
+	?context tosca:mime_type ?mime_type .
+}

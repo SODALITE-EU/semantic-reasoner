@@ -1,0 +1,22 @@
+select distinct ?artifact ?classifier ?type
+where {
+	?resource soda:hasInferredContext ?context .
+	#FILTER (strends(str(?resource), ?var)).
+	?context tosca:artifacts ?classifier. 
+	?classifier DUL:classifies ?artifact .
+	?type soda:hasContext ?context
+	
+	FILTER NOT EXISTS {
+			?resource soda:hasInferredContext ?context2 .
+			FILTER(?context != ?context2).
+			?context2 tosca:artifacts ?classifier2.
+			?classifier2 DUL:classifies ?artifact .
+			
+			?resource2 soda:hasContext ?context2 .
+			#FILTER(?resource != ?resource2).	
+			FILTER(?resource2 != owl:Nothing).
+			?resource2 rdfs:subClassOf ?resource.	
+	}
+	
+	
+}           

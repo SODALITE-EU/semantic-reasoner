@@ -380,7 +380,33 @@ public class DSLRMMappingService {
 							targetClassifierKB);
 			}
 			
+			//Artifacts vocabulary
+			Optional<String> _mime_type = Models.getPropertyString(rmModel, _node,
+					factory.createIRI(KB.EXCHANGE + "mime_type"));
+						
+			if (!_mime_type.isEmpty()) {
+				if (nodeDescriptionKB != null)	
+					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "mime_type"),
+							_mime_type.get());
+			}
 			
+			Optional<String> _file_ext = Models.getPropertyString(rmModel, _node,
+					factory.createIRI(KB.EXCHANGE + "file_ext"));
+			if (!_file_ext.isEmpty()) {
+				if (nodeDescriptionKB != null)	
+					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "file_ext"),
+							_file_ext.get());
+			}
+			
+			// artifacts
+			for (Resource _artifacts : Models.getPropertyResources(rmModel, _node,
+				factory.createIRI(KB.EXCHANGE + "artifacts"))) {
+				IRI artifact = (IRI) _artifacts;
+				IRI artifactClassifierKB = createArtifactKBModel(artifact);
+				if (nodeDescriptionKB != null)
+					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "artifacts"), artifactClassifierKB);
+			}
+	
 		}
 		
 	}
@@ -1141,6 +1167,96 @@ public class DSLRMMappingService {
 			}
 		}
 		return operationClassifierKB;
+	}
+	
+	private IRI createArtifactKBModel(IRI artifact) throws MappingException {
+		LOG.info( "createArtifactKBModel: {}", artifact);
+		Optional<Literal> _artifactName = Models
+				.objectLiteral(rmModel.filter(artifact, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		String artifactName = null;
+		if (!_artifactName.isPresent())
+			mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.ARTIFACTS), artifact.getLocalName(), "No 'name' defined for artifact"));
+		else {
+			artifactName = _artifactName.get().getLabel();
+			subMappingPath += ErrorConsts.SLASH + artifactName;
+		}
+		
+		IRI artifactProperty = null;
+		if (artifactName != null) {
+			artifactProperty = GetResources.getKBProperty(artifactName, this.namespacesOfType, kb);
+			if (artifactProperty == null || artifactProperty.toString().equals(namespace + artifactName)) {
+				artifactProperty = factory.createIRI(namespace + artifactName);
+				nodeBuilder.add(artifactProperty, RDF.TYPE, "rdf:Property");
+			}
+		}
+		
+		Optional<Resource> _type  = Models.getPropertyResource(rmModel, artifact,
+				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+		String type = MyUtils.getStringValue(_type.get());
+		
+		IRI artifactClassifierKB = null;
+		switch (type) {
+			case KBConsts.ARTIFACT:
+				artifactClassifierKB = factory.createIRI(namespace + "ArtifactClassifer_" + MyUtils.randomString());
+				nodeBuilder.add(artifactClassifierKB, RDF.TYPE, "tosca:Artifact");
+				break;
+			case KBConsts.PARAMETER:
+				artifactClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
+				nodeBuilder.add(artifactClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				break;
+			default:
+				LOG.warn("type = {} does not exist", type);
+		}
+		
+		if (artifactProperty != null)
+			nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + "classifies"), artifactProperty);
+		
+		//description is added for triggers
+		Optional<String> description = Models.getPropertyString(rmModel, artifact,
+				factory.createIRI(KB.EXCHANGE + "description"));
+		if (description.isPresent())
+					nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+
+		// check for direct values of parameters
+		Literal value = Models
+				.objectLiteral(rmModel.filter(artifact, factory.createIRI(KB.EXCHANGE + "value"), null))
+				.orElse(null);
+		
+		LOG.info("value: {}", value);
+
+		if (value != null) { // this means there is no parameters
+			if (artifactName != null && (artifactName.equals("type"))) {
+				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
+				IRI kbNode = getKBNode(n);
+				if (kbNode == null) {
+					if (nodeNames.contains(n.getResource()))
+						kbNode = factory.createIRI(namespace + n.getResource());
+					else {
+						mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.ARTIFACTS), artifact.getLocalName(), 
+												"Cannot find Node: " + value.getLabel() + " for artifact = " + artifactName));
+						LOG.warn("{}: Cannot find Node: {} for artifact {}", currentType, value.getLabel(), artifactName);
+					}
+				}
+				if(kbNode != null)
+					nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+			} else {
+				Object i = null;
+				if ((i = Ints.tryParse(value.toString())) != null)
+					 nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+				else 
+					nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+			}
+		} else {
+			Set<Resource> _parameters = Models.getPropertyResources(rmModel, artifact,
+					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
+			for (Resource _parameter : _parameters) {
+				IRI parameter = (IRI) _parameter;
+				IRI _p = createArtifactKBModel(parameter);
+				nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+			}
+		}
+		return artifactClassifierKB;
 	}
 	
 	//for the context path of Mapping errors

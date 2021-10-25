@@ -1,0 +1,5 @@
+select distinct ?file_ext
+where {
+	?resource soda:hasContext ?context .
+	?context tosca:file_ext ?file_ext .
+}
