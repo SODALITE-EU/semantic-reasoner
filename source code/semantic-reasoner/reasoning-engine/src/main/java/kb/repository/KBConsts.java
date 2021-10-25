@@ -33,6 +33,7 @@ public final class KBConsts {
 	
 	
 	static {
+		TYPES.put("artifact","tosca.artifacts.Root");
        	TYPES.put("data","tosca.datatypes.Root");
        	TYPES.put("node", "tosca.nodes.Root");
        	TYPES.put("capability", "tosca.capabilities.Root");
