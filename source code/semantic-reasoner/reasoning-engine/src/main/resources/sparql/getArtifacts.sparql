@@ -1,6 +1,6 @@
 select distinct ?artifact ?classifier ?type
 where {
-	?resource soda:hasContext ?context .
+	?resource soda:hasInferredContext ?context .
 	#FILTER (strends(str(?resource), ?var)).
 	?context tosca:artifacts ?classifier. 
 	?classifier DUL:classifies ?artifact .

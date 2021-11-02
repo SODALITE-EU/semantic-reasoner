@@ -19,6 +19,7 @@ public class GetResources {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(GetResources.class.getName());
 
+	//get type in type of templates, and in derived_from in types
 	public static IRI getKBNodeType(NamedResource n, String type, KB kb) {
 		LOG.info("getKBNodeType label = {}, type = {}\n", n.getResource(), type);
 		String namespace = n.getNamespace();
@@ -44,6 +45,48 @@ public class GetResources {
 		sparql += 	" ?x rdfs:subClassOf " + type + " .\r\n" +
 					" FILTER (strends(str(?x), \"" + resource + "\")). \r\n" +
 					"}";
+		LOG.info(sparql);
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
+
+		IRI x = null;
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			x = (IRI) bindingSet.getBinding("x").getValue();
+		}
+		result.close();
+		return x;
+	}
+	
+	//Get types within concepts such as in requirements, properties etc.
+	public static IRI getKBNodeInConcepts(NamedResource n, KB kb) {
+		String _namespace = n.getNamespace();
+		String _resource = n.getResource();
+		
+		LOG.info("getKBNode namespace = {}, resource = {}", _namespace, _resource);
+		
+		String sparql = "select ?x { \r\n" +
+						"  {\r\n " +
+						"    ?x rdf:type owl:Class .\r\n" +
+						"   FILTER NOT EXISTS\r\n" +
+						"   { \r\n" +
+						"     GRAPH ?g { ?x ?p ?o } \r\n" +
+						"   }\r\n" +
+						"  }\r\n";
+		
+		if (_namespace != null && !_namespace.contains("global"))
+			sparql += 	" UNION {\r\n" +
+						"     GRAPH " + "<"+ _namespace + ">\r\n" +
+						"     {\r\n" +
+						"	     ?x rdf:type owl:Class . \r\n" +
+						"     }\r\n" +
+						" }\r\n";
+		
+		sparql += " ?x rdfs:subClassOf ?class .\r\n" +
+				  " FILTER (?class IN (tosca:tosca.entity.Root, tosca:DataType ))\r\n"+
+				  " FILTER (strends(str(?x), \"" + _resource + "\")). \r\n" +
+				  "}";
 		LOG.info(sparql);
 		String query = KB.PREFIXES + sparql;
 

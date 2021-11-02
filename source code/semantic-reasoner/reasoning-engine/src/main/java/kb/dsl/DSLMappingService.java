@@ -452,6 +452,15 @@ public class DSLMappingService {
 					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "targets"),
 								targetClassifierKB);
 			}
+			
+			// artifacts
+			for (Resource _artifacts : Models.getPropertyResources(aadmModel, _template,
+				factory.createIRI(KB.EXCHANGE + "artifacts"))) {
+				IRI artifact = (IRI) _artifacts;
+				IRI artifactClassifierKB = createArtifactKBModel(artifact);
+				if (templateDescriptionKB != null)
+					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "artifacts"), artifactClassifierKB);
+			}
 
 		}
 
@@ -1019,6 +1028,94 @@ public class DSLMappingService {
 		
 		return parameterClassifierKB;		
 	}
+	
+	private IRI createArtifactKBModel(IRI artifact) throws MappingException {
+		LOG.info( "createArtifactKBModel: {}", artifact);
+		Optional<Literal> _artifactName = Models
+				.objectLiteral(aadmModel.filter(artifact, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		String artifactName = null;
+		if (!_artifactName.isPresent())
+			mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.ARTIFACTS), artifact.getLocalName(), "No 'name' defined for artifact"));
+		else {
+			artifactName = _artifactName.get().getLabel();
+			subMappingPath += ErrorConsts.SLASH + artifactName;
+		}
+		
+		IRI artifactProperty = null;
+		if (artifactName != null) {
+			artifactProperty = GetResources.getKBProperty(artifactName, this.namespacesOfType, kb);
+			if (artifactProperty == null || artifactProperty.toString().equals(namespace + artifactName)) {
+				artifactProperty = factory.createIRI(namespace + artifactName);
+				aadmBuilder.add(artifactProperty, RDF.TYPE, "rdf:Property");
+			}
+		}
+		
+		Optional<Resource> _type  = Models.getPropertyResource(aadmModel, artifact,
+				factory.createIRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+		String type = MyUtils.getStringValue(_type.get());
+		
+		IRI artifactClassifierKB = null;
+		switch (type) {
+			case KBConsts.ARTIFACT:
+				artifactClassifierKB = factory.createIRI(namespace + "ArtifactClassifer_" + MyUtils.randomString());
+				aadmBuilder.add(artifactClassifierKB, RDF.TYPE, "tosca:Artifact");
+				break;
+			case KBConsts.PARAMETER:
+				artifactClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
+				aadmBuilder.add(artifactClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				break;
+			default:
+				LOG.warn("type = {} does not exist", type);
+		}
+		
+		if (artifactProperty != null)
+			aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + "classifies"), artifactProperty);
+		
+		//description is added for triggers
+		Optional<String> description = Models.getPropertyString(aadmModel, artifact,
+				factory.createIRI(KB.EXCHANGE + "description"));
+		if (description.isPresent())
+			aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+
+		// check for direct values of parameters
+		Literal value = Models
+				.objectLiteral(aadmModel.filter(artifact, factory.createIRI(KB.EXCHANGE + "value"), null))
+				.orElse(null);
+		
+		LOG.info("value: {}", value);
+
+		if (value != null) { // this means there is no parameters
+			if (artifactName != null && (artifactName.equals("type"))) {
+				NamedResource n = GetResources.setNamedResource(templatews, value.getLabel(), kb);
+				IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
+				if (kbNode == null) {
+						mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.ARTIFACTS), artifact.getLocalName(), 
+												"Cannot find Node: " + value.getLabel() + " for artifact = " + artifactName));
+						LOG.warn("{}: Cannot find Node: {} for artifact {}", currentType, value.getLabel(), artifactName);
+				}
+				
+				if(kbNode != null)
+					aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+				} else {
+					Object i = null;
+					if ((i = Ints.tryParse(value.toString())) != null)
+						aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+					else 
+						aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+				}
+		} else {
+			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, artifact,
+					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
+			for (Resource _parameter : _parameters) {
+				IRI parameter = (IRI) _parameter;
+				IRI _p = createArtifactKBModel(parameter);
+				aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+			}
+		}
+		return artifactClassifierKB;
+	}
+	
 	
 	private void createInputOutputKBModel(boolean isInput) throws MappingException {
 		LOG.info("isInput: {}",  isInput);

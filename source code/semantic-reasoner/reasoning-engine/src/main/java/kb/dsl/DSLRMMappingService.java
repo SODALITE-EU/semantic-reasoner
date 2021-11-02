@@ -449,7 +449,7 @@ public class DSLRMMappingService {
 		if (value != null) { // this means there is no parameters
 			
 			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
-			IRI kbNode = getKBNode(n);
+			IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
 					kbNode = factory.createIRI(namespace + n.getResource());
@@ -532,7 +532,7 @@ public class DSLRMMappingService {
 					nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value.stringValue());
 				} else {
 						NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
-						IRI kbNode = getKBNode(n);
+						IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 						if (kbNode == null) {
 							// throw new Exception("Cannot find node: " + value);
 							if (nodeNames.contains(n.getResource()))
@@ -592,7 +592,7 @@ public class DSLRMMappingService {
 
 		if (value != null) { // this means there is no parameters
 			NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
-			IRI kbNode = getKBNode(n);
+			IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
 					kbNode = factory.createIRI(namespace + n.getResource());
@@ -676,7 +676,7 @@ public class DSLRMMappingService {
 		if (value != null) { // this means there is no parameters
 			if (interfaceName != null && (interfaceName.equals("type"))) {
 				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
-				IRI kbNode = getKBNode(n);
+				IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
@@ -765,7 +765,7 @@ public class DSLRMMappingService {
 			//probably for capability and requirement different handling needed, check event_fitler_definition in tosca yaml 1.3
 			if (triggerName!=null && triggerName.equals("node")) {
 				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
-				IRI kbNode = getKBNode(n);
+				IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
@@ -865,7 +865,7 @@ public class DSLRMMappingService {
 					String value = _values.iterator().next();
 					NamedResource n = GetResources.setNamedResource(nodews, value, kb);
 					LOG.info("namespacews = {}", nodews);
-					IRI kbNode = getKBNode(n);
+					IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 					if (kbNode == null) {
 						if (nodeNames.contains(n.getResource()))
 							kbNode = factory.createIRI(namespace + n.getResource());
@@ -881,7 +881,7 @@ public class DSLRMMappingService {
 					nodeBuilder.add(list, RDF.TYPE, "tosca:List");
 					for (String string : _values) {
 						NamedResource n = GetResources.setNamedResource(nodews, string, kb);
-						IRI kbNode = getKBNode(n);
+						IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 						if (kbNode == null) {
 							if (nodeNames.contains(n.getResource()))
 								kbNode = factory.createIRI(namespace + n.getResource());
@@ -901,7 +901,7 @@ public class DSLRMMappingService {
 				nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
 				nodeBuilder.add(list, RDF.TYPE, "tosca:List");
 				NamedResource n = GetResources.setNamedResource(nodews, listValue.getLabel(), kb);
-				IRI kbNode = getKBNode(n);
+				IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
@@ -1007,7 +1007,7 @@ public class DSLRMMappingService {
 				if (propertyName != null && propertyName.equals("type") && nodeNames.contains(n.getResource())) {
 					kbNode = factory.createIRI(namespace + factory.createLiteral(n.getResource()).getLabel());
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
-				} else if (propertyName != null && propertyName.equals("type") && !value.isEmpty() && (kbNode = getKBNode(n)) != null) {
+				} else if (propertyName != null && propertyName.equals("type") && !value.isEmpty() && (kbNode = GetResources.getKBNodeInConcepts(n, kb)) != null) {
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 				} else if ((i = Ints.tryParse(value)) != null) {
 					nodeBuilder.add(propertyClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
@@ -1080,7 +1080,7 @@ public class DSLRMMappingService {
 			nodeBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");			
 			
 			NamedResource n = GetResources.setNamedResource(nodews, l.getLabel(), kb);
-			IRI kbNode = getKBNode(n);
+			IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 			if (kbNode == null) {
 				if (nodeNames.contains(n.getResource()))
 					kbNode = factory.createIRI(namespace + n.getResource());
@@ -1228,7 +1228,7 @@ public class DSLRMMappingService {
 		if (value != null) { // this means there is no parameters
 			if (artifactName != null && (artifactName.equals("type"))) {
 				NamedResource n = GetResources.setNamedResource(nodews, value.getLabel(), kb);
-				IRI kbNode = getKBNode(n);
+				IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
 				if (kbNode == null) {
 					if (nodeNames.contains(n.getResource()))
 						kbNode = factory.createIRI(namespace + n.getResource());
@@ -1264,46 +1264,7 @@ public class DSLRMMappingService {
 		return currentPrefixType + ErrorConsts.SLASH + currentType + ErrorConsts.SLASH + entity + subMappingPath;
 	}
 	
-	private IRI getKBNode(NamedResource n) {
-		String _namespace = n.getNamespace();
-		String _resource = n.getResource();
-		
-		LOG.info("getKBNode namespace = {}, resource = {}", _namespace, _resource);
-		
-		String sparql = "select ?x { \r\n" +
-						"  {\r\n " +
-						"    ?x rdf:type owl:Class .\r\n" +
-						"   FILTER NOT EXISTS\r\n" +
-						"   { \r\n" +
-						"     GRAPH ?g { ?x ?p ?o } \r\n" +
-						"   }\r\n" +
-						"  }\r\n";
-		
-		if (_namespace != null && !_namespace.contains("global"))
-			sparql += 	" UNION {\r\n" +
-						"     GRAPH " + "<"+ _namespace + ">\r\n" +
-						"     {\r\n" +
-						"	     ?x rdf:type owl:Class . \r\n" +
-						"     }\r\n" +
-						" }\r\n";
-		
-		sparql += " ?x rdfs:subClassOf ?class .\r\n" +
-				  " FILTER (?class IN (tosca:tosca.entity.Root, tosca:DataType ))\r\n"+
-				  " FILTER (strends(str(?x), \"" + _resource + "\")). \r\n" +
-				  "}";
-		LOG.info(sparql);
-		String query = KB.PREFIXES + sparql;
-
-		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query);
-
-		IRI x = null;
-		while (result.hasNext()) {
-			BindingSet bindingSet = result.next();
-			x = (IRI) bindingSet.getBinding("x").getValue();
-		}
-		result.close();
-		return x;
-	}
+	
 	
 	public Set<String> getNodeNames() {
 		return this.nodeNames;
