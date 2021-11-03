@@ -390,12 +390,15 @@ public class DSLRMMappingService {
 							_mime_type.get());
 			}
 			
-			Optional<String> _file_ext = Models.getPropertyString(rmModel, _node,
+			// file exts
+			Optional<Resource> _fileExts = Models.getPropertyResource(rmModel, _node,
 					factory.createIRI(KB.EXCHANGE + "file_ext"));
-			if (!_file_ext.isEmpty()) {
-				if (nodeDescriptionKB != null)	
+			if (!_fileExts.isEmpty()) {
+				IRI parameterClassifierKB = createFileExtKBModel((IRI)_fileExts.get());
+				if (nodeDescriptionKB != null)	{
 					nodeBuilder.add(nodeDescriptionKB, factory.createIRI(KB.TOSCA + "file_ext"),
-							_file_ext.get());
+							parameterClassifierKB);
+				}
 			}
 			
 			// artifacts
@@ -1257,6 +1260,26 @@ public class DSLRMMappingService {
 			}
 		}
 		return artifactClassifierKB;
+	}
+	
+	private IRI createFileExtKBModel(IRI parameter) throws MappingException {
+		LOG.info( "createFileExtModel: {}", parameter);
+		
+		Set<Literal> fileExts = Models.objectLiterals(rmModel.filter(parameter, factory.createIRI(KB.EXCHANGE + "listValue"), null));
+		LOG.info("-----fileExts----: {}", fileExts);
+		IRI parameterClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
+		
+		nodeBuilder.add(parameterClassifierKB, RDF.TYPE, "soda:SodaliteParameter");	
+		
+		IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
+		nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), list);
+		nodeBuilder.add(list, RDF.TYPE, "tosca:List");
+		
+		for (Literal l:fileExts) {
+			nodeBuilder.add(list, factory.createIRI(KB.TOSCA + "hasDataValue"), l.stringValue());
+		}
+		
+		return parameterClassifierKB;	
 	}
 	
 	//for the context path of Mapping errors
