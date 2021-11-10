@@ -33,6 +33,8 @@ import com.google.gson.JsonParser;
 import kb.clean.ModifyKB;
 import kb.configs.ConfigsLoader;
 import kb.dto.AADM;
+import kb.dto.Artifact;
+import kb.dto.ArtifactMetadata;
 import kb.dto.Attribute;
 import kb.dto.Capability;
 import kb.dto.Interface;
@@ -130,6 +132,41 @@ public class KBApi {
 		return attributes;
 	}
 
+	public Set<Artifact> getArtifacts(String resource, boolean isTemplate) throws IOException {
+		LOG.info("getArtifacts: {}", resource);
+		
+		Set<Artifact> artifacts = new HashSet<>();
+
+		String sparql = MyUtils
+				.fileToString(!isTemplate ? "sparql/getArtifacts.sparql" : "sparql/getArtifactsTemplate.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("resource",  kb.getFactory().createIRI(resource)));
+
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			IRI p1 = (IRI) bindingSet.getBinding("artifact").getValue();
+			IRI concept = (IRI) bindingSet.getBinding("classifier").getValue();
+			Value _value = bindingSet.hasBinding("value") ? bindingSet.getBinding("value").getValue() : null;
+
+			Artifact c = new Artifact(p1);
+			c.setClassifiedBy(concept);
+			if (_value != null)
+				c.setValue(_value, kb);
+
+			artifacts.add(c);
+
+		}
+		result.close();
+
+		for (Artifact artifact : artifacts) {
+			artifact.build(this);
+		}
+
+		return artifacts;
+	}
+	
 	public Set<Property> getProperties(String resource, boolean isTemplate, boolean aadmJson) throws IOException {
 		LOG.info("getProperties: {}, isTemplate: {}, aadmJson: {}", resource, isTemplate, aadmJson);
 		
@@ -843,7 +880,7 @@ public class KBApi {
 			
 		
 			Parameter p = null;
-			if (parameter.equals("content") && ((rootParameter.equals("file") || rootParameter.equals("primary")))) {
+			if (parameter.equals("content") && ((rootParameter.endsWith("file") || rootParameter.equals("primary")))) {
 					/*implementation:
 						primary:
 							content: "script content" //not returned in aadm json
@@ -1124,6 +1161,46 @@ public class KBApi {
 		result.close();
 		
 		return optimization;
+	}
+	
+	public ArtifactMetadata getMimeType(String resource) throws IOException {
+		LOG.info("getMimeType: {}", resource);
+		ArtifactMetadata mimeType = null;
+		String sparql = MyUtils
+				.fileToString("sparql/getMimeType.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
+
+		if (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			Value _mime = bindingSet.getBinding("mime_type").getValue();
+			mimeType = new ArtifactMetadata(_mime.toString());
+		}
+		result.close();
+		
+		return mimeType;
+	}
+	
+	public ArtifactMetadata getFileExt(String resource) throws IOException {
+		LOG.info("getMimeType: {}", resource);
+		ArtifactMetadata fileExt = null;
+		String sparql = MyUtils
+				.fileToString("sparql/getFileExt.sparql");
+		String query = KB.PREFIXES + sparql;
+
+		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
+				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
+
+		if (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			Value _file_ext = bindingSet.getBinding("file_ext").getValue();
+			fileExt = new ArtifactMetadata(_file_ext.toString());
+		}
+		result.close();
+		
+		return fileExt;
 	}
 	
 

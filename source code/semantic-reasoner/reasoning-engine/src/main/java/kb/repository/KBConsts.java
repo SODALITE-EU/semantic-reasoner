@@ -17,6 +17,7 @@ public final class KBConsts {
 	public static final String ATTRIBUTE = "Attribute";
 	public static final String INTERFACE = "Interface";
 	public static final String OPERATION = "Operation";
+	public static final String ARTIFACT = "Artifact";
 	public static final String TOSCALIST = KB.TOSCA + "List";
 	public static final boolean AADM_JSON = true;
 	public static final boolean AADM = true;
@@ -32,6 +33,7 @@ public final class KBConsts {
 	
 	
 	static {
+		TYPES.put("artifact","tosca.artifacts.Root");
        	TYPES.put("data","tosca.datatypes.Root");
        	TYPES.put("node", "tosca.nodes.Root");
        	TYPES.put("capability", "tosca.capabilities.Root");

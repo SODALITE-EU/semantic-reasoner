@@ -26,10 +26,13 @@ public class NodeFull extends Node {
 	Set<Operation> operations;
 	Set<Trigger> triggers;
 	Set<IRI> targets;
+	Set<Artifact> artifacts;
 
 	Set<Property> inputs;
 	Set<Property> outputs;
 	Optimization optimization;
+	ArtifactMetadata mimeType;
+	ArtifactMetadata fileExt;
 
 	//only for types
 	String classType;
@@ -56,6 +59,7 @@ public class NodeFull extends Node {
 		capabilities = api.getCapabilities(uri.toString(), noInheritance, KBConsts.AADM_JSON);
 		interfaces = api.getInterfaces(uri.toString(), noInheritance);
 		requirements = api.getRequirements(uri.toString(), noInheritance);
+		artifacts = api.getArtifacts(uri.toString(), noInheritance);
 
 		// TODO orphan properties
 		validTargetTypes = api.getValidTargetTypes(uri.toString(), noInheritance);
@@ -70,6 +74,10 @@ public class NodeFull extends Node {
 		// inputs
 		inputs = api.getInputsOutputs(uri.toString(), true);
 		outputs = api.getInputsOutputs(uri.toString(), false);
+		
+		mimeType = api.getMimeType(uri.toString());
+		fileExt = api.getFileExt(uri.toString());
+		
 		
 		if (!isTemplate())
 			classType = api.getClassForType(uri);
@@ -118,6 +126,15 @@ public class NodeFull extends Node {
 		}
 		if (!attributes.isEmpty())
 			data.add("attributes", array);
+		
+		// artifacts
+		array = new JsonArray();
+		for (Artifact a : artifacts) {
+			array.add(a.serialise());
+			relevantUris.addAll(a.relevantUris);
+		}
+		if (!artifacts.isEmpty())
+			data.add("artifacts", array);
 
 		// requirements
 		array = new JsonArray();
@@ -201,6 +218,12 @@ public class NodeFull extends Node {
 
 		if(optimization != null)
 			data.addProperty("optimization", optimization.getJson());
+		
+		if(mimeType != null)
+			data.addProperty("mime_type", mimeType.getArtifactMetadata());
+		
+		if(fileExt != null)
+			data.addProperty("file_ext", fileExt.getArtifactMetadata());
 		
 		// triggers
 		array = new JsonArray();

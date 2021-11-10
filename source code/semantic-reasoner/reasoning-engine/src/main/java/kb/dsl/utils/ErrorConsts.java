@@ -9,6 +9,7 @@ public class ErrorConsts {
 	public static final String TRIGGERS = "triggers";
 	public static final String TARGETS = "targets";
 	public static final String OPERATIONS = "operations";
+	public static final String ARTIFACTS = "artifacts";
 	
 	
 }

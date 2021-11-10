@@ -30,7 +30,7 @@ import kb.utils.MyUtils;
 @Path("/rm")
 @Api()
 public class RMService extends AbstractService {
-	private static final Logger LOG = LoggerFactory.getLogger(AADMService.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(RMService.class.getName());
 	/**
 	 * Getting the resource model in JSON format.
 	 * It is used by the IDE so as to create DSL of the models that are saved by the Platform Discovery Service
