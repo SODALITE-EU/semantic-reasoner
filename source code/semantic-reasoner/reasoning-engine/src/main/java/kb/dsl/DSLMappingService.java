@@ -1254,8 +1254,13 @@ public class DSLMappingService {
 		IRI kbTemplate = null;
 		
 		if (resourceShortNamespace.equals(shortNamespace)) {
-			if (version.isEmpty() && templateNames.contains(n.getResource())) {
-				kbTemplate = factory.createIRI(namespace + n.getResource());
+			if (version.isEmpty()) {
+				if (templateNames.contains(n.getResource()))
+					kbTemplate = factory.createIRI(namespace + n.getResource());
+				else if ((kbTemplate = getKBTemplate(n)) != null) {
+					//eg maybe in the same namespace but in different aadm, the reference is saved (clinical uc)
+					LOG.info("kbTemplate from getKBTemplate: {}", kbTemplate);
+				}
 			} else if (!version.isEmpty() && templateNames.contains(version + KBConsts.SLASH + n.getResource())) {
 			/*If the model is versioned, then first check if the resource is local. If the resource is snow/snow-vm, only the snow-vm is checked.
 			* IDE does not know the version before saving, thus the assumption is that a reference without version is first checked against the local versioned ones */
