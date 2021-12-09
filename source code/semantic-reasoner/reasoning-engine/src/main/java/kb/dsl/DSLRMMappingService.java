@@ -699,6 +699,10 @@ public class DSLRMMappingService {
 					nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
 			}
 		} else {
+			if (interfaceName.endsWith("file") || interfaceName.equals("primary")) {
+				System.err.println("FILE OR PRIMARY");
+				//call another function retrieving content and path
+			}
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, interface_iri,
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
