@@ -35,6 +35,7 @@ import org.joda.time.DateTime;
 
 import com.google.common.primitives.Ints;
 
+import kb.dsl.artifact.files.HandleArtifactFile;
 import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
@@ -699,16 +700,20 @@ public class DSLRMMappingService {
 					nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
 			}
 		} else {
-			if (interfaceName.endsWith("file") || interfaceName.equals("primary")) {
-				System.err.println("FILE OR PRIMARY");
-				//call another function retrieving content and path
-			}
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, interface_iri,
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
-				IRI _p = createInterfaceKBModel(parameter);
-				nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				
+				String parameterName = getNameFromExchangeResource(parameter);
+				if ((interfaceName.endsWith("file") || interfaceName.endsWith("primary")) && parameterName.equals("content")) {
+						System.err.println("CONTENT");
+						IRI urlParameter = new HandleArtifactFile(kb, namespace).linkArtifactURLtoTheOntology(parameter, rmModel, nodeBuilder);
+						nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), urlParameter);
+				} else {
+					IRI _p = createInterfaceKBModel(parameter);
+					nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				}
 			}
 		}
 		return interfaceClassifierKB;
@@ -1284,6 +1289,13 @@ public class DSLRMMappingService {
 		}
 		
 		return parameterClassifierKB;	
+	}
+	
+	public String getNameFromExchangeResource(IRI iri) {
+		Optional<Literal> name = Models
+			.objectLiteral(rmModel.filter(iri, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		return name.get().getLabel();
 	}
 	
 	//for the context path of Mapping errors
