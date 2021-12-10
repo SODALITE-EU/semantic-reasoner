@@ -30,6 +30,7 @@ public class HandleArtifactFile {
 	}
 	
 	public IRI linkArtifactURLtoTheOntology (IRI contentIRI, Model model, ModelBuilder nodeBuilder) {
+		LOG.info("linkArtifactURLtoTheOntology: contentIRI={}", contentIRI);
 		IRI paramClassifierKB = null;
 		Literal value = Models
 				.objectLiteral(model.filter(contentIRI, kb.factory.createIRI(KB.EXCHANGE + "value"), null))
@@ -55,8 +56,10 @@ public class HandleArtifactFile {
 			
 			
 			paramClassifierKB = kb.factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
+			System.err.println("paramClassifierKB " + paramClassifierKB);
 			nodeBuilder.add(paramClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
-			nodeBuilder.add(paramClassifierKB, kb.factory.createIRI(KB.DUL + "classifies", namespace + "url"));
+			nodeBuilder.add(paramClassifierKB, kb.factory.createIRI(KB.DUL + "classifies"), namespace + "url");
+			nodeBuilder.add(paramClassifierKB, kb.factory.createIRI(KB.TOSCA + "hasDataValue"), fileUrlValue);
 		}
 		
 		return paramClassifierKB;
