@@ -1263,9 +1263,17 @@ public class DSLRMMappingService {
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, artifact,
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
+				
 				IRI parameter = (IRI) _parameter;
-				IRI _p = createArtifactKBModel(parameter);
-				nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				String parameterName = getNameFromExchangeResource(parameter);
+				if ((artifactName.endsWith("file") || artifactName.endsWith("primary")) && parameterName.equals("content")) {
+					IRI urlParameter = new HandleArtifactFile(kb, namespace).linkArtifactURLtoTheOntology(parameter, rmModel, nodeBuilder);
+					nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), urlParameter);
+				} else {
+					IRI _p = createArtifactKBModel(parameter);
+					nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				}
+				
 			}
 		}
 		return artifactClassifierKB;

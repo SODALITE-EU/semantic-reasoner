@@ -880,7 +880,7 @@ public class KBApi {
 			
 		
 			Parameter p = null;
-			if (parameter.equals("content") && ((rootParameter.endsWith("file") || rootParameter.equals("primary")))) {
+			//if (parameter.equals("content") && ((rootParameter.endsWith("file") || rootParameter.equals("primary")))) {
 					/*implementation:
 						primary:
 							content: "script content" //not returned in aadm json
@@ -888,7 +888,7 @@ public class KBApi {
 							file: content: "script content" //not returned in aadm json
 				 	*/
 						
-					if (_value != null) {
+			/*		if (_value != null) {
 						String content = _value.toString();
 					
 						String fileUrl = null;
@@ -911,7 +911,7 @@ public class KBApi {
 						if (fileUrlValue != null)
 							p.setValue(fileUrlValue, kb);
 					}
-			} else if (parameter.equals("occurrences")){
+			} else */if (parameter.equals("occurrences")){
 				Map<String, String> limitsMap = _getOccurrencesLimits(_classifier);
 				
 				p = new Parameter(_parameter);

@@ -58,7 +58,10 @@ public class HandleArtifactFile {
 			paramClassifierKB = kb.factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
 			System.err.println("paramClassifierKB " + paramClassifierKB);
 			nodeBuilder.add(paramClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
-			nodeBuilder.add(paramClassifierKB, kb.factory.createIRI(KB.DUL + "classifies"), namespace + "url");
+			
+			IRI urlProperty = kb.factory.createIRI(namespace + "url");  
+			nodeBuilder.add(paramClassifierKB, kb.factory.createIRI(KB.DUL + "classifies"), urlProperty);
+			nodeBuilder.add(urlProperty, RDF.TYPE, "rdf:Property");
 			nodeBuilder.add(paramClassifierKB, kb.factory.createIRI(KB.TOSCA + "hasDataValue"), fileUrlValue);
 		}
 		
