@@ -41,6 +41,7 @@ import com.google.common.primitives.Ints;
 
 import kb.KBApi;
 import kb.clean.ModifyKB;
+import kb.dsl.artifact.files.HandleArtifactFile;
 import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
@@ -1047,7 +1048,7 @@ public class DSLMappingService {
 			artifactProperty = GetResources.getKBProperty(artifactName, this.namespacesOfType, kb);
 			if (artifactProperty == null || artifactProperty.toString().equals(namespace + artifactName)) {
 				artifactProperty = factory.createIRI(namespace + artifactName);
-				aadmBuilder.add(artifactProperty, RDF.TYPE, "rdf:Property");
+				templateBuilder.add(artifactProperty, RDF.TYPE, "rdf:Property");
 			}
 		}
 		
@@ -1059,24 +1060,24 @@ public class DSLMappingService {
 		switch (type) {
 			case KBConsts.ARTIFACT:
 				artifactClassifierKB = factory.createIRI(namespace + "ArtifactClassifer_" + MyUtils.randomString());
-				aadmBuilder.add(artifactClassifierKB, RDF.TYPE, "tosca:Artifact");
+				templateBuilder.add(artifactClassifierKB, RDF.TYPE, "tosca:Artifact");
 				break;
 			case KBConsts.PARAMETER:
 				artifactClassifierKB = factory.createIRI(namespace + KBConsts.PARAM_CLASSIFIER + MyUtils.randomString());
-				aadmBuilder.add(artifactClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
+				templateBuilder.add(artifactClassifierKB, RDF.TYPE, "soda:SodaliteParameter");
 				break;
 			default:
 				LOG.warn("type = {} does not exist", type);
 		}
 		
 		if (artifactProperty != null)
-			aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + "classifies"), artifactProperty);
+			templateBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + "classifies"), artifactProperty);
 		
 		//description is added for triggers
 		Optional<String> description = Models.getPropertyString(aadmModel, artifact,
 				factory.createIRI(KB.EXCHANGE + "description"));
 		if (description.isPresent())
-			aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
+			templateBuilder.add(artifactClassifierKB, factory.createIRI(KB.DCTERMS + "description"), description.get());
 
 		// check for direct values of parameters
 		Literal value = Models
@@ -1096,21 +1097,30 @@ public class DSLMappingService {
 				}
 				
 				if(kbNode != null)
-					aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
+					templateBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 				} else {
 					Object i = null;
 					if ((i = Ints.tryParse(value.toString())) != null)
-						aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
+						templateBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), (int) i);
 					else 
-						aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+						templateBuilder.add(artifactClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
 				}
 		} else {
 			Set<Resource> _parameters = Models.getPropertyResources(aadmModel, artifact,
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
-				IRI _p = createArtifactKBModel(parameter);
-				aadmBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				
+				String parameterName = getNameFromExchangeResource(parameter);
+				//handle artifact files so as to save the content on the tomcat server and return them as urls
+				if ((artifactName.endsWith("file") || artifactName.endsWith("primary")) && parameterName.equals("content")) {
+						LOG.info("Content for parameter: {}", parameter);
+						IRI urlParameter = new HandleArtifactFile(kb, namespace).linkArtifactURLtoTheOntology(parameter, aadmModel, templateBuilder);
+						templateBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), urlParameter);
+				} else {
+					IRI _p = createArtifactKBModel(parameter);
+					templateBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				}
 			}
 		}
 		return artifactClassifierKB;
@@ -1293,6 +1303,13 @@ public class DSLMappingService {
 		
 		return templatesIRIs;
 	}*/
+	
+	private String getNameFromExchangeResource(IRI iri) {
+		Optional<Literal> name = Models
+			.objectLiteral(aadmModel.filter(iri, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		return name.get().getLabel();
+	}
 	
 	public List<ValidationModel> getModifiedModels() {
 		return modifiedModels;

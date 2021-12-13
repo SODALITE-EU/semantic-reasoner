@@ -31,8 +31,8 @@ public class NodeFull extends Node {
 	Set<Property> inputs;
 	Set<Property> outputs;
 	Optimization optimization;
-	ArtifactMetadata mimeType;
-	ArtifactMetadata fileExt;
+	String mimeType;
+	Set<String> fileExts;
 
 	//only for types
 	String classType;
@@ -76,7 +76,7 @@ public class NodeFull extends Node {
 		outputs = api.getInputsOutputs(uri.toString(), false);
 		
 		mimeType = api.getMimeType(uri.toString());
-		fileExt = api.getFileExt(uri.toString());
+		fileExts = api.getFileExt(uri.toString());
 		
 		
 		if (!isTemplate())
@@ -220,10 +220,16 @@ public class NodeFull extends Node {
 			data.addProperty("optimization", optimization.getJson());
 		
 		if(mimeType != null)
-			data.addProperty("mime_type", mimeType.getArtifactMetadata());
+			data.addProperty("mime_type", mimeType);
 		
-		if(fileExt != null)
-			data.addProperty("file_ext", fileExt.getArtifactMetadata());
+		
+		array = new JsonArray();
+		for (String f : fileExts) {
+			array.add(f);
+		}
+		
+		if(!fileExts.isEmpty())
+			data.add("file_ext", array);
 		
 		// triggers
 		array = new JsonArray();

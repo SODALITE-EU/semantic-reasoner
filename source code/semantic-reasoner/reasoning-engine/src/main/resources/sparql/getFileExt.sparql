@@ -1,5 +1,5 @@
-select distinct ?file_ext
+select distinct ?value
 where {
 	?resource soda:hasContext ?context .
-	?context tosca:file_ext ?file_ext .
+	?context tosca:file_ext [tosca:hasValue [tosca:hasValue ?value]] .
 }

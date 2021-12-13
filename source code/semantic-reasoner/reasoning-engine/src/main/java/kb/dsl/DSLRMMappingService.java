@@ -704,10 +704,16 @@ public class DSLRMMappingService {
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
-				
+				/*implementation:
+				primary:
+					content: "script content" //not returned in aadm json
+				dependencies:
+					file: content: "script content" //not returned in aadm json
+		 	   */
 				String parameterName = getNameFromExchangeResource(parameter);
+				//handle artifact files so as to save the content on the tomcat server and return them as urls
 				if ((interfaceName.endsWith("file") || interfaceName.endsWith("primary")) && parameterName.equals("content")) {
-						System.err.println("CONTENT");
+						LOG.info("Content for parameter: {}", parameter);
 						IRI urlParameter = new HandleArtifactFile(kb, namespace).linkArtifactURLtoTheOntology(parameter, rmModel, nodeBuilder);
 						nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), urlParameter);
 				} else {
@@ -1265,8 +1271,10 @@ public class DSLRMMappingService {
 			for (Resource _parameter : _parameters) {
 				
 				IRI parameter = (IRI) _parameter;
+				//handle artifact files so as to save the content on the tomcat server and return them as urls
 				String parameterName = getNameFromExchangeResource(parameter);
 				if ((artifactName.endsWith("file") || artifactName.endsWith("primary")) && parameterName.equals("content")) {
+					LOG.info("Content for parameter: {}", parameter);
 					IRI urlParameter = new HandleArtifactFile(kb, namespace).linkArtifactURLtoTheOntology(parameter, rmModel, nodeBuilder);
 					nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), urlParameter);
 				} else {
@@ -1299,7 +1307,7 @@ public class DSLRMMappingService {
 		return parameterClassifierKB;	
 	}
 	
-	public String getNameFromExchangeResource(IRI iri) {
+	private String getNameFromExchangeResource(IRI iri) {
 		Optional<Literal> name = Models
 			.objectLiteral(rmModel.filter(iri, factory.createIRI(KB.EXCHANGE + "name"), null));
 		
