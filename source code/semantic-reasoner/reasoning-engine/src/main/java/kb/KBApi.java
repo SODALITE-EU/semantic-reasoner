@@ -34,7 +34,6 @@ import kb.clean.ModifyKB;
 import kb.configs.ConfigsLoader;
 import kb.dto.AADM;
 import kb.dto.Artifact;
-import kb.dto.ArtifactMetadata;
 import kb.dto.Attribute;
 import kb.dto.Capability;
 import kb.dto.Interface;
@@ -880,7 +879,9 @@ public class KBApi {
 			
 		
 			Parameter p = null;
-			if (parameter.equals("content") && ((rootParameter.endsWith("file") || rootParameter.equals("primary")))) {
+			//This process is done in the DSL mapping service (DSLRMMappingService.java/DSLMappinService.java so as not to have duplicate files in tomcat server
+			//every time IaC builder requests the aadm json)
+			//if (parameter.equals("content") && ((rootParameter.endsWith("file") || rootParameter.equals("primary")))) {
 					/*implementation:
 						primary:
 							content: "script content" //not returned in aadm json
@@ -888,7 +889,7 @@ public class KBApi {
 							file: content: "script content" //not returned in aadm json
 				 	*/
 						
-					if (_value != null) {
+			/*		if (_value != null) {
 						String content = _value.toString();
 					
 						String fileUrl = null;
@@ -911,7 +912,7 @@ public class KBApi {
 						if (fileUrlValue != null)
 							p.setValue(fileUrlValue, kb);
 					}
-			} else if (parameter.equals("occurrences")){
+			} else */if (parameter.equals("occurrences")){
 				Map<String, String> limitsMap = _getOccurrencesLimits(_classifier);
 				
 				p = new Parameter(_parameter);
@@ -1163,9 +1164,9 @@ public class KBApi {
 		return optimization;
 	}
 	
-	public ArtifactMetadata getMimeType(String resource) throws IOException {
+	public String getMimeType(String resource) throws IOException {
 		LOG.info("getMimeType: {}", resource);
-		ArtifactMetadata mimeType = null;
+		String mimeType = null;
 		String sparql = MyUtils
 				.fileToString("sparql/getMimeType.sparql");
 		String query = KB.PREFIXES + sparql;
@@ -1176,16 +1177,16 @@ public class KBApi {
 		if (result.hasNext()) {
 			BindingSet bindingSet = result.next();
 			Value _mime = bindingSet.getBinding("mime_type").getValue();
-			mimeType = new ArtifactMetadata(_mime.toString());
+			mimeType = _mime.toString();
 		}
 		result.close();
 		
 		return mimeType;
 	}
 	
-	public ArtifactMetadata getFileExt(String resource) throws IOException {
+	public  Set<String> getFileExt(String resource) throws IOException {
 		LOG.info("getMimeType: {}", resource);
-		ArtifactMetadata fileExt = null;
+		Set<String> fileExt = new HashSet<>();
 		String sparql = MyUtils
 				.fileToString("sparql/getFileExt.sparql");
 		String query = KB.PREFIXES + sparql;
@@ -1193,10 +1194,10 @@ public class KBApi {
 		TupleQueryResult result = QueryUtil.evaluateSelectQuery(kb.getConnection(), query,
 				new SimpleBinding("resource", kb.getFactory().createIRI(resource)));
 
-		if (result.hasNext()) {
+		while (result.hasNext()) {
 			BindingSet bindingSet = result.next();
-			Value _file_ext = bindingSet.getBinding("file_ext").getValue();
-			fileExt = new ArtifactMetadata(_file_ext.toString());
+			Value _file_ext = bindingSet.getBinding("value").getValue();
+			fileExt.add(_file_ext.toString());
 		}
 		result.close();
 		

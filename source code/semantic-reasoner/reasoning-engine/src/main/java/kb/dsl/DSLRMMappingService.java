@@ -35,6 +35,7 @@ import org.joda.time.DateTime;
 
 import com.google.common.primitives.Ints;
 
+import kb.dsl.artifact.files.HandleArtifactFile;
 import kb.dsl.dto.DslModel;
 import kb.dsl.exceptions.MappingException;
 import kb.dsl.exceptions.models.DslValidationModel;
@@ -703,8 +704,22 @@ public class DSLRMMappingService {
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
 				IRI parameter = (IRI) _parameter;
-				IRI _p = createInterfaceKBModel(parameter);
-				nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				/*implementation:
+				primary:
+					content: "script content" //not returned in aadm json
+				dependencies:
+					file: content: "script content" //not returned in aadm json
+		 	   */
+				String parameterName = getNameFromExchangeResource(parameter);
+				//handle artifact files so as to save the content on the tomcat server and return them as urls
+				if ((interfaceName.endsWith("file") || interfaceName.endsWith("primary")) && parameterName.equals("content")) {
+						LOG.info("Content for parameter: {}", parameter);
+						IRI urlParameter = new HandleArtifactFile(kb, namespace).linkArtifactURLtoTheOntology(parameter, rmModel, nodeBuilder);
+						nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), urlParameter);
+				} else {
+					IRI _p = createInterfaceKBModel(parameter);
+					nodeBuilder.add(interfaceClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				}
 			}
 		}
 		return interfaceClassifierKB;
@@ -1254,9 +1269,19 @@ public class DSLRMMappingService {
 			Set<Resource> _parameters = Models.getPropertyResources(rmModel, artifact,
 					factory.createIRI(KB.EXCHANGE + KBConsts.HAS_PARAMETER));
 			for (Resource _parameter : _parameters) {
+				
 				IRI parameter = (IRI) _parameter;
-				IRI _p = createArtifactKBModel(parameter);
-				nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				//handle artifact files so as to save the content on the tomcat server and return them as urls
+				String parameterName = getNameFromExchangeResource(parameter);
+				if ((artifactName.endsWith("file") || artifactName.endsWith("primary")) && parameterName.equals("content")) {
+					LOG.info("Content for parameter: {}", parameter);
+					IRI urlParameter = new HandleArtifactFile(kb, namespace).linkArtifactURLtoTheOntology(parameter, rmModel, nodeBuilder);
+					nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), urlParameter);
+				} else {
+					IRI _p = createArtifactKBModel(parameter);
+					nodeBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
+				}
+				
 			}
 		}
 		return artifactClassifierKB;
@@ -1280,6 +1305,13 @@ public class DSLRMMappingService {
 		}
 		
 		return parameterClassifierKB;	
+	}
+	
+	private String getNameFromExchangeResource(IRI iri) {
+		Optional<Literal> name = Models
+			.objectLiteral(rmModel.filter(iri, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		return name.get().getLabel();
 	}
 	
 	//for the context path of Mapping errors
