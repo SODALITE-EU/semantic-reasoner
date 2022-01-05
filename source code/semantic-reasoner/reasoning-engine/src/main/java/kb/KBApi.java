@@ -1375,6 +1375,8 @@ public class KBApi {
 			Value name = bindingSet.getBinding("name").getValue();
 			Value _version = bindingSet.hasBinding("version") ? bindingSet.getBinding("version").getValue() : null;
 			Value _description = bindingSet.hasBinding("description") ? bindingSet.getBinding("description").getValue() : null;
+			Value types = bindingSet.hasBinding("types") ? bindingSet.getBinding("types").getValue() : null;
+			
 			
 			SodaliteAbstractModel a;
 			a = (_version != null) ? new SodaliteAbstractModel(kb.factory.createIRI(MyUtils.getAADMUriWithoutVersion(model)) , _version.stringValue()) : new SodaliteAbstractModel(model);
@@ -1386,7 +1388,17 @@ public class KBApi {
 			a.setName(name.toString());
 			if (_description != null)
 				a.setDescription(_description.stringValue());
-						
+			if (types != null) {
+				String[] split = types.toString().split(" ");
+				System.err.println("split: " + split);
+				for (String s : split) {
+					System.err.println("s: " + s);
+					NodeFull f = new NodeFull(kb.factory.createIRI(s), false);
+					a.addType(f);
+				}
+			}
+			a.build(this);
+								
 			models.add(a);
 		}
 		

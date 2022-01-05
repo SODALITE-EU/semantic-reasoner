@@ -64,5 +64,9 @@ public abstract class Resource {
 	public void setName(String name) {
 		this.label = name;
 	}
+	
+	public JsonElement serialiseForInterfaces() {
+		return null;
+	}
 
 }
