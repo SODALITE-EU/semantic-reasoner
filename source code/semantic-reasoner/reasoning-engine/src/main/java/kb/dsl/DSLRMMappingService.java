@@ -601,7 +601,6 @@ public class DSLRMMappingService {
 				if (nodeNames.contains(n.getResource()))
 					kbNode = factory.createIRI(namespace + n.getResource());
 				else {
-
 					mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.CAPABILITIES)
 											, capability.getLocalName(), "Cannot find Node: " + value.getLabel() + " for capability"));
 					LOG.warn("{}: Cannot find Node: {} for capability", currentType, value.getLabel());
@@ -881,19 +880,23 @@ public class DSLRMMappingService {
 			if (!_values.isEmpty()) {
 				if (_values.size() == 1) { // this means there is no parameters
 					String value = _values.iterator().next();
-					NamedResource n = GetResources.setNamedResource(nodews, value, kb);
-					LOG.info("namespacews = {}", nodews);
-					IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
-					if (kbNode == null) {
-						if (nodeNames.contains(n.getResource()))
-							kbNode = factory.createIRI(namespace + n.getResource());
-						else {
-							mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.CAPABILITIES), parameter.getLocalName(), "Cannot find Node: " + value +" for parameter =" + parameterName));
-							LOG.warn("{}: Cannot find: {} for parameter {}", currentType, value, parameterName);
+					if (value.equals("UNBOUNDED") || Ints.tryParse(value) != null) {
+						nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasDataValue"), value);
+					} else {
+						NamedResource n = GetResources.setNamedResource(nodews, value, kb);
+						LOG.info("namespacews = {}", nodews);
+						IRI kbNode = GetResources.getKBNodeInConcepts(n, kb);
+						if (kbNode == null) {
+							if (nodeNames.contains(n.getResource()))
+								kbNode = factory.createIRI(namespace + n.getResource());
+							else {
+								mappingModels.add(new MappingValidationModel(getContextPath(ErrorConsts.CAPABILITIES), parameter.getLocalName(), "Cannot find Node: " + value +" for parameter =" + parameterName));
+								LOG.warn("{}: Cannot find: {} for parameter {}", currentType, value, parameterName);
+							}
 						}
+						if (kbNode != null)
+							nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 					}
-					if (kbNode != null)
-						nodeBuilder.add(parameterClassifierKB, factory.createIRI(KB.TOSCA + "hasObjectValue"), kbNode);
 				} else {
 					IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
 					nodeBuilder.add(list, RDF.TYPE, "tosca:List");
