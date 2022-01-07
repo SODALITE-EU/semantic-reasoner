@@ -259,6 +259,7 @@ public class NodeFull extends Node {
 
 	@Override
 	public JsonElement serialiseForInterfaces() {
+		LOG.info("serialiseForInterfaces");
 		JsonObject data = null;
 		JsonArray array = new JsonArray();
 

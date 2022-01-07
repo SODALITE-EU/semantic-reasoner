@@ -1389,10 +1389,9 @@ public class KBApi {
 			if (_description != null)
 				a.setDescription(_description.stringValue());
 			if (types != null) {
-				String[] split = types.toString().split(" ");
-				System.err.println("split: " + split);
+				// remove quotes before and after types
+				String[] split = types.toString().replaceAll("^\"|\"$", "").split(" ");
 				for (String s : split) {
-					System.err.println("s: " + s);
 					NodeFull f = new NodeFull(kb.factory.createIRI(s), false);
 					a.addType(f);
 				}
