@@ -1113,8 +1113,9 @@ public class DSLMappingService {
 				
 				String parameterName = getNameFromExchangeResource(parameter);
 				//handle artifact files so as to save the content on the tomcat server and return them as urls
-				if ((artifactName.endsWith("file") || artifactName.endsWith("primary")) && parameterName.equals("content")) {
-						LOG.info("Content for parameter: {}", parameter);
+				//if ((artifactName.endsWith("file") || artifactName.endsWith("primary")) && parameterName.equals("content")) {
+				if (parameterName.equals("content")) {
+					LOG.info("Content for parameter: {}", parameter);
 						IRI urlParameter = new HandleArtifactFile(kb, namespace).linkArtifactURLtoTheOntology(parameter, aadmModel, templateBuilder);
 						templateBuilder.add(artifactClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), urlParameter);
 				} else {
