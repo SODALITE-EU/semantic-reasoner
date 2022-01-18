@@ -258,6 +258,7 @@ public class NodeFull extends Node {
 	}
 
 	@Override
+	//needed for KB Browser view for returning the interfaces related with a node type which is useful for the ansible assistance
 	public JsonElement serialiseForInterfaces() {
 		LOG.info("serialiseForInterfaces");
 		JsonObject data = null;

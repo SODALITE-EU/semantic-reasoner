@@ -1388,6 +1388,7 @@ public class KBApi {
 			a.setName(name.toString());
 			if (_description != null)
 				a.setDescription(_description.stringValue());
+			//only needed for retrieving interface info from types for returning the ansible files to the IDE KB Browser view
 			if (types != null) {
 				// remove quotes before and after types
 				String[] split = types.toString().replaceAll("^\"|\"$", "").split(" ");

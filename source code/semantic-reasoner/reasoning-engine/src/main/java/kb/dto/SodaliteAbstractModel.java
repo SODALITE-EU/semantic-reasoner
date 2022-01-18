@@ -25,7 +25,9 @@ public class SodaliteAbstractModel extends Resource {
 		String namespace;
 		String description;
 		
-		//needed by KB Browser view in IDE for rendering ansible DSL
+		/* needed by KB Browser view in IDE for returning  the interface information needed for ansible DSL context assistance
+		* so as the .ans abstract DSL files saved in the tomcat reasoner server to be returned to the user and the work not to be lost
+		*/
 		Set<NodeFull> types;
 
 		public SodaliteAbstractModel(IRI iri) {
