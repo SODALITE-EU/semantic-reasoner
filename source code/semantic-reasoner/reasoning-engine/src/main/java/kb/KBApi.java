@@ -1375,6 +1375,8 @@ public class KBApi {
 			Value name = bindingSet.getBinding("name").getValue();
 			Value _version = bindingSet.hasBinding("version") ? bindingSet.getBinding("version").getValue() : null;
 			Value _description = bindingSet.hasBinding("description") ? bindingSet.getBinding("description").getValue() : null;
+			Value types = bindingSet.hasBinding("types") ? bindingSet.getBinding("types").getValue() : null;
+			
 			
 			SodaliteAbstractModel a;
 			a = (_version != null) ? new SodaliteAbstractModel(kb.factory.createIRI(MyUtils.getAADMUriWithoutVersion(model)) , _version.stringValue()) : new SodaliteAbstractModel(model);
@@ -1386,7 +1388,17 @@ public class KBApi {
 			a.setName(name.toString());
 			if (_description != null)
 				a.setDescription(_description.stringValue());
-						
+			//only needed for retrieving interface info from types for returning the ansible files to the IDE KB Browser view
+			if (types != null) {
+				// remove quotes before and after types
+				String[] split = types.toString().replaceAll("^\"|\"$", "").split(" ");
+				for (String s : split) {
+					NodeFull f = new NodeFull(kb.factory.createIRI(s), false);
+					a.addType(f);
+				}
+			}
+			a.build(this);
+								
 			models.add(a);
 		}
 		

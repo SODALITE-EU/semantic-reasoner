@@ -1,14 +1,17 @@
-SELECT ?m ?time ?user ?dsl ?name ?description {
+SELECT ?m ?time ?user ?dsl ?name ?description (group_concat(str(?type)) as ?types) {
 		?m a soda:ResourceModel .
 		?m soda:createdAt ?time .
 		?m soda:createdBy ?user .
 		?m soda:hasDSL ?dsl .
 		?m soda:hasName ?name .
         
-		?m DUL:isSettingFor ?n
+		?m DUL:isSettingFor ?type .
+        
+		?type sesame:directSubClassOf ?superclass .
+		?superclass rdfs:subClassOf soda:SodaliteSituation .
         
         GRAPH ?g {
-			?n soda:hasContext ?c
+			?type soda:hasContext ?c
 		}
 		OPTIONAL {?m dcterms:description ?description .}
 } group by ?m ?time ?user ?dsl ?name ?description

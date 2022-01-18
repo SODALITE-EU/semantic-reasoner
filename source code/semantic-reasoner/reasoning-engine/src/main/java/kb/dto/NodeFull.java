@@ -83,6 +83,11 @@ public class NodeFull extends Node {
 			classType = api.getClassForType(uri);
 			
 	}
+	
+	public void buildForInterfaces(KBApi api) throws IOException {
+		LOG.info("building={}, isTemplate={}", uri, isTemplate);
+		interfaces = api.getInterfaces(uri.toString(), false);
+	}
 
 	public boolean isTemplate() {
 		return isTemplate;
@@ -252,4 +257,23 @@ public class NodeFull extends Node {
 		return data;
 	}
 
+	@Override
+	//needed for KB Browser view for returning the interfaces related with a node type which is useful for the ansible assistance
+	public JsonElement serialiseForInterfaces() {
+		LOG.info("serialiseForInterfaces");
+		JsonObject data = null;
+		JsonArray array = new JsonArray();
+
+		// interfaces
+		array = new JsonArray();
+		for (Interface i : interfaces) {
+			array.add(i.serialise());
+		}
+		if (!interfaces.isEmpty()) {
+			data = new JsonObject();
+			data.add("interfaces", array);
+		}
+		
+		return data;		
+	}
 }
