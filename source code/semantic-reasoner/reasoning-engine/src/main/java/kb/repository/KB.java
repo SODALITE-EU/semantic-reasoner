@@ -80,6 +80,7 @@ public class KB {
     public KB(String serverUrl, String repoName) {
         ConfigsLoader configLoaderIns = ConfigsLoader.getInstance();
         String env = configLoaderIns.getEnvironment();
+        System.setProperty("org.eclipse.rdf4j.repository.debug", "true");
         if (env == null) {
             configLoaderIns.loadProperties();
             env = configLoaderIns.getEnvironment();
