@@ -1344,8 +1344,16 @@ public class DSLRMMappingService {
 	public void save() {
 		Model rmodel = resourceBuilder.build();
 		Model nmodel = nodeBuilder.build();
-
-		kb.connection.add(rmodel);
+		try {
+			kb.connection.add(rmodel);
+		} catch (Exception e) {
+			LOG.info(e.getMessage());
+			LOG.info(e.toString());
+			LOG.info("StackTrace: ");
+	        e.printStackTrace();
+			
+		}
+		
 		if (namespace.toString().contains("global"))
 			kb.connection.add(nmodel);
 		else
