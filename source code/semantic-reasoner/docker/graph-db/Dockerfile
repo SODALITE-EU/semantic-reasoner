@@ -23,7 +23,7 @@ ENV PATH=${GRAPHDB_INSTALL_DIR}/bin:$PATH
 
 # Added 10485760 threshold because of Insufficient heap memory error
 #CMD ["-Dgraphdb.home=/opt/graphdb/home -Ddefault.min.distinct.threshold=10485760 -Djava.security.egd=file:/dev/./urandom -Xmx10G"]
-CMD ["-Dgraphdb.home=/opt/graphdb/home -Ddefault.min.distinct.threshold=10485760 -Djava.security.egd=file:/dev/./urandom"]
+CMD ["-Dgraphdb.home=/opt/graphdb/home -Ddefault.min.distinct.threshold=10485760 -Djava.security.egd=file:/dev/./urandom -Dgraphdb.logger.root.level=WARN"]
 ENTRYPOINT ["/opt/graphdb/dist/bin/graphdb"]
 
 EXPOSE 7200

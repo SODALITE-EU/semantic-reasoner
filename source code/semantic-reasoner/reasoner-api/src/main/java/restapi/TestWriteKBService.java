@@ -25,7 +25,7 @@ import kb.repository.KB;
 @Path("/testKBWrite")
 @Api()
 public class TestWriteKBService	extends AbstractService {
-		private static final Logger LOG = LoggerFactory.getLogger(TemplateService.class.getName());
+		private static final Logger LOG = LoggerFactory.getLogger(TestWriteKBService.class.getName());
 		
 			@GET
 			@Produces("text/plain")
