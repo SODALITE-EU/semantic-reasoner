@@ -1,4 +1,4 @@
-FROM tomcat:9.0.53-jdk11
+FROM tomcat:9.0.55-jdk11
 
 COPY ./reasoner-api/target/reasoner-api.war /usr/local/tomcat/webapps/reasoner-api.war
 EXPOSE 8080
