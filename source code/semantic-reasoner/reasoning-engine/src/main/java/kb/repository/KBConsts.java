@@ -18,6 +18,7 @@ public final class KBConsts {
 	public static final String INTERFACE = "Interface";
 	public static final String OPERATION = "Operation";
 	public static final String ARTIFACT = "Artifact";
+	public static final String GET_INPUT = "get_input";
 	public static final String TOSCALIST = KB.TOSCA + "List";
 	public static final boolean AADM_JSON = true;
 	public static final boolean AADM = true;
