@@ -15,19 +15,16 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.impl.SimpleBinding;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -35,7 +32,6 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.joda.time.DateTime;
-import org.joda.time.base.AbstractDateTime;
 
 import com.google.common.primitives.Ints;
 
@@ -66,6 +62,7 @@ import kb.validation.exceptions.ValidationException;
 import kb.validation.exceptions.models.RequiredPropertyAttributeModel;
 import kb.validation.exceptions.models.RequirementExistenceModel;
 import kb.validation.exceptions.models.ValidationModel;
+import kb.validation.input.PropertyInputValidation;
 import kb.validation.required.RequiredPropertyValidation;
 
 public class DSLMappingService {
@@ -123,6 +120,8 @@ public class DSLMappingService {
 	public List<PropertyMap> propertyMapValuesForValidation = new ArrayList<PropertyMap>();
 	PropertyMap tempPropertyMap;
 	String currentPropertyMap;
+
+	HashMap<String, String> getInputsInProperties = new HashMap<>();
 	
 	//for requirements Sommelier validation;
 	Set<HashMap<String, IRI>> templateRequirements = new HashSet<>();
@@ -138,6 +137,7 @@ public class DSLMappingService {
 	public List<DslValidationModel>  mappingModels =  new ArrayList<>();
 	
 	public Set<String> templateNames = new HashSet<>();
+	public Set<String> inputNames = new HashSet<>();
 	
 	RequirementExistenceValidation r;
 	
@@ -194,6 +194,20 @@ public class DSLMappingService {
 					templateNames.add(templateName.get().getLabel());
 			}			
 		}
+	}
+	
+	public void retrieveInputs() throws MappingException {
+		for (Resource _input : aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Input"))
+				.subjects()) {
+			IRI input = (IRI) _input;
+
+			Optional<Literal> inputName = Models
+					.objectLiteral(aadmModel.filter(input, factory.createIRI(KB.EXCHANGE + "name"), null));
+			
+			if (inputName.isPresent())
+					inputNames.add(inputName.get().getLabel());	
+		}
+		LOG.info("input names: {}", inputNames);
 	}
 	
 	public DslModel start() throws MappingException, ValidationException, IOException  {
@@ -258,7 +272,8 @@ public class DSLMappingService {
 			mappingModels.add(new MappingValidationModel("AADM", "", "No AADM container found."));
 		}
 
-		retrieveLocalTemplates();	
+		retrieveLocalTemplates();
+		retrieveInputs();
 		
 		// TEMPLATES
 		for (Resource _template : aadmModel.filter(null, RDF.TYPE, factory.createIRI(KB.EXCHANGE + "Template"))
@@ -345,6 +360,7 @@ public class DSLMappingService {
 			definedPropertiesForValidation.clear();
 			propertyValuesForValidation.clear();
 			propertyMapValuesForValidation.clear();
+			getInputsInProperties.clear();
 			for (Resource _property : _properties) {
 				IRI property = (IRI) _property;
 				IRI propertyClassifierKB = createPropertyOrAttributeKBModel(property);
@@ -357,6 +373,7 @@ public class DSLMappingService {
 					templateBuilder.add(templateDescriptionKB, factory.createIRI(KB.TOSCA + "properties"), propertyClassifierKB);
 			}
 			
+			LOG.info("getInputsInProperties: {}", getInputsInProperties);
 			for (PropertyMap pm: propertyMapValuesForValidation) {
 				LOG.info("propertyMapValuesForValidation: ");
 				LOG.info("propertyName: {}", pm.getName());
@@ -370,6 +387,10 @@ public class DSLMappingService {
 			
 			ConstraintsPropertyValidation c = new ConstraintsPropertyValidation(currentPrefixTemplate, templateName, fullTemplateType, propertyValuesForValidation, propertyMapValuesForValidation, kb);
 			validationModels.addAll(c.validate());
+			
+			PropertyInputValidation vi = new PropertyInputValidation(currentPrefixTemplate, templateName,
+					 getInputsInProperties, inputNames, kb);
+			validationModels.addAll(vi.validate());
 			
 			// attributes
 			definedAttributesForValidation.clear();
@@ -684,7 +705,7 @@ public class DSLMappingService {
 		}
 
 //		String value = _value.isPresent() ? _value.get().stringValue() : null;
-		if (propertyName != null)
+		if (propertyName != null) 
 			definedPropertiesForValidation.add(propertyName);
 
 		LOG.info("Property name: {}, value: {}", new Object[] {propertyName, _values});
@@ -724,7 +745,6 @@ public class DSLMappingService {
 				templateBuilder.add(kbProperty, RDF.TYPE, "rdf:Property");
 			}
 			templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + "classifies"), kbProperty);
-			
 		}
 		
 		/*Just assign all properties to property maps, so as to detect properties of type map that have no parameter.
@@ -733,7 +753,6 @@ public class DSLMappingService {
 			tempPropertyMap = new PropertyMap(propertyName);
 			propertyMapValuesForValidation.add(tempPropertyMap);
 		}
-		
 		
 		if (!_values.isEmpty()) {
 
@@ -752,8 +771,7 @@ public class DSLMappingService {
 				if (tempPropertyMap != null && tempPropertyMap.getMapProperties() != null && parameterType.equals(KBConsts.PARAMETER)) {
 					HashMap<String, String> _inPropertyMap = tempPropertyMap.getMapProperties().get(currentPropertyMap);
 					_inPropertyMap.put(propertyName, value);
-				}
-				
+				}			
 				
 			} else {
 				IRI list = factory.createIRI(namespace + "List_" + MyUtils.randomString());
@@ -800,6 +818,9 @@ public class DSLMappingService {
 				}
 				
 				IRI parameter = (IRI) _parameter;
+				
+				assignInputsToPropertiesForValidation(parameter, propertyName);
+				
 				IRI _p = createPropertyOrAttributeKBModel(parameter);
 				
 				templateBuilder.add(propertyClassifierKB, factory.createIRI(KB.DUL + KBConsts.HAS_PARAMETER), _p);
@@ -1288,6 +1309,22 @@ public class DSLMappingService {
 	}
 
 
+	/* Assign the get_input values of properties to getInputsInProperties in order to validate that all the 
+	* input referred in properties have been defined in the model*/
+	public void assignInputsToPropertiesForValidation(IRI inputParameter, String propertyName) {
+		Optional<Literal> _parameterName = Models
+				.objectLiteral(aadmModel.filter(inputParameter, factory.createIRI(KB.EXCHANGE + "name"), null));
+		
+		if (_parameterName.isPresent()) {
+			String parameterName = _parameterName.get().getLabel();
+			if (parameterName.equals(KBConsts.GET_INPUT)) {
+				Set<String> ivalues = Models.getPropertyStrings(aadmModel, inputParameter,
+						factory.createIRI(KB.EXCHANGE + "value"));
+				this.getInputsInProperties.put(propertyName, ivalues.iterator().next());
+			}
+		}		
+	}
+	
 	public IRI getNamespace() {
 		return this.namespace;
 	}
